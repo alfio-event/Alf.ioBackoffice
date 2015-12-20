@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">Alf.io Backoffice</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_scan_qrcode">Scan QR-Code</string>
+    <string name="action_insert_data_manually">Insert data manually</string>
+    <string name="message_permission_camera_rationale">Camera permission is necessary to scan QR-Code</string>
+    <string name="message_accept_permissions">The requested permission are required to run the application</string>
+    <string name="message_check_in_successful">Check-in successful</string>
+    <string name="message_dismiss">Dismiss</string>
+    <string name="message_rescan">Rescan</string>
+    <string name="message_already_checked_in">Ticket already checked in!!</string>
+    <string name="message_scan_your_qrcode">Scan your Alf.io QR-Code</string>
+    <string name="message_scan_attendee_badge">Scan Attendee Badge</string>
+    <string name="title_activity_insert_user">Add user</string>
+    <string name="dialog_select_event_title">Event selection</string>
+    <string name="dialog_select_event_text">Please select the event from the list</string>
+    <string name="ok">OK</string>
+    <string name="save">Save</string>
+    <string name="name">Name</string>
+    <string name="event_name">Event name</string>
+    <string name="base_url">Base url</string>
+    <string name="user_name">User name</string>
+    <string name="password">Password</string>
+    <string name="message_name_mandatory">Name is mandatory</string>
+    <string name="message_event_name_mandatory">Event name is mandatory</string>
+    <string name="message_base_url_mandatory">Base URL is mandatory</string>
+    <string name="message_user_name_mandatory">Username is mandatory</string>
+    <string name="main.title">Init Profile</string>
+    <string name="main.description">Select a saved profile or insert a new one</string>
+    <string name="title_activity_event_detail">Event detail</string>
+    <string name="event_logo">event logo</string>
+    <string name="attendee_name">Attendee</string>
+    <string name="attendee_mail">E-Mail</string>
+    <string name="reservation_id">Reservation ID</string>
+    <string name="rescan">Rescan</string>
+    <string name="check_in">Check-in</string>
+    <string name="init_checkin">Initiate Check-in</string>
+    <string name="checkin_description">Start check-in process for this event by clicking on the button below</string>
+    <string name="checkin_error_must_pay" formatted="false">Not yet paid. Amount due: %1.2f %s</string>
+    <string name="checkin_error_ticket_not_found">Ticket not found</string>
+    <string name="checkin_error_invalid_code">Invalid Ticket Code.</string>
+    <string name="scan_tickets">Scan Tickets</string>
+</resources>

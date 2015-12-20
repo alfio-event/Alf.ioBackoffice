@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_event_detail"
+    tools:context="alfio.backoffice.EventDetailActivity"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/eventHeader"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="1dp"
+        android:layout_marginBottom="5dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/max_event_image_height"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:id="@+id/imageView"
+                    android:contentDescription="@string/event_logo"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Medium Text"
+                    android:layout_gravity="bottom"
+                    android:id="@+id/eventDates"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Small Text"
+                android:id="@+id/eventDescription"/>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/resultCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="1dp"
+        android:layout_marginBottom="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- ticket details -->
+            <TableLayout
+                android:id="@+id/ticketDetailPanel"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:stretchColumns="1">
+
+                <TableRow>
+                    <TextView
+                        android:text="@string/attendee_name"
+                        android:padding="3dip"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/attendeeName"
+                        android:text=""
+                        android:gravity="end"
+                        android:padding="3dip"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textStyle="bold"/>
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:text="@string/attendee_mail"
+                        android:padding="3dip"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/attendeeEmail"
+                        android:text=""
+                        android:gravity="end"
+                        android:padding="3dip"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textStyle="bold"/>
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:id="@+id/reservationId"
+                        android:text=""
+                        android:gravity="end"
+                        android:padding="3dip"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:layout_span="2"/>
+                </TableRow>
+
+            </TableLayout>
+
+            <android.support.v7.widget.ButtonBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ticketDetailButtons">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="1dp">
+                </View>
+
+                <Button
+                    android:id="@+id/rescan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="@string/rescan"
+                    android:background="@color/white"
+                    android:textColor="@color/cancel"
+                    android:textSize="15sp"
+                    android:layout_gravity="end"
+                    style="?android:attr/buttonBarButtonStyle"/>
+                <Button
+                    android:id="@+id/confirm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="@string/check_in"
+                    android:background="@color/white"
+                    android:textColor="@color/ok"
+                    android:textSize="15sp"
+                    style="?android:attr/buttonBarButtonStyle"/>
+            </android.support.v7.widget.ButtonBarLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+    
+    <android.support.v7.widget.CardView
+        android:id="@+id/errorCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="1dp"
+        android:visibility="gone"
+        android:layout_marginBottom="5dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/errorMessage"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textStyle="bold"
+                android:text=""
+                android:textSize="15sp"
+                android:textColor="@color/error"
+                android:layout_margin="5dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="1dp">
+                </View>
+
+                <Button
+                    android:id="@+id/errorButton1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@color/white"
+                    android:hapticFeedbackEnabled="true"
+                    android:textColor="@color/error"
+                    android:text="@string/rescan"
+                    android:layout_gravity="end"
+                    style="?android:attr/buttonBarButtonStyle"/>
+
+                <Button
+                    android:id="@+id/errorButton2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:textSize="15sp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@color/white"
+                    android:hapticFeedbackEnabled="true"
+                    android:textColor="@color/ok"
+                    android:text=""
+                    android:layout_gravity="end"
+                    style="?android:attr/buttonBarButtonStyle"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/initCheckInCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="1dp"
+        android:layout_marginBottom="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:padding="20dp"
+                android:id="@+id/initTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/init_checkin"/>
+
+            <TextView
+                android:id="@+id/checkInDescription"
+                android:padding="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/checkin_description"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="1dp">
+                </View>
+                <Button
+                    android:id="@+id/initScan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/ok"
+                    android:hapticFeedbackEnabled="true"
+                    android:textColorHighlight="@color/colorAccentLight"
+                    android:background="@color/white"
+                    android:text="@string/scan_tickets"
+                    style="?android:attr/buttonStyle"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
