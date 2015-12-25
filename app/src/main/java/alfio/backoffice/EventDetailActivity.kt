@@ -18,7 +18,6 @@ package alfio.backoffice
 
 import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.CheckInStatus.*
-import alfio.backoffice.model.Event
 import alfio.backoffice.model.Ticket
 import alfio.backoffice.task.*
 import android.content.Intent
@@ -32,8 +31,7 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import kotlinx.android.synthetic.main.activity_event_detail.*
 import kotlinx.android.synthetic.main.content_event_detail.*
-import org.jetbrains.anko.onClick
-import java.text.SimpleDateFormat
+import kotlinx.android.synthetic.main.event_descriptor.*
 import kotlin.properties.Delegates
 
 class EventDetailActivity : BaseActivity() {
@@ -54,7 +52,7 @@ class EventDetailActivity : BaseActivity() {
         imageView.setImageBitmap(BitmapFactory.decodeByteArray(eventDetail.image, 0, eventDetail.image.size));
         val event = eventDetail.event!!;
         title = event.name;
-        writeEventDescription(event);
+        writeEventDescription(event, eventDates, eventDescription);
         initScan.setOnClickListener { view ->
             requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrate(50)}, false);
             requestScan();
@@ -69,17 +67,6 @@ class EventDetailActivity : BaseActivity() {
         scanQRCode(R.string.message_scan_attendee_badge)();
     }
 
-
-    private fun writeEventDescription(event: Event) {
-        val dates: String;
-        if(event.oneDay) {
-            dates = "${SimpleDateFormat("EEE d MMM yyyy").format(event.begin)} \nFrom: ${SimpleDateFormat("HH:mm").format(event.begin)} To: ${SimpleDateFormat("HH:mm").format(event.end)}";
-        } else {
-            dates = "From: ${SimpleDateFormat("EEE d MMM yyyy HH:mm").format(event.begin)} \nTo: ${SimpleDateFormat("EEE d MMM yyyy HH:mm").format(event.end)}";
-        }
-        eventDates.text = "$dates";
-        eventDescription.text = event.location;
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, i: Intent?) {
         val scanResult : IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, i);
@@ -148,7 +135,7 @@ class EventDetailActivity : BaseActivity() {
                 errorMessage.text = getString(R.string.checkin_error_must_pay).format(result!!.dueAmount, result.currency);
                 errorButton2.visibility = VISIBLE;
                 errorButton2.text = getString(R.string.check_in);
-                errorButton2.onClick { confirmDeskPayment(qrCode!!); }
+                errorButton2.setOnClickListener { confirmDeskPayment(qrCode!!); }
             }
             EMPTY_TICKET_CODE, INVALID_TICKET_CODE -> errorMessage.text = getString(R.string.checkin_error_invalid_code);
             TICKET_NOT_FOUND, EVENT_NOT_FOUND, INVALID_TICKET_STATE -> errorMessage.text = getString(R.string.checkin_error_ticket_not_found);
@@ -156,7 +143,7 @@ class EventDetailActivity : BaseActivity() {
                 errorMessage.text = getString(R.string.message_already_checked_in);
             }
         }
-        errorButton1.onClick { requestScan(); }
+        errorButton1.setOnClickListener { requestScan(); }
         errorCard.visibility = VISIBLE;
     };
 

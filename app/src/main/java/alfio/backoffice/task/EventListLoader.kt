@@ -28,7 +28,7 @@ import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import java.util.*
 
-class EventListLoader(val caller: AppCompatActivity, val dataService: DataService): AsyncTask<EventListLoaderCommand, Int, Pair<EventListLoaderCommand, EventListLoaderResult>>() {
+class EventListLoader(val caller: AppCompatActivity): AsyncTask<EventListLoaderCommand, Int, Pair<EventListLoaderCommand, EventListLoaderResult>>() {
 
     val eventService = EventService();
     val progressDialog = ProgressDialog(caller);
@@ -71,8 +71,8 @@ class EventListLoader(val caller: AppCompatActivity, val dataService: DataServic
                     .setItems(filteredEvents.map { it.name }.toTypedArray(), {
                         dialog, which ->
                         val event = filteredEvents[which];
-                        val configuration = AlfioConfiguration(event.name!!, event.key!!, command.baseUrl, command.username, command.password);
-                        dataService.saveAlfioConfiguration(configuration);
+                        val configuration = AlfioConfiguration(command.baseUrl, command.username, command.password, event);
+                        DataService.saveAlfioConfiguration(configuration);
                         successCallbacks.forEach { it(configuration); };
                     })
                     .show();

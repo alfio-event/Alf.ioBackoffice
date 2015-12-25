@@ -16,16 +16,16 @@
  */
 package alfio.backoffice.service
 
+import alfio.backoffice.AlfioBackoffice
 import alfio.backoffice.Common
 import alfio.backoffice.model.AlfioConfiguration
-import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.google.gson.reflect.TypeToken
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-class DataService(context: Context) {
+object DataService {
 
     private val sharedPreferences: SharedPreferences;
     val configurations: ConcurrentHashMap<String, AlfioConfiguration>;
@@ -33,7 +33,7 @@ class DataService(context: Context) {
         get() = ArrayList(configurations.values);
 
     init {
-        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AlfioBackoffice.context);
         val existing: Map<String, AlfioConfiguration>? = Common.gson.fromJson(sharedPreferences.getString(KEY_ALFIO_CONFIGURATIONS, ""), SerializedConfigurations().type);
         this.configurations = if(existing != null) ConcurrentHashMap(existing) else ConcurrentHashMap();
     }
@@ -47,12 +47,7 @@ class DataService(context: Context) {
         persistAlfioConfigurations();
     }
 
-    companion object {
-        private val KEY_ALFIO = "alfio"
-        private val KEY_ALFIO_CONFIGURATIONS = "alfio-configurations"
-        private val EVENT_ID = "eventId"
-    }
 
 }
-class ListOfAlfioConfigurations: TypeToken<List<AlfioConfiguration>>();
+private val KEY_ALFIO_CONFIGURATIONS = "alfio-configurations"
 class SerializedConfigurations: TypeToken<Map<String, AlfioConfiguration>>();

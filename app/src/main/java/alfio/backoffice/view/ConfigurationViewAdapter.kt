@@ -16,117 +16,63 @@
  */
 package alfio.backoffice.view
 
+import alfio.backoffice.BaseActivity
+import alfio.backoffice.R
 import alfio.backoffice.model.AlfioConfiguration
-import android.content.Context
-import android.view.Gravity
+import alfio.backoffice.service.DataService
+import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.LinearLayout
+import android.widget.ImageView
 import android.widget.TextView
-import org.jetbrains.anko.*
+import kotlin.properties.Delegates
 
-/**
- * source: https://github.com/yanex/anko-example/blob/master/app/src/main/java/org/example/ankodemo/util/ListItemAdapter.kt
- */
-class ConfigurationViewAdapter(ctx: Context, val items: List<ListItem>) : ArrayAdapter<ListItem>(ctx, 0, items) {
+class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) : RecyclerView.Adapter<ViewHolder>() {
 
-    private val ankoContext = AnkoContext.createReusable(ctx, this);
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
-        val item = getItem(position)
-        if (item != null) {
-            val view = convertView ?: item.createView(ankoContext)
-            item.apply(view)
-            return view
-        } else return convertView
+    override fun getItemCount(): Int {
+        return DataService.alfioConfigurations.size;
     }
 
-    override fun getItem(position: Int): ListItem? {
-        return items[position];
-    }
-
-    override fun getItemId(position: Int): Long {
-        return position.toLong();
-    }
-
-    override fun hasStableIds(): Boolean {
-        return false;
-    }
-
-    override fun getCount(): Int {
-        return items.size;
-    }
-}
-
-interface ListItem : AnkoComponent<ConfigurationViewAdapter> {
-    fun apply(convertView: View)
-}
-
-class ConfigurationListItem(val alfioConfiguration: AlfioConfiguration) : ListItem {
-    var title : TextView? = null;
-    var description: TextView? = null;
-    protected inline fun createLinearLayout(ui: AnkoContext<ConfigurationViewAdapter>, init: LinearLayout.() -> Unit) = ui.apply {
-        linearLayout {
-            title = textView {
-                id = android.R.id.text1
-                text = "Text title"
-                textSize = 17f
+    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
+        val configuration = DataService.alfioConfigurations[position];
+        if(holder != null) {
+            holder.setOnClickListener {
+                clickHandler.invoke(configuration);
             }
-            description = textView {
-                id = android.R.id.text2
-                text = "description"
-                textSize = 12f
-            }
-            init();
-        }
-    }.view;
-
-    override fun createView(ui: AnkoContext<ConfigurationViewAdapter>) = createLinearLayout(ui) {
-        orientation = LinearLayout.VERTICAL;
-        gravity = Gravity.AXIS_CLIP;
-    }
-
-    private fun getHolder(convertView: View): Holder {
-        return (convertView.tag as? Holder) ?: Holder(title!!, description!!).apply {
-            convertView.tag = this
+            BaseActivity.writeEventDescription(configuration.event, holder.eventDates, holder.eventDescription);
+            holder.userDetail.text = "${configuration.username} @ ${configuration.url}";
+            holder.eventName.text = configuration.event.name;
         }
     }
 
-    override fun apply(convertView: View) {
-        val h = getHolder(convertView)
-        h.title.text = alfioConfiguration.name;
-        h.description.text = "${alfioConfiguration.username} on ${alfioConfiguration.url}";
+    fun notifyInsertion() {
+        super.notifyItemInserted(DataService.alfioConfigurations.size - 1);
     }
 
-    internal class Holder(val title: TextView, val description: TextView)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder? {
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.event_descriptor, parent, false));
+    }
+
 }
 
-class TextListItem(val text: String) : ListItem {
-    protected inline fun createTextView(ui: AnkoContext<ConfigurationViewAdapter>, init: TextView.() -> Unit) = ui.apply {
-        textView {
-            id = android.R.id.text1
-            setText("Text list item") // default text (for the preview)
-            init()
-        }
-    }.view
+class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    override fun createView(ui: AnkoContext<ConfigurationViewAdapter>) = createTextView(ui) {
-        gravity = Gravity.CENTER_VERTICAL
-        padding = ui.dip(20)
-        textSize = 18f
+    var imageView by Delegates.notNull<ImageView>();
+    var eventDates by Delegates.notNull<TextView>();
+    var eventDescription by Delegates.notNull<TextView>();
+    var userDetail by Delegates.notNull<TextView>();
+    var eventName by Delegates.notNull<TextView>()
+
+    init {
+        imageView = itemView.findViewById(R.id.imageView) as ImageView;
+        eventDates = itemView.findViewById(R.id.eventDates) as TextView;
+        eventDescription = itemView.findViewById(R.id.eventDescription) as TextView;
+        userDetail = itemView.findViewById(R.id.userDetail) as TextView;
+        eventName = itemView.findViewById(R.id.eventName) as TextView;
     }
 
-    private fun getHolder(convertView: View): Holder {
-        return (convertView.tag as? Holder) ?: Holder(convertView as TextView).apply {
-            convertView.tag = this
-        }
+    fun setOnClickListener(listener: (View) -> Unit) {
+        itemView.setOnClickListener(listener);
     }
-
-    override fun apply(convertView: View) {
-        val h = getHolder(convertView)
-        h.textView.text = text
-    }
-
-    internal class Holder(val textView: TextView)
 }

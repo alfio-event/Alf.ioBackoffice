@@ -16,7 +16,7 @@
  */
 package alfio.backoffice
 
-import alfio.backoffice.service.DataService
+import alfio.backoffice.model.Event
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -24,17 +24,14 @@ import android.os.Build
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.TextView
 import com.google.zxing.integration.android.IntentIntegrator
+import java.text.SimpleDateFormat
 
 abstract class BaseActivity: AppCompatActivity() {
 
     private val pendingActions: MutableMap<Int, Pair<Boolean, () -> Unit>> = hashMapOf();
     private var requestId: Int = 0;
-
-    public val dataService : DataService
-        get() {
-            return DataService(this)
-        };
 
     override fun onPause() {
         super.onPause();
@@ -73,6 +70,19 @@ abstract class BaseActivity: AppCompatActivity() {
             return;
         }
         action.second();
+    }
+
+    companion object {
+        fun writeEventDescription(event: Event, eventDates: TextView, eventDescription: TextView) {
+            val dates: String;
+            if(event.oneDay) {
+                dates = "${SimpleDateFormat("EEE d MMM yyyy").format(event.begin)} \nFrom: ${SimpleDateFormat("HH:mm").format(event.begin)} To: ${SimpleDateFormat("HH:mm").format(event.end)}";
+            } else {
+                dates = "From: ${SimpleDateFormat("EEE d MMM yyyy HH:mm").format(event.begin)} \nTo: ${SimpleDateFormat("EEE d MMM yyyy HH:mm").format(event.end)}";
+            }
+            eventDates.text = "$dates";
+            eventDescription.text = event.location;
+        }
     }
 
 }

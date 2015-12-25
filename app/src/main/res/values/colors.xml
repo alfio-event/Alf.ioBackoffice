@@ -11,4 +11,5 @@
     <color name="cancel">#d50000</color>
     <color name="ok">#388e3c</color>
     <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
 </resources>

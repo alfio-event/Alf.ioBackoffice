@@ -27,7 +27,7 @@ class EventService: RemoteService {
 
     fun loadUserEvents(baseUrl: String, username: String, password: String) : Response {
         val request = Request.Builder()
-                .addHeader("Authorization", "Basic " + getAuthorizationHeader(username, password))
+                .addHeader("Authorization", getAuthorizationHeader(username, password))
                 .get()
                 .url("$baseUrl/admin/api/events")
                 .build();

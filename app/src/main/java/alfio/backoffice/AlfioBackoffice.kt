@@ -14,15 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with alf.io backoffice.  If not, see //www.gnu.org/licenses/>.
  */
-package alfio.backoffice.model
+package alfio.backoffice
 
-import java.io.Serializable
+import android.app.Application
+import android.content.Context
 
-data class AlfioConfiguration(val url: String, val username: String, val password: String, val event: Event) : Serializable {
-    val name : String
-        get() = event.name!!;
-    val eventName : String
-        get() = event.key!!;
-    val imageUrl : String?
-        get() = event.imageUrl;
+class AlfioBackoffice : Application() {
+
+    override fun onCreate() {
+        Companion.ctx = applicationContext;
+    }
+
+    companion object {
+        private var ctx: Context? = null;
+        public val context: Context
+            get() {
+                val c = ctx;
+                if(c != null) {
+                    return c;
+                }
+                throw AssertionError("Can't return a null value");
+            }
+    }
 }
