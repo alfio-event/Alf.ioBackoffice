@@ -17,8 +17,10 @@
 package alfio.backoffice
 
 import alfio.backoffice.model.AlfioConfiguration
+import alfio.backoffice.service.DataService
 import alfio.backoffice.task.*
 import alfio.backoffice.view.ConfigurationViewAdapter
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -96,7 +98,18 @@ class MainActivity : BaseActivity() {
         if(scanResult != null && scanResult.contents != null) {
             val result: Map<String, String> = Common.gson.fromJson(scanResult.contents, MapStringStringTypeToken().type);
             EventListLoader(this)
-                    .onSuccess { listAdapter.notifyInsertion(); }
+                    .then({
+                        AlertDialog.Builder(this)
+                                .setTitle(R.string.dialog_select_event_title)
+                                .setItems(it.results.map { it.name }.toTypedArray(), {
+                                    dialog, which ->
+                                    val event = it.results[which];
+                                    val configuration = AlfioConfiguration(it.param!!.baseUrl, it.param.username, it.param.password, event);
+                                    DataService.saveAlfioConfiguration(configuration);
+                                    listAdapter.notifyInsertion();
+                                })
+                                .show();
+                    })
                     .execute(EventListLoaderCommand(result["baseUrl"]!!, result["username"]!!, result["password"]!!));
         }
     }

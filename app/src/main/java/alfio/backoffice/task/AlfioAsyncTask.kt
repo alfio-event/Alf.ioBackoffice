@@ -67,7 +67,7 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
         return result.isSuccessful();
     }
 
-    override fun onPreExecute() {
+    override final fun onPreExecute() {
         progressDialog.setMessage(getProgressMessage());
         progressDialog.show();
     }

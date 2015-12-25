@@ -17,89 +17,32 @@
 package alfio.backoffice.task
 
 import alfio.backoffice.Common
-import alfio.backoffice.R
-import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.Event
-import alfio.backoffice.service.DataService
 import alfio.backoffice.service.EventService
-import android.app.AlertDialog
-import android.app.ProgressDialog
-import android.os.AsyncTask
-import android.support.v7.app.AppCompatActivity
-import java.util.*
+import android.content.Context
 
-class EventListLoader(val caller: AppCompatActivity): AsyncTask<EventListLoaderCommand, Int, Pair<EventListLoaderCommand, EventListLoaderResult>>() {
+class EventListLoader(caller: Context): AlfioAsyncTask<List<Event>, EventListLoaderCommand, EventListLoaderResult>(caller) {
 
-    val eventService = EventService();
-    val progressDialog = ProgressDialog(caller);
-    val successCallbacks = ArrayList<(AlfioConfiguration) -> Unit>();
-    val failureCallbacks = ArrayList<(EventListLoaderResult) -> Unit>();
-    val emptyFailedResult = EventListLoaderResult(false, null);
+    override fun emptyResult(): EventListLoaderResult {
+        return EventListLoaderResult(false, emptyList(), null);
+    }
 
-    override fun doInBackground(vararg params: EventListLoaderCommand?): Pair<EventListLoaderCommand, EventListLoaderResult>? {
-        params.forEach {
-            if(it != null) {
-                val response = eventService.loadUserEvents(it.baseUrl, it.username, it.password);
-                if(response.isSuccessful) {
-                    return it to EventListLoaderResult(true, response.body().string());
-                }
-                return it to EventListLoaderResult(false, null);
-            }
+    override fun work(param: EventListLoaderCommand): Pair<EventListLoaderCommand, EventListLoaderResult> {
+        val response = eventService.loadUserEvents(param.baseUrl, param.username, param.password);
+        if(response.isSuccessful) {
+            val events: List<Event> = Common.gson.fromJson(response.body().string(), EventService.ListOfEvents().type);
+            return param to EventListLoaderResult(true, events.filter { !it.external; }, param);
         }
-        return null;
+        return param to emptyResult();
     }
 
-    override fun onPreExecute() {
-        progressDialog.setMessage("Loading events...");
-        progressDialog.show();
+    override fun getProgressMessage(): String {
+        return "loading events...";
     }
-
-    override fun onCancelled() {
-        AlertDialog.Builder(caller).setTitle("error").setMessage("error").show()
-    }
-
-    override fun onPostExecute(result: Pair<EventListLoaderCommand, EventListLoaderResult>?) {
-
-        if(result != null && result.second.success) {
-            val response = result.second;
-            val command = result.first;
-            val events: List<Event> = Common.gson.fromJson(response.responseBody, EventService.ListOfEvents().type);
-            hideProgressDialog();
-            val filteredEvents = events.filter { !it.external };
-            AlertDialog.Builder(caller)
-                    .setTitle(R.string.dialog_select_event_title)
-                    .setItems(filteredEvents.map { it.name }.toTypedArray(), {
-                        dialog, which ->
-                        val event = filteredEvents[which];
-                        val configuration = AlfioConfiguration(command.baseUrl, command.username, command.password, event);
-                        DataService.saveAlfioConfiguration(configuration);
-                        successCallbacks.forEach { it(configuration); };
-                    })
-                    .show();
-        } else {
-            hideProgressDialog();
-            failureCallbacks.forEach { it( if(result != null) result.second else emptyFailedResult) }
-        }
-    }
-
-    private fun hideProgressDialog() {
-        if(progressDialog.isShowing) {
-            progressDialog.dismiss();
-        }
-    }
-
-    fun onSuccess(callback: (AlfioConfiguration) -> Unit) : EventListLoader {
-        successCallbacks.add(callback);
-        return this;
-    }
-
-    fun onFailure(callback: (EventListLoaderResult) -> Unit) : EventListLoader {
-        failureCallbacks.add(callback);
-        return this;
-    }
-
-
 }
 
-data class EventListLoaderCommand(val baseUrl: String, val username: String, val password: String);
-data class EventListLoaderResult(val success: Boolean, val responseBody: String?);
+data class EventListLoaderCommand(val baseUrl: String, val username: String, val password: String) : TaskParam;
+data class EventListLoaderResult(val success: Boolean, val results: List<Event>, val param: EventListLoaderCommand?) : TaskResult<List<Event>> {
+    override fun isSuccessful(): Boolean = success;
+    override fun getResponse(): List<Event> = results;
+};
