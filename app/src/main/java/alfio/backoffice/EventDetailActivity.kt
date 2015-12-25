@@ -22,6 +22,7 @@ import alfio.backoffice.model.Ticket
 import alfio.backoffice.task.*
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Vibrator
 import android.support.design.widget.Snackbar
@@ -49,9 +50,11 @@ class EventDetailActivity : BaseActivity() {
         setSupportActionBar(toolbar);
         eventDetail = intent.extras.get("detail") as EventDetailResult;
         config = intent.extras.get("config") as AlfioConfiguration;
-        imageView.setImageBitmap(BitmapFactory.decodeByteArray(eventDetail.image, 0, eventDetail.image.size));
+        val drawable = BitmapDrawable(resources, BitmapFactory.decodeByteArray(eventDetail.image, 0, eventDetail.image.size));
+        eventLogoContainer.background = drawable;
         val event = eventDetail.event!!;
         title = event.name;
+        eventName.text = event.name;
         writeEventDescription(event, eventDates, eventDescription);
         initScan.setOnClickListener { view ->
             requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrate(50)}, false);

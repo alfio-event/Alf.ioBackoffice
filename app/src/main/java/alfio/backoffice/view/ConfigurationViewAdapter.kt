@@ -24,7 +24,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import kotlin.properties.Delegates
 
@@ -58,14 +58,14 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
 
 class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    var imageView by Delegates.notNull<ImageView>();
+    var mainComponent by Delegates.notNull<LinearLayout>();
     var eventDates by Delegates.notNull<TextView>();
     var eventDescription by Delegates.notNull<TextView>();
     var userDetail by Delegates.notNull<TextView>();
     var eventName by Delegates.notNull<TextView>()
 
     init {
-        imageView = itemView.findViewById(R.id.imageView) as ImageView;
+        mainComponent = itemView.findViewById(R.id.eventLogoContainer) as LinearLayout;
         eventDates = itemView.findViewById(R.id.eventDates) as TextView;
         eventDescription = itemView.findViewById(R.id.eventDescription) as TextView;
         userDetail = itemView.findViewById(R.id.userDetail) as TextView;
