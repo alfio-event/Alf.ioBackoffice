@@ -4,7 +4,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="list_item_height">72dp</dimen>
     <dimen name="event_image_height">70dp</dimen>
-    <dimen name="event_detail_card_height">150dp</dimen>
+    <dimen name="event_detail_card_height">100dp</dimen>
     <dimen name="event_image_width">150dp</dimen>
     <dimen name="card_elevation">2dp</dimen>
 

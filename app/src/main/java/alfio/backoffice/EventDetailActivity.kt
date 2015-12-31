@@ -26,6 +26,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Vibrator
 import android.support.design.widget.Snackbar
+import android.view.Gravity
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.google.zxing.integration.android.IntentIntegrator
@@ -51,6 +52,7 @@ class EventDetailActivity : BaseActivity() {
         eventDetail = intent.extras.get("detail") as EventDetailResult;
         config = intent.extras.get("config") as AlfioConfiguration;
         val drawable = BitmapDrawable(resources, BitmapFactory.decodeByteArray(eventDetail.image, 0, eventDetail.image.size));
+        drawable.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL;
         eventLogoContainer.background = drawable;
         val event = eventDetail.event!!;
         title = event.name;

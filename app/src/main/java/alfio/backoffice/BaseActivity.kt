@@ -76,9 +76,9 @@ abstract class BaseActivity: AppCompatActivity() {
         fun writeEventDescription(event: Event, eventDates: TextView, eventDescription: TextView) {
             val dates: String;
             if(event.oneDay) {
-                dates = "${SimpleDateFormat("EEE d MMM yyyy").format(event.begin)} From: ${SimpleDateFormat("HH:mm").format(event.begin)} To: ${SimpleDateFormat("HH:mm").format(event.end)}";
+                dates = "${SimpleDateFormat("EEE d MMM yyyy").format(event.begin)} ${SimpleDateFormat("HH:mm").format(event.begin)} - ${SimpleDateFormat("HH:mm").format(event.end)}";
             } else {
-                dates = "From: ${SimpleDateFormat("EEE d MMM yyyy HH:mm").format(event.begin)} To: ${SimpleDateFormat("EEE d MMM yyyy HH:mm").format(event.end)}";
+                dates = "${SimpleDateFormat("EEE d MMM yyyy HH:mm").format(event.begin)} - ${SimpleDateFormat("EEE d MMM yyyy HH:mm").format(event.end)}";
             }
             eventDates.text = "$dates";
             eventDescription.text = event.location;
