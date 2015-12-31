@@ -102,7 +102,7 @@
                     android:textColor="@color/cancel"
                     android:textSize="15sp"
                     android:layout_gravity="end"
-                    style="?android:attr/buttonBarButtonStyle"/>
+                    style="?android:attr/borderlessButtonStyle"/>
                 <Button
                     android:id="@+id/confirm"
                     android:layout_width="wrap_content"
@@ -113,7 +113,7 @@
                     android:background="@color/white"
                     android:textColor="@color/ok"
                     android:textSize="15sp"
-                    style="?android:attr/buttonBarButtonStyle"/>
+                    style="?android:attr/borderlessButtonStyle"/>
             </android.support.v7.widget.ButtonBarLayout>
 
         </LinearLayout>
@@ -166,7 +166,7 @@
                     android:textColor="@color/error"
                     android:text="@string/rescan"
                     android:layout_gravity="end"
-                    style="?android:attr/buttonBarButtonStyle"/>
+                    style="?android:attr/borderlessButtonStyle"/>
 
                 <Button
                     android:id="@+id/errorButton2"
@@ -181,7 +181,7 @@
                     android:textColor="@color/ok"
                     android:text=""
                     android:layout_gravity="end"
-                    style="?android:attr/buttonBarButtonStyle"/>
+                    style="?android:attr/borderlessButtonStyle"/>
 
             </LinearLayout>
         </LinearLayout>
@@ -234,11 +234,8 @@
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
                     android:textColor="@color/ok"
-                    android:hapticFeedbackEnabled="true"
-                    android:textColorHighlight="@color/colorAccentLight"
-                    android:background="@color/white"
                     android:text="@string/scan_tickets"
-                    style="?android:attr/buttonStyle"/>
+                    style="?android:attr/borderlessButtonStyle"/>
             </LinearLayout>
         </LinearLayout>
 
