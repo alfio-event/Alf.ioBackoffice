@@ -24,10 +24,11 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.os.AsyncTask
 import java.util.*
+import kotlin.properties.Delegates
 
-abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val caller: Context) : AsyncTask<Param, Void, Result>() {
+abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val caller: Context, val showProgressDialog: Boolean = true) : AsyncTask<Param, Void, Result>() {
 
-    val progressDialog = ProgressDialog(caller);
+    var progressDialog by Delegates.notNull<ProgressDialog>();
     var param : Param? = null;
     val successCallbacks = ArrayList<(Result) -> Unit>();
     val failureCallbacks = ArrayList<(Param?, Result?) -> Unit>();
@@ -35,6 +36,12 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
     protected val eventService = EventService();
     protected val userService = UserService();
     protected val checkInService = CheckInService();
+
+    init {
+        if(showProgressDialog) {
+            progressDialog = ProgressDialog(caller);
+        }
+    }
 
     override final fun doInBackground(vararg params: Param?): Result {
         if(params.size > 0 && params[0] != null) {
@@ -46,7 +53,7 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
 
     protected abstract fun emptyResult() : Result;
 
-    protected abstract fun work(param: Param): Pair<Param, Result>;
+    internal abstract fun work(param: Param): Pair<Param, Result>;
 
     override fun onCancelled(result: Result?) {
         super.onCancelled(result)
@@ -70,8 +77,10 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
     }
 
     override final fun onPreExecute() {
-        progressDialog.setMessage(getProgressMessage());
-        progressDialog.show();
+        if(showProgressDialog) {
+            progressDialog.setMessage(getProgressMessage());
+            progressDialog.show();
+        }
     }
 
     protected open fun getProgressMessage() : String {
@@ -79,7 +88,7 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
     }
 
     private fun hideProgressDialog() {
-        if(progressDialog.isShowing) {
+        if(showProgressDialog && progressDialog.isShowing) {
             progressDialog.dismiss();
         }
     }

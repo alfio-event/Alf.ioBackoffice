@@ -20,7 +20,13 @@ import alfio.backoffice.BaseActivity
 import alfio.backoffice.R
 import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.service.DataService
+import alfio.backoffice.task.EventImageLoader
+import alfio.backoffice.task.EventImageParam
+import alfio.backoffice.task.EventImageResult
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.support.v7.widget.RecyclerView
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +46,12 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
                 clickHandler.invoke(configuration);
             }
             BaseActivity.writeEventDetails(configuration.event, configuration, holder.eventDates, holder.eventDescription, holder.userDetail, holder.url, holder.eventName);
+            EventImageLoader(holder.itemView.context)
+                    .then({result: EventImageResult ->
+                        val drawable = BitmapDrawable(holder.itemView.resources, BitmapFactory.decodeByteArray(result.image, 0, result.image.size));
+                        drawable.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL;
+                        holder.mainComponent.background = drawable;
+                    }).execute(EventImageParam(configuration.url, configuration.event));
         }
     }
 
