@@ -97,18 +97,25 @@ class MainActivity : BaseActivity() {
         val scanResult : IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if(scanResult != null && scanResult.contents != null) {
             val result: Map<String, String> = Common.gson.fromJson(scanResult.contents, MapStringStringTypeToken().type);
+            val resultHandler: (EventListLoaderResult, Int) -> Unit = {
+                resp, which ->
+                val event = resp.results[which];
+                val configuration = AlfioConfiguration(resp.param!!.baseUrl, resp.param.username, resp.param.password, resp.userType, event);
+                DataService.saveAlfioConfiguration(configuration);
+                listAdapter.notifyInsertion();
+            };
             EventListLoader(this)
                     .then({
-                        AlertDialog.Builder(this)
-                                .setTitle(R.string.dialog_select_event_title)
-                                .setItems(it.results.map { it.name }.toTypedArray(), {
-                                    dialog, which ->
-                                    val event = it.results[which];
-                                    val configuration = AlfioConfiguration(it.param!!.baseUrl, it.param.username, it.param.password, event);
-                                    DataService.saveAlfioConfiguration(configuration);
-                                    listAdapter.notifyInsertion();
-                                })
-                                .show();
+                        when(it.results.size) {
+                            1 -> resultHandler(it, 0);
+                            else -> AlertDialog.Builder(this)
+                                    .setTitle(R.string.dialog_select_event_title)
+                                    .setItems(it.results.map { it.name }.toTypedArray(), {
+                                        dialog, which ->
+                                        resultHandler(it, which);
+                                    })
+                                    .show();
+                        }
                     })
                     .execute(EventListLoaderCommand(result["baseUrl"]!!, result["username"]!!, result["password"]!!));
         }

@@ -18,6 +18,7 @@ package alfio.backoffice.task
 
 import alfio.backoffice.service.CheckInService
 import alfio.backoffice.service.EventService
+import alfio.backoffice.service.UserService
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
@@ -32,6 +33,7 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
     val failureCallbacks = ArrayList<(Param?, Result?) -> Unit>();
 
     protected val eventService = EventService();
+    protected val userService = UserService();
     protected val checkInService = CheckInService();
 
     override final fun doInBackground(vararg params: Param?): Result {

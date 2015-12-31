@@ -55,9 +55,8 @@ class EventDetailActivity : BaseActivity() {
         drawable.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL;
         eventLogoContainer.background = drawable;
         val event = eventDetail.event!!;
-        title = event.name;
         eventName.text = event.name;
-        writeEventDescription(event, eventDates, eventDescription);
+        writeEventDetails(event, config, eventDates, eventDescription, userDetail, baseUrl, eventName);
         initScan.setOnClickListener { view ->
             requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrate(50)}, false);
             requestScan();

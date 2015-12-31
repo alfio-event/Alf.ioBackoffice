@@ -16,13 +16,14 @@
  */
 package alfio.backoffice.model
 
-import java.io.Serializable
-
-data class AlfioConfiguration(val url: String, val username: String, val password: String, val userType: UserType, val event: Event) : Serializable {
-    val name : String
-        get() = event.name!!;
-    val eventName : String
-        get() = event.key!!;
-    val imageUrl : String?
-        get() = event.imageUrl;
+enum class UserType {
+    STAFF, SPONSOR;
+    companion object {
+        fun fromString(name: String) : UserType {
+            return when(name) {
+                SPONSOR.name -> SPONSOR;
+                else -> STAFF;
+            }
+        }
+    }
 }

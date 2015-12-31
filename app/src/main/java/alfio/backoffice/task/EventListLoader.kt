@@ -18,6 +18,7 @@ package alfio.backoffice.task
 
 import alfio.backoffice.Common
 import alfio.backoffice.model.Event
+import alfio.backoffice.model.UserType
 import alfio.backoffice.service.EventService
 import android.content.Context
 
@@ -28,10 +29,15 @@ class EventListLoader(caller: Context): AlfioAsyncTask<List<Event>, EventListLoa
     }
 
     override fun work(param: EventListLoaderCommand): Pair<EventListLoaderCommand, EventListLoaderResult> {
+        val userRoleResponse = userService.loadUserType(param.baseUrl, param.username, param.password);
+        if(!userRoleResponse.isSuccessful) {
+            return param to emptyResult();
+        }
+        val userType = UserType.fromString(userRoleResponse.body().string());
         val response = eventService.loadUserEvents(param.baseUrl, param.username, param.password);
         if(response.isSuccessful) {
             val events: List<Event> = Common.gson.fromJson(response.body().string(), EventService.ListOfEvents().type);
-            return param to EventListLoaderResult(true, events.filter { !it.external; }, param);
+            return param to EventListLoaderResult(true, events.filter { !it.external; }, param, userType);
         }
         return param to emptyResult();
     }
@@ -42,7 +48,7 @@ class EventListLoader(caller: Context): AlfioAsyncTask<List<Event>, EventListLoa
 }
 
 data class EventListLoaderCommand(val baseUrl: String, val username: String, val password: String) : TaskParam;
-data class EventListLoaderResult(val success: Boolean, val results: List<Event>, val param: EventListLoaderCommand?) : TaskResult<List<Event>> {
+data class EventListLoaderResult(val success: Boolean, val results: List<Event>, val param: EventListLoaderCommand?, val userType: UserType = UserType.STAFF) : TaskResult<List<Event>> {
     override fun isSuccessful(): Boolean = success;
     override fun getResponse(): List<Event> = results;
 };

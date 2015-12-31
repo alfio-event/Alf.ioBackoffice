@@ -27,7 +27,7 @@
     <string name="message_user_name_mandatory">Username is mandatory</string>
     <string name="main.title">Init Profile</string>
     <string name="main.description">Select a saved profile or insert a new one</string>
-    <string name="title_activity_event_detail">Event detail</string>
+    <string name="title_activity_event_detail">Check-in process</string>
     <string name="event_logo">event logo</string>
     <string name="attendee_name">Attendee</string>
     <string name="attendee_mail">E-Mail</string>

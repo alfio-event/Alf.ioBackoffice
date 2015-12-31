@@ -16,6 +16,7 @@
  */
 package alfio.backoffice
 
+import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.Event
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
@@ -73,7 +74,7 @@ abstract class BaseActivity: AppCompatActivity() {
     }
 
     companion object {
-        fun writeEventDescription(event: Event, eventDates: TextView, eventDescription: TextView) {
+        fun writeEventDetails(event: Event, config: AlfioConfiguration, eventDates: TextView, eventDescription: TextView, userDetail: TextView, url: TextView, eventName: TextView) {
             val dates: String;
             if(event.oneDay) {
                 dates = "${SimpleDateFormat("EEE d MMM yyyy").format(event.begin)} ${SimpleDateFormat("HH:mm").format(event.begin)} - ${SimpleDateFormat("HH:mm").format(event.end)}";
@@ -82,6 +83,15 @@ abstract class BaseActivity: AppCompatActivity() {
             }
             eventDates.text = "$dates";
             eventDescription.text = event.location;
+            userDetail.text = "${config.userType}";
+            url.text = "${config.url}".replace("^https?://(.*?)(:\\d+)?$".toRegex(), {
+                if(it.groups[1] != null) {
+                    it.groups[1]!!.value
+                } else {
+                    it.value
+                }
+            });
+            eventName.text = config.event.name;
         }
     }
 

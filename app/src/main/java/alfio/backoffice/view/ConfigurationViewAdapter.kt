@@ -39,9 +39,7 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
             holder.setOnClickListener {
                 clickHandler.invoke(configuration);
             }
-            BaseActivity.writeEventDescription(configuration.event, holder.eventDates, holder.eventDescription);
-            holder.userDetail.text = "${configuration.username} @ ${configuration.url}";
-            holder.eventName.text = configuration.event.name;
+            BaseActivity.writeEventDetails(configuration.event, configuration, holder.eventDates, holder.eventDescription, holder.userDetail, holder.url, holder.eventName);
         }
     }
 
@@ -61,7 +59,8 @@ class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var eventDates by Delegates.notNull<TextView>();
     var eventDescription by Delegates.notNull<TextView>();
     var userDetail by Delegates.notNull<TextView>();
-    var eventName by Delegates.notNull<TextView>()
+    var eventName by Delegates.notNull<TextView>();
+    var url by Delegates.notNull<TextView>();
 
     init {
         mainComponent = itemView.findViewById(R.id.eventLogoContainer);
@@ -69,6 +68,7 @@ class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         eventDescription = itemView.findViewById(R.id.eventDescription) as TextView;
         userDetail = itemView.findViewById(R.id.userDetail) as TextView;
         eventName = itemView.findViewById(R.id.eventName) as TextView;
+        url = itemView.findViewById(R.id.baseUrl) as TextView;
     }
 
     fun setOnClickListener(listener: (View) -> Unit) {

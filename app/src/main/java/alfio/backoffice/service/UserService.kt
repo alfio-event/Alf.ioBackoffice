@@ -14,15 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with alf.io backoffice.  If not, see //www.gnu.org/licenses/>.
  */
-package alfio.backoffice.model
+package alfio.backoffice.service
 
-import java.io.Serializable
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.Request
+import com.squareup.okhttp.Response
 
-data class AlfioConfiguration(val url: String, val username: String, val password: String, val userType: UserType, val event: Event) : Serializable {
-    val name : String
-        get() = event.name!!;
-    val eventName : String
-        get() = event.key!!;
-    val imageUrl : String?
-        get() = event.imageUrl;
+class UserService : RemoteService {
+
+    val client = OkHttpClient();
+
+    fun loadUserType(baseUrl: String, username: String, password: String) : Response {
+        val request = Request.Builder()
+                .addHeader("Authorization", getAuthorizationHeader(username, password))
+                .get()
+                .url("$baseUrl/admin/api/user-type")
+                .build();
+        return client.newCall(request).execute();
+    }
 }
