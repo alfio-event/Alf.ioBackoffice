@@ -127,7 +127,6 @@ class EventDetailActivity : BaseActivity() {
         displayTicketDetails(null, null);
         signalSuccess();
         Snackbar.make(initCheckInCard, R.string.message_check_in_successful, Snackbar.LENGTH_LONG).setAction(R.string.message_dismiss, {}).show();
-//        requestScan(); //TODO should load the scanner in background, in order to speedup the process
     }
 
     private val errorHandler: (TicketDetailParam?, TicketDetailResult?) -> Unit = { param, result ->

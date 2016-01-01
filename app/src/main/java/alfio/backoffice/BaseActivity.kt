@@ -19,7 +19,6 @@ package alfio.backoffice
 import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.Event
 import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.support.design.widget.Snackbar
@@ -40,9 +39,10 @@ abstract class BaseActivity: AppCompatActivity() {
 
     fun BaseActivity.scanQRCode(resId: Int) : () -> Unit = {
         val integrator: IntentIntegrator = IntentIntegrator(this);
+        integrator.setCaptureActivity(CustomCaptureActivity::class.java);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-        integrator.setResultDisplayDuration(0);
-        integrator.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        integrator.setOrientationLocked(false);
+        integrator.setBeepEnabled(true);
         integrator.setPrompt(getString(resId));
         integrator.initiateScan();
     }
