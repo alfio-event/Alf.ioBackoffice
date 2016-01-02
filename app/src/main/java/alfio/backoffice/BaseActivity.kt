@@ -79,7 +79,7 @@ abstract class BaseActivity: AppCompatActivity() {
             if(event.oneDay) {
                 dates = "${SimpleDateFormat("EEE d MMM yyyy").format(event.begin)} ${SimpleDateFormat("HH:mm").format(event.begin)} - ${SimpleDateFormat("HH:mm").format(event.end)}";
             } else {
-                dates = "${SimpleDateFormat("EEE d MMM yyyy HH:mm").format(event.begin)} - ${SimpleDateFormat("EEE d MMM yyyy HH:mm").format(event.end)}";
+                dates = "${SimpleDateFormat("dd/MM/yyyy HH:mm").format(event.begin)} - ${SimpleDateFormat("dd/MM/yyyy HH:mm").format(event.end)}";
             }
             eventDates.text = "$dates";
             eventDescription.text = event.location;

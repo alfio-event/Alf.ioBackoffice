@@ -56,7 +56,7 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
     }
 
     fun notifyInsertion() {
-        super.notifyItemInserted(DataService.alfioConfigurations.size - 1);
+        super.notifyItemRangeChanged(0, DataService.alfioConfigurations.size);
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder? {

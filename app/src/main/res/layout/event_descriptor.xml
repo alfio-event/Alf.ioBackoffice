@@ -12,14 +12,29 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
-        <View
+        <RelativeLayout
+            android:id="@+id/eventLogoContainer"
             android:layout_width="@dimen/event_detail_card_height"
             android:layout_height="match_parent"
-            android:id="@+id/eventLogoContainer"
             android:layout_margin="2dp">
-        </View>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:background="@color/userDetailBackground"
+                android:gravity="center"
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/baseUrl"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_alignParentBottom="true"/>
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -31,27 +46,14 @@
             android:layout_marginLeft="3dp"
             android:layout_gravity="center_vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/eventName"
-                    android:background="@color/white"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:text=""
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginStart="20dp"
-                    android:id="@+id/userDetail"/>
-            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/eventName"
+                android:background="@color/white"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:ellipsize="end"
+                android:maxLines="1"/>
 
 
             <TextView
@@ -102,7 +104,7 @@
                     android:scrollHorizontally="true"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:id="@+id/baseUrl"/>
+                    android:id="@+id/userDetail"/>
             </LinearLayout>
 
         </LinearLayout>

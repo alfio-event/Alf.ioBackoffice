@@ -29,6 +29,7 @@ import android.support.design.widget.Snackbar
 import android.view.Gravity
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.WindowManager
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import kotlinx.android.synthetic.main.activity_event_detail.*
@@ -52,11 +53,9 @@ class EventDetailActivity : BaseActivity() {
         eventDetailSection.visibility = GONE;
         progressIndicator.visibility = VISIBLE;
         EventDetailLoader(this, false)
-                .then(success = {
-                    eventLoaded(it, savedInstanceState);
-                }, error = { param, result ->
-                    loadingDataFailed.visibility = VISIBLE;
-                }).execute(EventDetailParam(config.url, config.eventName));
+                .then(success = { eventLoaded(it, savedInstanceState); }, error = { param, result -> loadingDataFailed.visibility = VISIBLE; })
+                .execute(EventDetailParam(config.url, config.eventName));
+        requestPermissionForAction(listOf(android.Manifest.permission.DISABLE_KEYGUARD), {window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)});
     }
 
     private fun eventLoaded(eventDetail: EventDetailResult, savedInstanceState: Bundle?) {

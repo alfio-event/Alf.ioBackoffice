@@ -12,4 +12,5 @@
     <color name="ok">#388e3c</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
+    <color name="userDetailBackground">#CCFFFFFF</color>
 </resources>
