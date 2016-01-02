@@ -24,6 +24,45 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_event_detail"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:id="@+id/progressIndicator"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin">
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:indeterminateProgressStyle"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/loading_data"
+            android:gravity="center_horizontal"
+            android:paddingTop="10dp"/>
+
+        <TextView
+            android:id="@+id/loadingDataFailed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/error"
+            android:text="@string/loading_data_failed"
+            android:gravity="center_horizontal"
+            android:paddingTop="10dp"
+            android:visibility="gone"/>
+
+
+
+    </LinearLayout>
+
+    <include layout="@layout/content_event_detail" android:id="@+id/eventDetailSection"/>
 
 </android.support.design.widget.CoordinatorLayout>

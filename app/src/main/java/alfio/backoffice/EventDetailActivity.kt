@@ -38,7 +38,6 @@ import kotlin.properties.Delegates
 
 class EventDetailActivity : BaseActivity() {
 
-    var eventDetail: EventDetailResult by Delegates.notNull();
     var config: AlfioConfiguration by Delegates.notNull();
     var ticket: Ticket? = null;
     var qrCode: String? = null;
@@ -49,8 +48,18 @@ class EventDetailActivity : BaseActivity() {
         vibratorService = getSystemService(VIBRATOR_SERVICE) as Vibrator;
         setContentView(R.layout.activity_event_detail);
         setSupportActionBar(toolbar);
-        eventDetail = intent.extras.get("detail") as EventDetailResult;
         config = intent.extras.get("config") as AlfioConfiguration;
+        eventDetailSection.visibility = GONE;
+        progressIndicator.visibility = VISIBLE;
+        EventDetailLoader(this, false)
+                .then(success = {
+                    eventLoaded(it, savedInstanceState);
+                }, error = { param, result ->
+                    loadingDataFailed.visibility = VISIBLE;
+                }).execute(EventDetailParam(config.url, config.eventName));
+    }
+
+    private fun eventLoaded(eventDetail: EventDetailResult, savedInstanceState: Bundle?) {
         val drawable = BitmapDrawable(resources, BitmapFactory.decodeByteArray(eventDetail.image, 0, eventDetail.image.size));
         drawable.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL;
         eventLogoContainer.background = drawable;
@@ -65,6 +74,8 @@ class EventDetailActivity : BaseActivity() {
             confirmCheckIn(qrCode!!);
         }
         displayTicketDetails(savedInstanceState?.get("ticket") as Ticket?, savedInstanceState?.get("qrCode") as String?);
+        progressIndicator.visibility = GONE;
+        eventDetailSection.visibility = VISIBLE;
     }
 
     private fun requestScan() {

@@ -23,7 +23,7 @@ import android.util.Log
 import java.io.Serializable
 import java.nio.ByteBuffer
 
-class EventDetailLoader(c: Context) : AlfioAsyncTask<Event, EventDetailParam, EventDetailResult>(c) {
+class EventDetailLoader(c: Context, showProgressDialog: Boolean = true) : AlfioAsyncTask<Event, EventDetailParam, EventDetailResult>(c, showProgressDialog) {
 
     override fun emptyResult(): EventDetailResult {
         return EventDetailResult(false, null, "", ByteArray(0));

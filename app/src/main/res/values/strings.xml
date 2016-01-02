@@ -40,4 +40,6 @@
     <string name="checkin_error_ticket_not_found">Ticket not found</string>
     <string name="checkin_error_invalid_code">Invalid Ticket Code.</string>
     <string name="scan_tickets">Scan Tickets</string>
+    <string name="loading_data">Loading Data…</string>
+    <string name="loading_data_failed">Error during data loading. Check internet connectivity and retry.</string>
 </resources>

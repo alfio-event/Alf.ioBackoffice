@@ -18,7 +18,9 @@ package alfio.backoffice
 
 import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.service.DataService
-import alfio.backoffice.task.*
+import alfio.backoffice.task.EventListLoader
+import alfio.backoffice.task.EventListLoaderCommand
+import alfio.backoffice.task.EventListLoaderResult
 import alfio.backoffice.view.ConfigurationViewAdapter
 import android.app.AlertDialog
 import android.content.Intent
@@ -48,12 +50,7 @@ class MainActivity : BaseActivity() {
             floating_menu.close(true);
             scanQRCodeClicked();
         };
-        listAdapter = ConfigurationViewAdapter({configuration ->
-            EventDetailLoader(this)
-                    .then({
-                        startEventDetailActivity(it, configuration);
-                    }).execute(EventDetailParam(configuration.url, configuration.eventName));
-        });
+        listAdapter = ConfigurationViewAdapter({configuration -> startEventDetailActivity(configuration)});
         listView.adapter = listAdapter;
         listView.layoutManager = LinearLayoutManager(this);
         Thread.setDefaultUncaughtExceptionHandler({ thread, throwable ->
@@ -62,9 +59,8 @@ class MainActivity : BaseActivity() {
         })
     }
 
-    private fun startEventDetailActivity(eventDetailResult: EventDetailResult, config: AlfioConfiguration) {
+    private fun startEventDetailActivity(config: AlfioConfiguration) {
         val intent = Intent(baseContext, EventDetailActivity::class.java);
-        intent.putExtra("detail", eventDetailResult);
         intent.putExtra("config", config);
         startActivity(intent);
     }
