@@ -45,7 +45,6 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setSupportActionBar(toolbar);
-        floating_menu.setOnClickListener { view -> Snackbar.make(view, "Test", Snackbar.LENGTH_LONG).setAction("Action", null).show() };
         button_scan_qrcode.setOnClickListener { view ->
             floating_menu.close(true);
             scanQRCodeClicked();

@@ -20,12 +20,18 @@ import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.CheckInStatus.*
 import alfio.backoffice.model.Ticket
 import alfio.backoffice.task.*
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Vibrator
 import android.support.design.widget.Snackbar
+import android.util.Log
 import android.view.Gravity
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -42,7 +48,10 @@ class EventDetailActivity : BaseActivity() {
     var config: AlfioConfiguration by Delegates.notNull();
     var ticket: Ticket? = null;
     var qrCode: String? = null;
-    var vibratorService: Vibrator by Delegates.notNull();
+    var vibratorService by Delegates.notNull<Vibrator>();
+    var sensorManager by Delegates.notNull<SensorManager>();
+    var accelerometer by Delegates.notNull<Sensor>();
+    var shakeDetector by Delegates.notNull<ShakeDetector>();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState);
@@ -56,6 +65,18 @@ class EventDetailActivity : BaseActivity() {
                 .then(success = { eventLoaded(it, savedInstanceState); }, error = { param, result -> loadingDataFailed.visibility = VISIBLE; })
                 .execute(EventDetailParam(config.url, config.eventName));
         requestPermissionForAction(listOf(android.Manifest.permission.DISABLE_KEYGUARD), {window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)});
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager;
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        shakeDetector = ShakeDetector(object: OnShakeListener {
+            override fun onShake(count: Int) {
+                Log.d(EventDetailActivity@javaClass.simpleName, "shake count $count");
+                if(count >= 2) {
+                    requestScan();
+                }
+            }
+        });
+
     }
 
     private fun eventLoaded(eventDetail: EventDetailResult, savedInstanceState: Bundle?) {
@@ -66,7 +87,6 @@ class EventDetailActivity : BaseActivity() {
         eventName.text = event.name;
         writeEventDetails(event, config, eventDates, eventDescription, userDetail, baseUrl, eventName);
         initScan.setOnClickListener { view ->
-            requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrate(50)}, false);
             requestScan();
         };
         confirm.setOnClickListener { view ->
@@ -78,6 +98,7 @@ class EventDetailActivity : BaseActivity() {
     }
 
     private fun requestScan() {
+        requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrate(50)}, false);
         scanQRCode(R.string.message_scan_attendee_badge)();
     }
 
@@ -102,6 +123,16 @@ class EventDetailActivity : BaseActivity() {
         if(ticket != null) {
             outState?.putSerializable("ticket", ticket);
         }
+    }
+
+    override fun onResume() {
+        super.onResume();
+        sensorManager.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_UI);
+    }
+
+    override fun onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(shakeDetector);
     }
 
     private fun displayTicketDetails(ticket: Ticket?, qrCode: String?) {
@@ -167,4 +198,43 @@ class EventDetailActivity : BaseActivity() {
     private fun signalFailure() {
         requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrate(longArrayOf(10L,150L,200L,150L,200L,150L), -1)}, false);
     }
+}
+
+//thanks to Jason McReynolds: http://jasonmcreynolds.com/?p=388
+class ShakeDetector(val listener: OnShakeListener) : SensorEventListener {
+
+    private var lastShakeTimestamp = 0L;
+    private var shakeCount = 0;
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+    }
+
+    override fun onSensorChanged(event: SensorEvent) {
+        val gx = event.values[0].div(SensorManager.GRAVITY_EARTH).toDouble();
+        val gy = event.values[1].div(SensorManager.GRAVITY_EARTH).toDouble();
+        val gz = event.values[2].div(SensorManager.GRAVITY_EARTH).toDouble();
+
+        val gForce = Math.sqrt(Math.pow(gx, 2.0) + Math.pow(gy, 2.0) + Math.pow(gz, 2.0));
+
+        val now = System.currentTimeMillis();
+
+        if(gForce > SHAKE_TRESHOLD_GRAVITY && lastShakeTimestamp + SHAKE_SLOP_TIME_MS < now) {
+            if(lastShakeTimestamp + SHAKE_COUNT_RESET_TIME_MS < now) {
+                shakeCount = 0;
+            }
+            lastShakeTimestamp = now;
+            listener.onShake(++shakeCount);
+        }
+    }
+
+    companion object {
+        val SHAKE_TRESHOLD_GRAVITY = 2.7F;
+        val SHAKE_SLOP_TIME_MS = 150;
+        val SHAKE_COUNT_RESET_TIME_MS = 3000;
+    }
+
+}
+
+interface OnShakeListener {
+    fun onShake(count: Int);
 }
