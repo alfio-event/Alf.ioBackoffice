@@ -33,7 +33,7 @@ class EventListLoader(caller: Context): AlfioAsyncTask<List<Event>, EventListLoa
         if(!userRoleResponse.isSuccessful) {
             return param to emptyResult();
         }
-        val userType = UserType.fromString(userRoleResponse.body().string());
+        val userType = UserType.fromString(Common.gson.fromJson(userRoleResponse.body().string(), String::class.java));
         val response = eventService.loadUserEvents(param.baseUrl, param.username, param.password);
         if(response.isSuccessful) {
             val events: List<Event> = Common.gson.fromJson(response.body().string(), EventService.ListOfEvents().type);

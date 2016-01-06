@@ -43,7 +43,7 @@ object DataService {
     }
 
     fun saveAlfioConfiguration(alfioConfiguration: AlfioConfiguration) {
-        configurations.put("${alfioConfiguration.eventName}@${alfioConfiguration.url}", alfioConfiguration);
+        configurations.put("${alfioConfiguration.username}@${alfioConfiguration.eventName}@${alfioConfiguration.url}", alfioConfiguration);
         persistAlfioConfigurations();
     }
 
