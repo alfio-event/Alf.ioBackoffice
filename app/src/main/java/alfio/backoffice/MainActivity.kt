@@ -17,12 +17,7 @@
 package alfio.backoffice
 
 import alfio.backoffice.model.AlfioConfiguration
-import alfio.backoffice.service.DataService
-import alfio.backoffice.task.EventListLoader
-import alfio.backoffice.task.EventListLoaderCommand
-import alfio.backoffice.task.EventListLoaderResult
 import alfio.backoffice.view.ConfigurationViewAdapter
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -45,7 +40,11 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setSupportActionBar(toolbar);
-        button_scan_qrcode.setOnClickListener { view ->
+        button_insert_data_manually.setOnClickListener {
+            floating_menu.close(true);
+            manualInsertClicked();
+        };
+        button_scan_qrcode.setOnClickListener {
             floating_menu.close(true);
             scanQRCodeClicked();
         };
@@ -84,35 +83,24 @@ class MainActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onResume() {
+        super.onResume();
+        listAdapter.notifyInsertion();
+    }
+
     fun scanQRCodeClicked(): Unit {
         requestPermissionForAction(listOf(android.Manifest.permission.CAMERA), scanQRCode(R.string.message_scan_your_qrcode));
+    }
+
+    fun manualInsertClicked() : Unit {
+        startActivity(Intent(baseContext, ManualInsertActivity::class.java));
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         val scanResult : IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if(scanResult != null && scanResult.contents != null) {
             val result: Map<String, String> = Common.gson.fromJson(scanResult.contents, MapStringStringTypeToken().type);
-            val resultHandler: (EventListLoaderResult, Int) -> Unit = {
-                resp, which ->
-                val event = resp.results[which];
-                val configuration = AlfioConfiguration(resp.param!!.baseUrl, resp.param.username, resp.param.password, resp.userType, event);
-                DataService.saveAlfioConfiguration(configuration);
-                listAdapter.notifyInsertion();
-            };
-            EventListLoader(this)
-                    .then({
-                        when(it.results.size) {
-                            1 -> resultHandler(it, 0);
-                            else -> AlertDialog.Builder(this)
-                                    .setTitle(R.string.dialog_select_event_title)
-                                    .setItems(it.results.map { it.name }.toTypedArray(), {
-                                        dialog, which ->
-                                        resultHandler(it, which);
-                                    })
-                                    .show();
-                        }
-                    })
-                    .execute(EventListLoaderCommand(result["baseUrl"]!!, result["username"]!!, result["password"]!!));
+            loadAndSelectEvent(result["baseUrl"]!!, result["username"]!!, result["password"]!!, {listAdapter.notifyInsertion();});
         }
     }
 

@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_scan_qrcode">Scan QR-Code</string>
     <string name="action_insert_data_manually">Insert data manually</string>
-    <string name="message_permission_camera_rationale">Camera permission is necessary to scan QR-Code</string>
+    <string name="message_permission_camera_rationale">Camera permission is required to scan QR-Code</string>
     <string name="message_accept_permissions">The requested permission are required to run the application</string>
     <string name="message_check_in_successful">Check-in successful</string>
     <string name="message_dismiss">Dismiss</string>
@@ -19,12 +19,14 @@
     <string name="name">Name</string>
     <string name="event_name">Event name</string>
     <string name="base_url">Base url</string>
-    <string name="user_name">User name</string>
+    <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="message_name_mandatory">Name is mandatory</string>
     <string name="message_event_name_mandatory">Event name is mandatory</string>
     <string name="message_base_url_mandatory">Base URL is mandatory</string>
-    <string name="message_user_name_mandatory">Username is mandatory</string>
+    <string name="message_username_mandatory">Username is mandatory</string>
+    <string name="message_password_mandatory">Password is mandatory</string>
+    <string name="message_check_fields">Check form fields</string>
     <string name="main.title">Init Profile</string>
     <string name="main.description">Select a saved profile or insert a new one</string>
     <string name="title_activity_event_detail">Check-in process</string>
@@ -42,4 +44,6 @@
     <string name="scan_tickets">Scan Tickets</string>
     <string name="loading_data">Loading Data…</string>
     <string name="loading_data_failed">Error during data loading. Check internet connectivity and retry.</string>
+    <string name="title_activity_manual_insert">Manual insert</string>
+    <string name="description_activity_manual_insert">Please configure the connection data. After doing that, you\'ll be able to select the event.</string>
 </resources>

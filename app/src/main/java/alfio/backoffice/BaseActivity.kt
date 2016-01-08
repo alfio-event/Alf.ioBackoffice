@@ -18,7 +18,12 @@ package alfio.backoffice
 
 import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.Event
+import alfio.backoffice.service.DataService
+import alfio.backoffice.task.EventListLoader
+import alfio.backoffice.task.EventListLoaderCommand
+import alfio.backoffice.task.EventListLoaderResult
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Build
 import android.support.design.widget.Snackbar
@@ -71,6 +76,31 @@ abstract class BaseActivity: AppCompatActivity() {
             return;
         }
         action.second();
+    }
+
+    fun loadAndSelectEvent(baseUrl: String, username: String, password: String, onSuccess: (AlfioConfiguration) -> Unit) {
+
+        val resultHandler: (EventListLoaderResult, Int) -> Unit = {
+            resp, which ->
+            val event = resp.results[which];
+            val configuration = AlfioConfiguration(resp.param!!.baseUrl, resp.param.username, resp.param.password, resp.userType, event);
+            DataService.saveAlfioConfiguration(configuration);
+            onSuccess.invoke(configuration);
+        };
+        EventListLoader(this)
+                .then({
+                    when(it.results.size) {
+                        1 -> resultHandler(it, 0);
+                        else -> AlertDialog.Builder(this)
+                                .setTitle(R.string.dialog_select_event_title)
+                                .setItems(it.results.map { it.name }.toTypedArray(), {
+                                    dialog, which ->
+                                    resultHandler(it, which);
+                                })
+                                .show();
+                    }
+                })
+                .execute(EventListLoaderCommand(baseUrl, username, password));
     }
 
     companion object {
