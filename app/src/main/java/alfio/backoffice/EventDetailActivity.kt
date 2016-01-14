@@ -61,6 +61,7 @@ class EventDetailActivity : BaseActivity() {
         config = intent.extras.get("config") as AlfioConfiguration;
         eventDetailSection.visibility = GONE;
         progressIndicator.visibility = VISIBLE;
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true);
         EventDetailLoader(this, false)
                 .then(success = { eventLoaded(it, savedInstanceState); }, error = { param, result -> loadingDataFailed.visibility = VISIBLE; })
                 .execute(EventDetailParam(config.url, config.eventName));

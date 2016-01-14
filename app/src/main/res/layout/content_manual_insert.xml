@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/manualInsertDescription"
-        app:errorEnabled="true"
+        app:errorEnabled="false"
         android:hint="@string/base_url">
 
         <EditText
@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/textInputUrl"
-        app:errorEnabled="true"
+        app:errorEnabled="false"
         android:hint="@string/username">
 
         <EditText
@@ -59,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/textInputUsername"
-        app:errorEnabled="true"
+        app:errorEnabled="false"
         android:hint="@string/password">
 
         <EditText

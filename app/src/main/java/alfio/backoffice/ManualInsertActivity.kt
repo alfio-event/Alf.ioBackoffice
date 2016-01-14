@@ -2,9 +2,8 @@ package alfio.backoffice
 
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Patterns
+import android.view.View
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_manual_insert.*
 import kotlinx.android.synthetic.main.content_manual_insert.*
@@ -17,11 +16,11 @@ class ManualInsertActivity : BaseActivity() {
         setSupportActionBar(toolbar);
         supportActionBar!!.setDisplayHomeAsUpEnabled(true);
         val urlValidator = TextValidator(manualInsertUrl, {Patterns.WEB_URL.matcher(it).matches()}, getString(R.string.message_base_url_mandatory));
-        manualInsertUrl.addTextChangedListener(urlValidator);
+        manualInsertUrl.onFocusChangeListener = urlValidator;
         val usernameValidator = TextValidator(manualInsertUsername, {it.isNotBlank()}, getString(R.string.message_username_mandatory));
-        manualInsertUsername.addTextChangedListener(usernameValidator);
-        val passwordValidator = TextValidator(manualInsertUsername, {it.isNotBlank()}, getString(R.string.message_password_mandatory));
-        manualInsertPassword.addTextChangedListener(passwordValidator);
+        manualInsertUsername.onFocusChangeListener = usernameValidator;
+        val passwordValidator = TextValidator(manualInsertPassword, {it.isNotBlank()}, getString(R.string.message_password_mandatory));
+        manualInsertPassword.onFocusChangeListener = passwordValidator;
         val validators = listOf(urlValidator, usernameValidator, passwordValidator);
 
         fab.setOnClickListener {
@@ -35,22 +34,13 @@ class ManualInsertActivity : BaseActivity() {
 
 }
 
-/**
- * Original version: http://stackoverflow.com/a/11838715
- */
-class TextValidator(val textView: TextView, val validator: (String) -> Boolean, val errorMessage: String) : TextWatcher {
-
-    override fun afterTextChanged(s: Editable?) {
-        textView.error = if(isValid()) null else errorMessage;
-    }
+class TextValidator(val textView: TextView, val validator: (String) -> Boolean, val errorMessage: String) : View.OnFocusChangeListener {
 
     fun isValid() : Boolean = validator.invoke(textView.text.toString());
 
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        //does nothing
-    }
-
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        //does nothing
+    override fun onFocusChange(v: View?, hasFocus: Boolean) {
+        if(!hasFocus) {
+            textView.error = if(isValid()) null else errorMessage;
+        }
     }
 }
