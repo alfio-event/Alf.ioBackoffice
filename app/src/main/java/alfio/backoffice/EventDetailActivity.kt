@@ -63,7 +63,10 @@ class EventDetailActivity : BaseActivity() {
         progressIndicator.visibility = VISIBLE;
         supportActionBar!!.setDisplayHomeAsUpEnabled(true);
         EventDetailLoader(this, false)
-                .then(success = { eventLoaded(it, savedInstanceState); }, error = { param, result -> loadingDataFailed.visibility = VISIBLE; })
+                .then(success = { eventLoaded(it, savedInstanceState); }, error = { param, result ->
+                    loadingIndicator.visibility = GONE;
+                    loadingDataFailed.visibility = VISIBLE;
+                })
                 .execute(EventDetailParam(config.url, config.eventName));
         requestPermissionForAction(listOf(android.Manifest.permission.DISABLE_KEYGUARD), {window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)});
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

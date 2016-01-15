@@ -43,12 +43,6 @@ class EventDetailLoader(c: Context, showProgressDialog: Boolean = true) : AlfioA
         }
         return param to emptyResult();
     }
-
-    override fun post(result: EventDetailResult?) {
-        if(result != null) {
-            successCallbacks.forEach { it(result); }
-        }
-    }
 }
 
 data class EventDetailParam(val baseUrl: String, val eventName: String) : TaskParam;

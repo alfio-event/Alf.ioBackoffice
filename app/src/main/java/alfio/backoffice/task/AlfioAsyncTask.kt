@@ -23,6 +23,7 @@ import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.AsyncTask
+import android.util.Log
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -46,9 +47,19 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
     override final fun doInBackground(vararg params: Param?): Result {
         if(params.size > 0 && params[0] != null) {
             param = params[0];
-            return work(param!!).second;
+            return internalDoInBackground();
         }
         return emptyResult();
+    }
+
+    private fun internalDoInBackground() : Result {
+        try {
+            return work(param!!).second;
+        } catch(e: Exception) {
+            Log.w(javaClass.simpleName, e);
+            failureCallbacks.forEach { it(param, null); }
+            return emptyResult();
+        }
     }
 
     protected abstract fun emptyResult() : Result;
