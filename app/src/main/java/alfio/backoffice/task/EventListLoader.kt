@@ -33,13 +33,20 @@ class EventListLoader(caller: Context): AlfioAsyncTask<List<Event>, EventListLoa
         if(!userRoleResponse.isSuccessful) {
             return param to emptyResult();
         }
-        val userType = UserType.fromString(Common.gson.fromJson(userRoleResponse.body().string(), String::class.java));
+        val userRoleResponseBody = userRoleResponse.body()
+        val userType = UserType.fromString(Common.gson.fromJson(userRoleResponseBody.string(), String::class.java));
         val response = eventService.loadUserEvents(param.baseUrl, param.username, param.password);
-        if(response.isSuccessful) {
-            val events: List<Event> = Common.gson.fromJson(response.body().string(), EventService.ListOfEvents().type);
-            return param to EventListLoaderResult(true, events.filter { !it.external; }, param, userType);
+        val responseBody = response.body();
+        try {
+            if(response.isSuccessful) {
+                val events: List<Event> = Common.gson.fromJson(responseBody.string(), EventService.ListOfEvents().type);
+                return param to EventListLoaderResult(true, events.filter { !it.external; }, param, userType);
+            }
+            return param to emptyResult();
+        } finally {
+            userRoleResponseBody.close();
+            responseBody.close();
         }
-        return param to emptyResult();
     }
 
     override fun getProgressMessage(): String {

@@ -16,23 +16,15 @@
  */
 package alfio.backoffice.task
 
-import alfio.backoffice.Common
-import alfio.backoffice.model.TicketAndCheckInResult
 import alfio.backoffice.service.CheckInService
 import android.content.Context
 import com.squareup.okhttp.Response
 
 open class CheckInConfirmation(caller: Context, val executor: (TicketDetailParam, CheckInService) -> Response = {param, checkInService -> checkInService.checkInTicket(param.code, param.conf);}) : TicketDetailLoader(caller) {
 
-    override fun work(param: TicketDetailParam): Pair<TicketDetailParam, TicketDetailResult> {
-        val response = executor.invoke(param, checkInService);
-        if(response.isSuccessful) {
-            val result = Common.gson.fromJson(response.body().string(), TicketAndCheckInResult::class.java);
-            return param to evaluateCheckInResult(result);
-        }
-        return param to emptyResult();
+    override fun performRequest(param: TicketDetailParam): Response {
+        return executor.invoke(param, checkInService);
     }
-
 }
 
 class DeskPaymentConfirmation(caller: Context) : CheckInConfirmation(caller, {param, checkInService -> checkInService.confirmDeskPayment(param.code, param.conf);});

@@ -19,6 +19,7 @@ package alfio.backoffice
 import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.CheckInStatus.*
 import alfio.backoffice.model.Ticket
+import alfio.backoffice.model.UserType
 import alfio.backoffice.task.*
 import android.content.Context
 import android.content.Intent
@@ -80,7 +81,11 @@ class EventDetailActivity : BaseActivity() {
                 }
             }
         });
+        initView();
+    }
 
+    private fun initView() {
+        title = when (config.userType) { UserType.SPONSOR -> getString(R.string.title_activity_event_detail_sponsor); else -> getString(R.string.title_activity_event_detail); };
     }
 
     private fun eventLoaded(eventDetail: EventDetailResult, savedInstanceState: Bundle?) {
@@ -90,11 +95,18 @@ class EventDetailActivity : BaseActivity() {
         val event = eventDetail.event!!;
         eventName.text = event.name;
         writeEventDetails(event, config, eventDates, eventDescription, userDetail, baseUrl, eventName);
-        initScan.setOnClickListener { view ->
+        initScan.setOnClickListener {
             requestScan();
         };
-        confirm.setOnClickListener { view ->
-            confirmCheckIn(qrCode!!);
+        rescan.setOnClickListener {
+            requestScan();
+        }
+        confirm.setOnClickListener {
+            if(config.userType == UserType.SPONSOR) {
+                requestScan();
+            } else {
+                confirmCheckIn(qrCode!!);
+            }
         }
         displayTicketDetails(savedInstanceState?.get("ticket") as Ticket?, savedInstanceState?.get("qrCode") as String?);
         progressIndicator.visibility = GONE;
@@ -110,16 +122,29 @@ class EventDetailActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, i: Intent?) {
         val scanResult : IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, i);
         if(scanResult != null && scanResult.contents != null) {
-            TicketDetailLoader(this)
-                    .then({
-                        displayTicketDetails(it.ticket!!, scanResult.contents);
-                    }, {param, result ->
-                        if(result != null) {
-                            displayTicketDetails(result.ticket, scanResult.contents);
-                        }
-                        errorHandler(param, result);
-                    }).execute(TicketDetailParam(config, scanResult.contents));
+            when(config.userType) {
+                UserType.SPONSOR -> scanAttendeeBadge(scanResult);
+                else -> requestTicketDetailForCheckIn(scanResult);
+            }
         }
+    }
+
+    private fun scanAttendeeBadge(scanResult : IntentResult) {
+        SponsorScanUpload(this)
+            .then(success = sponsorScanSuccessHandler, error = errorHandler)
+            .execute(TicketDetailParam(config, scanResult.contents));
+    }
+
+    private fun requestTicketDetailForCheckIn(scanResult : IntentResult) {
+        TicketDetailLoader(this)
+                .then({
+                    displayTicketDetails(it.ticket!!, scanResult.contents);
+                }, {param, result ->
+                    if(result != null) {
+                        displayTicketDetails(result.ticket, scanResult.contents);
+                    }
+                    errorHandler(param, result);
+                }).execute(TicketDetailParam(config, scanResult.contents));
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -164,14 +189,23 @@ class EventDetailActivity : BaseActivity() {
         performCheckIn.invoke(qrCode, DeskPaymentConfirmation(this), config);
     }
 
-    private val performCheckIn : (String, CheckInConfirmation, AlfioConfiguration) -> Unit = {qrCode, task, config -> task.then(success = successHandler, error = errorHandler).execute(TicketDetailParam(config, qrCode));}
+    private val performCheckIn : (String, CheckInConfirmation, AlfioConfiguration) -> Unit = {qrCode, task, config -> task.then(success = checkInSuccessHandler, error = errorHandler).execute(TicketDetailParam(config, qrCode));}
 
-    private val successHandler : (TicketDetailResult) -> Unit = { result ->
+    private val checkInSuccessHandler: (TicketDetailResult) -> Unit = { result ->
         this.ticket = null;//reset ticket view
         errorCard.visibility = GONE;
         displayTicketDetails(null, null);
         signalSuccess();
         Snackbar.make(initCheckInCard, R.string.message_check_in_successful, Snackbar.LENGTH_LONG).setAction(R.string.message_dismiss, {}).show();
+    }
+
+    private val sponsorScanSuccessHandler: (TicketDetailResult) -> Unit = {result ->
+        displayTicketDetails(result.ticket!!, null);
+        errorCard.visibility = GONE;
+        rescan.visibility = GONE;
+        confirm.text = getString(R.string.ok);
+        signalSuccess();
+        Snackbar.make(initCheckInCard, R.string.message_scan_successful, Snackbar.LENGTH_LONG).setAction(R.string.message_dismiss, {}).show();
     }
 
     private val errorHandler: (TicketDetailParam?, TicketDetailResult?) -> Unit = { param, result ->

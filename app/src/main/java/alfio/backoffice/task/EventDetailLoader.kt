@@ -36,11 +36,13 @@ class EventDetailLoader(c: Context, showProgressDialog: Boolean = true) : AlfioA
 
     override fun work(param: EventDetailParam): Pair<EventDetailParam, EventDetailResult> {
         val response = eventService.loadSingleEvent(param.baseUrl, param.eventName);
+        val body = response.body();
         if(response.isSuccessful) {
-            val event = Common.gson.fromJson(response.body().string(), Event::class.java);
+            val event = Common.gson.fromJson(body.string(), Event::class.java);
             val image = EventImageLoader(caller).work(EventImageParam(param.baseUrl, event)).second;
             return param to EventDetailResult(true, event, image.image);
         }
+        body.close();
         return param to emptyResult();
     }
 }
@@ -135,10 +137,12 @@ class EventImageLoader(c: Context) : AlfioAsyncTask<ByteArray, EventImageParam, 
     private fun loadRemoteImage(baseUrl: String, imageUrl: String, event: Event) : ByteArray {
         val url = if(imageUrl.startsWith("http")) imageUrl else "$baseUrl${event.imageUrl}";
         val response = eventService.loadEventImage(url);
+        val body = response.body()
         if(response.isSuccessful) {
-            val image = response.body().bytes();
+            val image = body.bytes();
             return saveImageFile(baseUrl, event, image);
         }
+        body.close();
         return ByteArray(0);
     }
 

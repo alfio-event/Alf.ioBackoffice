@@ -22,19 +22,29 @@ import alfio.backoffice.model.CheckInStatus
 import alfio.backoffice.model.Ticket
 import alfio.backoffice.model.TicketAndCheckInResult
 import android.content.Context
+import com.squareup.okhttp.Response
 import java.io.Serializable
 import java.math.BigDecimal
 
 open class TicketDetailLoader(caller: Context) : AlfioAsyncTask<Ticket, TicketDetailParam, TicketDetailResult>(caller) {
     override fun emptyResult(): TicketDetailResult = TicketDetailResult(CheckInStatus.TICKET_NOT_FOUND, null);
 
-    override fun work(param: TicketDetailParam): Pair<TicketDetailParam, TicketDetailResult> {
-        val response = checkInService.getTicketDetail(param.code, param.conf);
-        if(response.isSuccessful) {
-            val result = Common.gson.fromJson(response.body().string(), TicketAndCheckInResult::class.java);
-            return param to evaluateCheckInResult(result);
+    override final fun work(param: TicketDetailParam): Pair<TicketDetailParam, TicketDetailResult> {
+        val response = performRequest(param);
+        val body = response.body();
+        try {
+            if(response.isSuccessful) {
+                val result = Common.gson.fromJson(body.string(), TicketAndCheckInResult::class.java);
+                return param to evaluateCheckInResult(result);
+            }
+            return param to emptyResult();
+        } finally {
+            body.close();
         }
-        return param to emptyResult();
+    }
+
+    protected open fun performRequest(param: TicketDetailParam) : Response {
+        return checkInService.getTicketDetail(param.code, param.conf);
     }
 
     fun evaluateCheckInResult(tcResult: TicketAndCheckInResult): TicketDetailResult {

@@ -6,6 +6,7 @@
     <string name="message_permission_camera_rationale">Camera permission is required to scan QR-Code</string>
     <string name="message_accept_permissions">The requested permission are required to run the application</string>
     <string name="message_check_in_successful">Check-in successful</string>
+    <string name="message_scan_successful">Scan successful</string>
     <string name="message_dismiss">Dismiss</string>
     <string name="message_rescan">Rescan</string>
     <string name="message_already_checked_in">Ticket already checked in!!</string>
@@ -30,6 +31,7 @@
     <string name="main.title">Init Profile</string>
     <string name="main.description">Select a saved profile or insert a new one</string>
     <string name="title_activity_event_detail">Check-in process</string>
+    <string name="title_activity_event_detail_sponsor">Scan attendees\' badge</string>
     <string name="event_logo">event logo</string>
     <string name="attendee_name">Attendee</string>
     <string name="attendee_mail">E-Mail</string>

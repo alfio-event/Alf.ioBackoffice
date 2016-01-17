@@ -16,7 +16,6 @@
  */
 package alfio.backoffice.service
 
-import alfio.backoffice.Common
 import alfio.backoffice.model.AlfioConfiguration
 import com.squareup.okhttp.*
 import java.net.URLEncoder
@@ -40,10 +39,6 @@ class CheckInService : RemoteService {
         return callProtectedRequest(conf, "/admin/api/check-in/event/${conf.eventName}/ticket/${parsed.first}/confirm-on-site-payment", configurePost(parsed.second)).invoke(client);
     }
 
-    private fun parseQRCode(code: String) : Pair<String, String> = code.split("/".toRegex()).first() to Common.gson.toJson(TicketCode(code));
-
     private fun configurePost(ticketCode: String) : (Request.Builder) -> Request.Builder = {builder -> builder.post(RequestBody.create(MediaType.parse("application/json"), ticketCode));};
 
-    class TicketCode(val code: String) {
-    }
 }

@@ -16,6 +16,7 @@
  */
 package alfio.backoffice.service
 
+import alfio.backoffice.Common
 import alfio.backoffice.model.AlfioConfiguration
 import android.util.Base64
 import com.squareup.okhttp.OkHttpClient
@@ -41,6 +42,11 @@ interface RemoteService {
             encoded = basicAuth.toByteArray()
         }
         return "Basic "+ Base64.encodeToString(encoded, Base64.NO_WRAP);
+    }
+
+    fun parseQRCode(code: String) : Pair<String, String> = code.split("/".toRegex()).first() to Common.gson.toJson(TicketCode(code));
+
+    class TicketCode(val code: String) {
     }
 
 }

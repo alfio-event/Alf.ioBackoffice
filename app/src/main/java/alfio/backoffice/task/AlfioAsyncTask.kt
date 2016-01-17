@@ -18,6 +18,7 @@ package alfio.backoffice.task
 
 import alfio.backoffice.service.CheckInService
 import alfio.backoffice.service.EventService
+import alfio.backoffice.service.SponsorScanService
 import alfio.backoffice.service.UserService
 import android.app.AlertDialog
 import android.app.ProgressDialog
@@ -37,6 +38,7 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
     protected val eventService = EventService();
     protected val userService = UserService();
     protected val checkInService = CheckInService();
+    protected val sponsorScanService = SponsorScanService();
 
     init {
         if(showProgressDialog) {
