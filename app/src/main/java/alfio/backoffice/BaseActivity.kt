@@ -69,7 +69,7 @@ abstract class BaseActivity: AppCompatActivity() {
     //@TargetApi(Build.VERSION_CODES.M) //FIXME: why this annotation is not recognized during build?
     @SuppressLint("NewApi")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        val action = pendingActions.getOrElse(requestCode, {Pair(false, {super.onRequestPermissionsResult(requestCode, permissions, grantResults)})});
+        val action = pendingActions[requestCode] ?: Pair(false, {super.onRequestPermissionsResult(requestCode, permissions, grantResults)});
         if(grantResults.any { !it.equals(PackageManager.PERMISSION_GRANTED) } && action.first) {
             Log.d(this.javaClass.canonicalName, "The user didn't grant all the permissions");
             Snackbar.make(findViewById(android.R.id.content), R.string.message_accept_permissions, Snackbar.LENGTH_LONG).show();

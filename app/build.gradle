@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.0.0-beta-3594'
+    ext.kotlin_version = '1.0.0-beta-4589'
     repositories {
         mavenCentral()
     }
@@ -11,7 +11,7 @@ buildscript {
 
 plugins {
     id 'com.github.hierynomus.license' version '0.12.1'
-    id 'net.researchgate.release' version '2.3.0'
+    id 'net.researchgate.release' version '2.3.5'
 }
 
 apply plugin: 'com.android.application'
@@ -41,6 +41,19 @@ android {
         // https://github.com/square/okio/issues/58
         warning 'InvalidPackage'
         abortOnError false
+    }
+    signingConfigs {
+        release {
+            def propertiesFile = new File("./signing_config")
+            final properties = new Properties();
+            if(propertiesFile.exists()) {
+                propertiesFile.withReader { properties.load( it ) }
+                storeFile properties['ALFIO_KEYSTORE_PATH']
+                storePassword properties['ALFIO_KEYSTORE_PWD']
+                keyAlias "alf.io"
+                keyPassword properties['ALFIO_KEY_PWD']
+            }
+        }
     }
 }
 
