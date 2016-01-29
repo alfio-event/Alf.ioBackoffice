@@ -48,4 +48,9 @@
     <string name="loading_data_failed">Error during data loading. Check internet connectivity and retry.</string>
     <string name="title_activity_manual_insert">Manual insert</string>
     <string name="description_activity_manual_insert">Please configure the connection data. After doing that, you\'ll be able to select the event.</string>
+    <string name="vibration_feedback_summary">Speed-up the check-in process! 1 long vibration for check-in OK, 3 short for KO</string>
+    <string name="vibration_feedback_resource">Vibration feedback</string>
+    <string name="shake_to_checkin_summary">On event detail, shake the phone to start the ticket scan</string>
+    <string name="shake_to_checkin_title">Shake to check-in</string>
+    <string name="title_activity_settings">Settings</string>
 </resources>

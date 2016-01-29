@@ -46,8 +46,8 @@ android {
         release {
             def propertiesFile = new File("./signing_config")
             final properties = new Properties();
-            if(propertiesFile.exists()) {
-                propertiesFile.withReader { properties.load( it ) }
+            if (propertiesFile.exists()) {
+                propertiesFile.withReader { properties.load(it) }
                 storeFile properties['ALFIO_KEYSTORE_PATH']
                 storePassword properties['ALFIO_KEYSTORE_PWD']
                 keyAlias "alf.io"
@@ -62,13 +62,14 @@ dependencies {
     // GUI: Third-party libraries
     // ZXING: https://github.com/journeyapps/zxing-android-embedded
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
     compile 'com.android.support:cardview-v7:23.1.1'
     compile 'com.android.support:recyclerview-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:preference-v7:23.1.1'
     compile 'com.android.support:support-v4:23.1.1'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.github.clans:fab:1.6.1'

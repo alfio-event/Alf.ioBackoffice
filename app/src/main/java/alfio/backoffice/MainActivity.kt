@@ -77,6 +77,7 @@ class MainActivity : BaseActivity() {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(Intent(baseContext, SettingsActivity::class.java));
             return true;
         }
 
