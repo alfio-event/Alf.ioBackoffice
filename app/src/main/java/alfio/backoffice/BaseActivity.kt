@@ -38,10 +38,6 @@ abstract class BaseActivity: AppCompatActivity() {
     private val pendingActions: MutableMap<Int, Pair<Boolean, () -> Unit>> = hashMapOf();
     private var requestId: Int = 0;
 
-    override fun onPause() {
-        super.onPause();
-    }
-
     fun BaseActivity.scanQRCode(resId: Int) : () -> Unit = {
         val integrator: IntentIntegrator = IntentIntegrator(this);
         integrator.setCaptureActivity(CustomCaptureActivity::class.java);

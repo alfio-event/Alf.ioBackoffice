@@ -20,6 +20,7 @@ import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.CheckInStatus.*
 import alfio.backoffice.model.Ticket
 import alfio.backoffice.model.UserType
+import alfio.backoffice.service.DataService
 import alfio.backoffice.task.*
 import android.content.Context
 import android.content.Intent
@@ -114,7 +115,7 @@ class EventDetailActivity : BaseActivity() {
     }
 
     private fun requestScan() {
-        requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrate(50)}, false);
+        requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrateIfEnabled(50)}, false);
         scanQRCode(R.string.message_scan_attendee_badge)();
     }
 
@@ -230,11 +231,11 @@ class EventDetailActivity : BaseActivity() {
     };
 
     private fun signalSuccess() {
-        requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrate(200L)}, false);
+        requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrateIfEnabled(200L)}, false);
     }
 
     private fun signalFailure() {
-        requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrate(longArrayOf(10L,150L,200L,150L,200L,150L), -1)}, false);
+        requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrateIfEnabled(longArrayOf(10L,150L,200L,150L,200L,150L), -1)}, false);
     }
 }
 
@@ -248,6 +249,9 @@ class ShakeDetector(val listener: OnShakeListener) : SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent) {
+        if(!DataService.shakeToCheckInEnabled) {
+            return;
+        }
         val gx = event.values[0].div(SensorManager.GRAVITY_EARTH).toDouble();
         val gy = event.values[1].div(SensorManager.GRAVITY_EARTH).toDouble();
         val gz = event.values[2].div(SensorManager.GRAVITY_EARTH).toDouble();
@@ -275,4 +279,16 @@ class ShakeDetector(val listener: OnShakeListener) : SensorEventListener {
 
 interface OnShakeListener {
     fun onShake(count: Int);
+}
+
+fun Vibrator.vibrateIfEnabled(milliseconds: Long) {
+    if(DataService.vibrationFeedbackEnabled) {
+        vibrate(milliseconds);
+    }
+}
+
+fun Vibrator.vibrateIfEnabled(pattern: LongArray, repeat: Int) {
+    if(DataService.vibrationFeedbackEnabled) {
+        vibrate(pattern, repeat);
+    }
 }

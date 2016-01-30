@@ -31,6 +31,10 @@ object DataService {
     val configurations: ConcurrentHashMap<String, AlfioConfiguration>;
     val alfioConfigurations: MutableList<AlfioConfiguration>
         get() = ArrayList(configurations.values);
+    val vibrationFeedbackEnabled: Boolean
+        get() = sharedPreferences.getBoolean(KEY_VIBRATION_FEEDBACK_ENABLED, true);
+    val shakeToCheckInEnabled: Boolean
+        get() = sharedPreferences.getBoolean(KEY_SHAKE_TO_CHECK_IN_ENABLED, true);
 
     init {
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AlfioBackoffice.context);
@@ -50,4 +54,6 @@ object DataService {
 
 }
 private val KEY_ALFIO_CONFIGURATIONS = "alfio-configurations"
+private val KEY_VIBRATION_FEEDBACK_ENABLED = "enable_vibration_feedback"
+private val KEY_SHAKE_TO_CHECK_IN_ENABLED = "enable_shake_to_checkin"
 class SerializedConfigurations: TypeToken<Map<String, AlfioConfiguration>>();
