@@ -20,10 +20,10 @@ import alfio.backoffice.service.CheckInService
 import alfio.backoffice.service.EventService
 import alfio.backoffice.service.SponsorScanService
 import alfio.backoffice.service.UserService
-import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.AsyncTask
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import java.util.*
 import kotlin.properties.Delegates
@@ -34,6 +34,18 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
     var param : Param? = null;
     val successCallbacks = ArrayList<(Result) -> Unit>();
     val failureCallbacks = ArrayList<(Param?, Result?) -> Unit>();
+    val defaultFailureCallback : (Param?, Result?) -> Unit = { param, result ->
+        val message = if(result?.hasErrorDetail() ?: false) {
+            result!!.getErrorDetail()!!.message;
+        } else {
+            caller.getString(alfio.backoffice.R.string.loading_data_failed);
+        };
+        AlertDialog.Builder(caller)
+                .setTitle(alfio.backoffice.R.string.unexpected_error_title)
+                .setMessage(message)
+                .create()
+                .show();
+    };
 
     protected val eventService = EventService();
     protected val userService = UserService();
@@ -59,10 +71,12 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
             return work(param!!).second;
         } catch(e: Exception) {
             Log.w(javaClass.simpleName, e);
-            failureCallbacks.forEach { it(param, null); }
-            return emptyResult();
+            return exceptionResult(e);
         }
     }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun exceptionResult(exception: Throwable) : Result = ErrorResult(exception) as Result;
 
     protected abstract fun emptyResult() : Result;
 
@@ -110,7 +124,7 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
         AlertDialog.Builder(caller).setTitle("error").setMessage("error").show();
     }
 
-    fun then(success: (Result) -> Unit, error: (Param?, Result?) -> Unit = {p,r -> }) : AlfioAsyncTask<R, Param, Result> {
+    fun then(success: (Result) -> Unit, error: (Param?, Result?) -> Unit = defaultFailureCallback) : AlfioAsyncTask<R, Param, Result> {
         successCallbacks.add(success);
         failureCallbacks.add(error);
         return this;
@@ -122,15 +136,18 @@ interface TaskParam;
 interface TaskResult<R> {
     fun isSuccessful(): Boolean;
     fun getResponse(): R?;
+    fun hasErrorDetail() = false;
+    fun getErrorDetail(): Throwable? = null;
 };
 
-data class DefaultTaskResult(val success: Boolean, val responseBody: String?) : TaskResult<String> {
+class ErrorResult(val exception: Throwable) : TaskResult<Any> {
+    override fun isSuccessful(): Boolean = false;
 
-    override fun getResponse(): String? {
-        return responseBody;
-    }
+    override fun getResponse(): Any? = null;
 
-    override fun isSuccessful(): Boolean {
-        return success;
-    }
+    override fun hasErrorDetail(): Boolean = true;
+
+    override fun getErrorDetail() : Throwable {
+        return exception;
+    };
 };
