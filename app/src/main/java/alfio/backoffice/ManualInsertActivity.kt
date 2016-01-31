@@ -6,6 +6,7 @@ import android.util.Patterns
 import android.view.View
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_manual_insert.*
+import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.android.synthetic.main.content_manual_insert.*
 
 class ManualInsertActivity : BaseActivity() {

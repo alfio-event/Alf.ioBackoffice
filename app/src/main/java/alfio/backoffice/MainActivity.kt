@@ -28,6 +28,7 @@ import com.google.gson.reflect.TypeToken
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlin.properties.Delegates
 
@@ -70,17 +71,16 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId;
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(Intent(baseContext, SettingsActivity::class.java));
-            return true;
+        when(item.itemId) {
+            R.id.action_settings -> {
+                startActivity(Intent(baseContext, SettingsActivity::class.java));
+                return true;
+            }
+            R.id.action_about -> {
+                startActivity(Intent(baseContext, AboutActivity::class.java));
+                return true;
+            }
         }
-
         return super.onOptionsItemSelected(item)
     }
 

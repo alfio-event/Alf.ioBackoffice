@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="alfio.backoffice.SettingsActivity">
+    tools:context="alfio.backoffice.AboutActivity">
 
     <include layout="@layout/app_bar" />
 
-    <include layout="@layout/content_settings" />
+    <include layout="@layout/content_about" />
 
 </android.support.design.widget.CoordinatorLayout>

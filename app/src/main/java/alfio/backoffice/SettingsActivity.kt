@@ -18,7 +18,7 @@ package alfio.backoffice
 
 import android.os.Bundle
 import android.support.v7.preference.PreferenceFragmentCompat
-import kotlinx.android.synthetic.main.activity_settings.*
+import kotlinx.android.synthetic.main.app_bar.*
 
 class SettingsActivity: BaseActivity() {
 

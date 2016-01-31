@@ -54,4 +54,17 @@
     <string name="shake_to_checkin_title">Shake to check-in</string>
     <string name="title_activity_settings">Settings</string>
     <string name="unexpected_error_title">Unexpected error</string>
+    <string name="action_about">About</string>
+    <string name="title_activity_about">About</string>
+    <string name="license_title">License</string>
+    <string name="license_text"><a href="https://alf.io">Alf.io</a> Backoffice is free software. It is licensed under the GNU GPLv3.\nMore info <a href="https://raw.githubusercontent.com/exteso/Alf.ioBackoffice/master/LICENSE">here</a></string>
+
+    <string name="credits_sw">Credits</string>
+    <string name="credits_sw_text">The application logo is based on <a href="https://openclipart.org/detail/183401/event-tickets">event-tickets by barrettward</a></string>
+    <string name="credits_people_title">Thanks to…</string>
+    <string name="credits_people_text">We would like to say "thank you" to all the people who contributed to this project:\n\n
+        - Matthijs (<a href="https://github.com/mg-1999">@mg-1999</a>) - application testing\n
+        - Giannandrea (<a href="https://github.com/gcastaldi">@gcastaldi</a>) - tips &amp; tricks, app testing
+    </string>
+
 </resources>

@@ -41,6 +41,7 @@ import android.view.WindowManager
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import kotlinx.android.synthetic.main.activity_event_detail.*
+import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.android.synthetic.main.content_event_detail.*
 import kotlinx.android.synthetic.main.event_descriptor.*
 import kotlin.properties.Delegates
