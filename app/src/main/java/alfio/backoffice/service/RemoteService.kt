@@ -22,7 +22,7 @@ import android.util.Base64
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import com.squareup.okhttp.Response
-import java.io.UnsupportedEncodingException
+import java.nio.charset.Charset
 
 interface RemoteService {
 
@@ -35,12 +35,7 @@ interface RemoteService {
 
     fun getAuthorizationHeader(username: String, password: String): String {
         val basicAuth = username + ":" + password;
-        val encoded: ByteArray
-        try {
-            encoded = basicAuth.toByteArray("UTF-8")
-        } catch (uee: UnsupportedEncodingException) {
-            encoded = basicAuth.toByteArray()
-        }
+        val encoded: ByteArray = basicAuth.toByteArray(Charset.forName("UTF-8"));
         return "Basic "+ Base64.encodeToString(encoded, Base64.NO_WRAP);
     }
 
