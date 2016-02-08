@@ -35,7 +35,12 @@ android {
         }
     }
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main {
+            assets.srcDirs = ['src/main/assets', 'build/reports/license']
+            java {
+                srcDir 'src/main/kotlin'
+            }
+        }
     }
     lintOptions {
         // https://github.com/square/okio/issues/58
@@ -55,6 +60,15 @@ android {
             }
         }
     }
+}
+
+downloadLicenses {
+    includeProjectDependencies = true
+    reportByDependency = true
+    reportByLicenseType = false
+    report.html.enabled = false
+    report.xml.enabled = true
+    dependencyConfiguration = "compile"
 }
 
 dependencies {
@@ -88,6 +102,12 @@ license {
     }
     ext.year = '2015-' + GregorianCalendar.newInstance().get(Calendar.YEAR);
     include "**/*.kt"
+}
+
+//http://stackoverflow.com/a/31963059
+project.afterEvaluate {
+    mergeDebugAssets.dependsOn project.tasks.getByName('downloadLicenses')
+    mergeReleaseAssets.dependsOn project.tasks.getByName('downloadLicenses')
 }
 
 release {

@@ -57,6 +57,7 @@
     <string name="action_about">About</string>
     <string name="title_activity_about">About</string>
     <string name="license_title">License</string>
+    <string name="thirdparty_title">Third Party Software</string>
     <string name="license_text"><a href="https://alf.io">Alf.io</a> Backoffice is free software. It is licensed under the GNU GPLv3.\nMore info <a href="https://raw.githubusercontent.com/exteso/Alf.ioBackoffice/master/LICENSE">here</a></string>
 
     <string name="credits_sw">Credits</string>
