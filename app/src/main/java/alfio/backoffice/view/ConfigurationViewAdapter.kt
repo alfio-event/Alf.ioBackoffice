@@ -26,6 +26,7 @@ import alfio.backoffice.task.EventImageResult
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -34,6 +35,8 @@ import android.widget.TextView
 import kotlin.properties.Delegates
 
 class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) : RecyclerView.Adapter<ViewHolder>() {
+
+    var itemRemovedListener: ((AlfioConfiguration) -> Unit)? = null;
 
     override fun getItemCount(): Int {
         return DataService.alfioConfigurations.size;
@@ -55,7 +58,14 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
         }
     }
 
-    fun notifyInsertion() {
+    fun remove(position: Int) {
+        val removed = DataService.alfioConfigurations[position];
+        DataService.blacklistConfiguration(removed);
+        notifyItemRemoved(position);
+        itemRemovedListener?.invoke(removed);
+    }
+
+    fun rangeChanged() {
         super.notifyItemRangeChanged(0, DataService.alfioConfigurations.size);
     }
 
@@ -63,6 +73,22 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
         return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.event_descriptor, parent, false));
     }
 
+}
+
+class SwipeCallback(val adapter: ConfigurationViewAdapter): ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+
+    override fun onMove(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?, target: RecyclerView.ViewHolder?): Boolean {
+        return false;
+    }
+
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, swipeDir: Int) {
+        if(swipeDir == ItemTouchHelper.RIGHT && viewHolder != null) {
+            adapter.remove(viewHolder.adapterPosition);
+        }
+    }
+
+    override fun isLongPressDragEnabled() = false;
+    override fun isItemViewSwipeEnabled(): Boolean = adapter.itemRemovedListener != null;
 }
 
 class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

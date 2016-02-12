@@ -28,9 +28,10 @@ import java.util.concurrent.ConcurrentHashMap
 object DataService {
 
     private val sharedPreferences: SharedPreferences;
+    private val blacklist: MutableSet<AlfioConfiguration> = hashSetOf();
     val configurations: ConcurrentHashMap<String, AlfioConfiguration>;
     val alfioConfigurations: MutableList<AlfioConfiguration>
-        get() = ArrayList(configurations.values);
+        get() = ArrayList(configurations.values.filter { !blacklist.contains(it) });
     val vibrationFeedbackEnabled: Boolean
         get() = sharedPreferences.getBoolean(KEY_VIBRATION_FEEDBACK_ENABLED, true);
     val shakeToCheckInEnabled: Boolean
@@ -47,10 +48,26 @@ object DataService {
     }
 
     fun saveAlfioConfiguration(alfioConfiguration: AlfioConfiguration) {
-        configurations.put("${alfioConfiguration.username}@${alfioConfiguration.eventName}@${alfioConfiguration.url}", alfioConfiguration);
+        configurations.put(buildKey(alfioConfiguration), alfioConfiguration);
         persistAlfioConfigurations();
     }
 
+    private fun buildKey(alfioConfiguration: AlfioConfiguration) = "${alfioConfiguration.username}@${alfioConfiguration.eventName}@${alfioConfiguration.url}"
+
+    fun removeAlfioConfiguration(alfioConfiguration: AlfioConfiguration) {
+        configurations.remove(buildKey(alfioConfiguration));
+        persistAlfioConfigurations();
+    }
+
+    fun blacklistConfiguration(configuration: AlfioConfiguration) {
+        blacklist.add(configuration);
+    }
+
+    fun whitelistConfiguration(configuration: AlfioConfiguration) {
+        blacklist.remove(configuration);
+    }
+
+    fun blacklistedConfigurationsCount() = blacklist.size;
 
 }
 private val KEY_ALFIO_CONFIGURATIONS = "alfio-configurations"

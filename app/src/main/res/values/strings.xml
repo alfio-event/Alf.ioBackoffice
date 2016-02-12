@@ -67,5 +67,7 @@
         - Matthijs (<a href="https://github.com/mg-1999">@mg-1999</a>) - application testing\n
         - Giannandrea (<a href="https://github.com/gcastaldi">@gcastaldi</a>) - tips &amp; tricks, app testing
     </string>
+    <string name="item_removed_successfully">Configuration for "%s" deleted</string>
+    <string name="item_removed_undo">UNDO</string>
 
 </resources>

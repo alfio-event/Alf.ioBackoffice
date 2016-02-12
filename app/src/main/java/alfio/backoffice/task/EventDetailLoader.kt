@@ -30,9 +30,9 @@ import java.nio.ByteBuffer
 
 class EventDetailLoader(c: Context, showProgressDialog: Boolean = true) : AlfioAsyncTask<Event, EventDetailParam, EventDetailResult>(c, showProgressDialog) {
 
-    override fun emptyResult(): EventDetailResult {
-        return EventDetailResult(false, null, ByteArray(0));
-    }
+    override fun errorResult(error: Throwable) = EventDetailResult(false, null, ByteArray(0), error);
+
+    override fun emptyResult() = EventDetailResult(false, null, ByteArray(0));
 
     override fun work(param: EventDetailParam): Pair<EventDetailParam, EventDetailResult> {
         val response = eventService.loadSingleEvent(param.baseUrl, param.eventName);
@@ -48,13 +48,9 @@ class EventDetailLoader(c: Context, showProgressDialog: Boolean = true) : AlfioA
 }
 
 data class EventDetailParam(val baseUrl: String, val eventName: String) : TaskParam;
-data class EventDetailResult(val success: Boolean, val event: Event?, val image: ByteArray) : TaskResult<Event>, Serializable {
+class EventDetailResult(val success: Boolean, val event: Event?, val image: ByteArray, error: Throwable? = null) : TaskResult<Event>(event, error), Serializable {
     override fun isSuccessful(): Boolean {
         return success;
-    }
-
-    override fun getResponse(): Event? {
-        return event;
     }
 };
 
@@ -62,9 +58,9 @@ data class EventDetailResult(val success: Boolean, val event: Event?, val image:
 
 class EventImageLoader(c: Context) : AlfioAsyncTask<ByteArray, EventImageParam, EventImageResult>(c, false) {
 
-    override fun emptyResult(): EventImageResult {
-        return EventImageResult(ByteArray(0));
-    }
+    override fun emptyResult() = EventImageResult(ByteArray(0));
+
+    override fun errorResult(error: Throwable) = EventImageResult(ByteArray(0));
 
     override fun work(param: EventImageParam): Pair<EventImageParam, EventImageResult> {
         val imageUrl = param.event.imageUrl ?: return param to emptyResult();
@@ -150,13 +146,8 @@ class EventImageLoader(c: Context) : AlfioAsyncTask<ByteArray, EventImageParam, 
 
 data class EventImageParam(val baseUrl: String, val event: Event) : TaskParam;
 
-data class EventImageResult(val image: ByteArray) : TaskResult<ByteArray>, Serializable {
+class EventImageResult(val image: ByteArray, error: Throwable? = null) : TaskResult<ByteArray>(image, error), Serializable {
     override fun isSuccessful(): Boolean {
         return !image.isEmpty();
     }
-
-    override fun getResponse(): ByteArray {
-        return image;
-    }
-
 }

@@ -24,9 +24,8 @@ import android.content.Context
 
 class EventListLoader(caller: Context): AlfioAsyncTask<List<Event>, EventListLoaderCommand, EventListLoaderResult>(caller) {
 
-    override fun emptyResult(): EventListLoaderResult {
-        return EventListLoaderResult(false, emptyList(), null);
-    }
+    override fun emptyResult() = EventListLoaderResult(false, emptyList(), null);
+    override fun errorResult(error: Throwable) = EventListLoaderResult(false, emptyList(), null, error = error);
 
     override fun work(param: EventListLoaderCommand): Pair<EventListLoaderCommand, EventListLoaderResult> {
         val userRoleResponse = userService.loadUserType(param.baseUrl, param.username, param.password);
@@ -55,7 +54,6 @@ class EventListLoader(caller: Context): AlfioAsyncTask<List<Event>, EventListLoa
 }
 
 data class EventListLoaderCommand(val baseUrl: String, val username: String, val password: String) : TaskParam;
-data class EventListLoaderResult(val success: Boolean, val results: List<Event>, val param: EventListLoaderCommand?, val userType: UserType = UserType.STAFF) : TaskResult<List<Event>> {
+class EventListLoaderResult(val success: Boolean, val results: List<Event>, val param: EventListLoaderCommand?, val userType: UserType = UserType.STAFF, error: Throwable? = null) : TaskResult<List<Event>>(results, error) {
     override fun isSuccessful(): Boolean = success;
-    override fun getResponse(): List<Event> = results;
 };

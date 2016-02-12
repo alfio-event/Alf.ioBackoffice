@@ -71,14 +71,13 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
             return work(param!!).second;
         } catch(e: Exception) {
             Log.w(javaClass.simpleName, e);
-            return exceptionResult(e);
+            return errorResult(e);
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun exceptionResult(exception: Throwable) : Result = ErrorResult(exception) as Result;
-
     protected abstract fun emptyResult() : Result;
+
+    protected abstract fun errorResult(error: Throwable): Result;
 
     internal abstract fun work(param: Param): Pair<Param, Result>;
 
@@ -133,21 +132,11 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
 
 interface TaskParam;
 
-interface TaskResult<R> {
-    fun isSuccessful(): Boolean;
-    fun getResponse(): R?;
-    fun hasErrorDetail() = false;
-    fun getErrorDetail(): Throwable? = null;
+abstract class TaskResult<R>(val response: R?, val error: Throwable?) {
+    open fun isSuccessful() = hasError();
+    fun hasError() = error == null;
+    open fun hasErrorDetail() = false;
+    open fun getErrorDetail(): Throwable? = null;
 };
 
-class ErrorResult(val exception: Throwable) : TaskResult<Any> {
-    override fun isSuccessful(): Boolean = false;
 
-    override fun getResponse(): Any? = null;
-
-    override fun hasErrorDetail(): Boolean = true;
-
-    override fun getErrorDetail() : Throwable {
-        return exception;
-    };
-};

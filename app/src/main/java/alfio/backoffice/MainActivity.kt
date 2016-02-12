@@ -17,11 +17,14 @@
 package alfio.backoffice
 
 import alfio.backoffice.model.AlfioConfiguration
+import alfio.backoffice.service.DataService
 import alfio.backoffice.view.ConfigurationViewAdapter
+import alfio.backoffice.view.SwipeCallback
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.Menu
 import android.view.MenuItem
 import com.google.gson.reflect.TypeToken
@@ -50,7 +53,26 @@ class MainActivity : BaseActivity() {
             scanQRCodeClicked();
         };
         listAdapter = ConfigurationViewAdapter({configuration -> startEventDetailActivity(configuration)});
+        listAdapter.itemRemovedListener = {
+            var snackbar: Snackbar? = null;
+            snackbar = Snackbar.make(textView, getString(R.string.item_removed_successfully, it.eventName), Snackbar.LENGTH_LONG)
+                    .setAction(R.string.item_removed_undo, {snackbar?.dismiss()})
+                    .setCallback(object: Snackbar.Callback() {
+                        override fun onDismissed(snackbar: Snackbar?, event: Int) {
+                            if(event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                                DataService.removeAlfioConfiguration(it);
+                            }
+                            if(DataService.blacklistedConfigurationsCount() > 0) {
+                                DataService.whitelistConfiguration(it);
+                                listAdapter.rangeChanged();
+                            }
+                        }
+                    });
+            snackbar.show();
+            DataService.removeAlfioConfiguration(it);
+        };
         listView.adapter = listAdapter;
+        ItemTouchHelper(SwipeCallback(listAdapter)).attachToRecyclerView(listView);
         listView.layoutManager = LinearLayoutManager(this);
         Thread.setDefaultUncaughtExceptionHandler({ thread, throwable ->
             throwable.printStackTrace();
@@ -86,7 +108,7 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume();
-        listAdapter.notifyInsertion();
+        listAdapter.rangeChanged();
     }
 
     fun scanQRCodeClicked(): Unit {
@@ -101,7 +123,7 @@ class MainActivity : BaseActivity() {
         val scanResult : IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if(scanResult != null && scanResult.contents != null) {
             val result: Map<String, String> = Common.gson.fromJson(scanResult.contents, MapStringStringTypeToken().type);
-            loadAndSelectEvent(result["baseUrl"]!!, result["username"]!!, result["password"]!!, {listAdapter.notifyInsertion();});
+            loadAndSelectEvent(result["baseUrl"]!!, result["username"]!!, result["password"]!!, {listAdapter.rangeChanged();});
         }
     }
 

@@ -28,6 +28,7 @@ import java.math.BigDecimal
 
 open class TicketDetailLoader(caller: Context) : AlfioAsyncTask<Ticket, TicketDetailParam, TicketDetailResult>(caller) {
     override fun emptyResult(): TicketDetailResult = TicketDetailResult(CheckInStatus.TICKET_NOT_FOUND, null);
+    override fun errorResult(error: Throwable) = TicketDetailResult(CheckInStatus.TICKET_NOT_FOUND, null, error=error);
 
     override final fun work(param: TicketDetailParam): Pair<TicketDetailParam, TicketDetailResult> {
         val response = performRequest(param);
@@ -57,13 +58,9 @@ open class TicketDetailLoader(caller: Context) : AlfioAsyncTask<Ticket, TicketDe
 }
 
 class TicketDetailParam(val conf: AlfioConfiguration, val code: String) : TaskParam;
-class TicketDetailResult(val status: CheckInStatus, val ticket: Ticket?, val dueAmount: BigDecimal = BigDecimal.ZERO, val currency: String = "") : TaskResult<Ticket>, Serializable {
+class TicketDetailResult(val status: CheckInStatus, val ticket: Ticket?, val dueAmount: BigDecimal = BigDecimal.ZERO, val currency: String = "", error: Throwable? = null) : TaskResult<Ticket>(ticket, error), Serializable {
 
     override fun isSuccessful(): Boolean {
         return status.succesful;
-    }
-
-    override fun getResponse(): Ticket? {
-        return ticket;
     }
 };
