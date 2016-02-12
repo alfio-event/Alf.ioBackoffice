@@ -55,11 +55,11 @@ class MainActivity : BaseActivity() {
         listAdapter = ConfigurationViewAdapter({configuration -> startEventDetailActivity(configuration)});
         listAdapter.itemRemovedListener = {
             var snackbar: Snackbar? = null;
-            snackbar = Snackbar.make(textView, getString(R.string.item_removed_successfully, it.eventName), Snackbar.LENGTH_LONG)
+            snackbar = Snackbar.make(textView, getString(R.string.item_removed_successfully, it.name), Snackbar.LENGTH_LONG)
                     .setAction(R.string.item_removed_undo, {snackbar?.dismiss()})
                     .setCallback(object: Snackbar.Callback() {
                         override fun onDismissed(snackbar: Snackbar?, event: Int) {
-                            if(event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                            if(event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT || event == Snackbar.Callback.DISMISS_EVENT_SWIPE) {
                                 DataService.removeAlfioConfiguration(it);
                             }
                             if(DataService.blacklistedConfigurationsCount() > 0) {
@@ -69,7 +69,6 @@ class MainActivity : BaseActivity() {
                         }
                     });
             snackbar.show();
-            DataService.removeAlfioConfiguration(it);
         };
         listView.adapter = listAdapter;
         ItemTouchHelper(SwipeCallback(listAdapter)).attachToRecyclerView(listView);
