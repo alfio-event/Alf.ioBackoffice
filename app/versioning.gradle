@@ -1,0 +1,39 @@
+ext {
+    /**
+     *
+     * source: http://www.jayway.com/2015/03/11/automatic-versioncode-generation-in-android-gradle/
+     *
+     * Builds an Android version code from the version of the project.
+     * This is designed to handle the -SNAPSHOT and -RC format.
+     *
+     * I.e. during development the version ends with -SNAPSHOT. As the code stabilizes and release nears
+     * one or many Release Candidates are tagged. These all end with "-RC1", "-RC2" etc.
+     * And the final release is without any suffix.
+     * @return
+     */
+    buildVersionCode = {
+        //The rules is as follows:
+        //-SNAPSHOT counts as 0
+        //-RC* counts as the RC number, i.e. 1 to 98
+        //Thus you can only have 98 Release Candidates, which ought to be enough for everyone
+
+        def candidate = "99"
+        def (major, minor, patch) = version.toLowerCase().tokenize('.')
+        (major, minor, patch) = [major, minor, patch]
+                .collect {it?:"0"}
+                .collect {
+                    if(it.endsWith("-snapshot")) {
+                        it.substring(0, it.length() - "-snapshot".length());
+                    } else if(it.contains("rc")) {
+                        def rc
+                        (p, rc) = it.tokenize("rc")
+                        rc ?: "0"
+                    } else {
+                        it
+                    }
+                }
+                .collect {it.toInteger()}
+
+        (major * 1000000) + (minor * 10000) + (patch * 100);
+    }
+}

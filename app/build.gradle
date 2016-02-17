@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.0.0-rc-1036'
+    ext.kotlin_version = '1.0.0'
     repositories {
         mavenCentral()
     }
@@ -17,6 +17,7 @@ plugins {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply from: 'versioning.gradle'
 
 android {
     compileSdkVersion 23
@@ -26,8 +27,8 @@ android {
         applicationId "alfio.backoffice"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 5
-        versionName "1.0.1"
+        versionCode buildVersionCode()
+        versionName project.version
     }
     buildTypes {
         release {
