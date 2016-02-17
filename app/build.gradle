@@ -30,10 +30,22 @@ android {
         versionCode buildVersionCode()
         versionName project.version
     }
+    signingConfigs {
+        def propertiesFile = new File("app/signing_config")
+        final properties = new Properties();
+        propertiesFile.withReader { properties.load(it) }
+        release {
+            storeFile file(properties['ALFIO_KEYSTORE_PATH'])
+            storePassword properties['ALFIO_KEYSTORE_PWD']
+            keyAlias "alf.io"
+            keyPassword properties['ALFIO_KEY_PWD']
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     sourceSets {
@@ -48,19 +60,6 @@ android {
         // https://github.com/square/okio/issues/58
         warning 'InvalidPackage'
         abortOnError false
-    }
-    signingConfigs {
-        release {
-            def propertiesFile = new File("./signing_config")
-            final properties = new Properties();
-            if (propertiesFile.exists()) {
-                propertiesFile.withReader { properties.load(it) }
-                storeFile properties['ALFIO_KEYSTORE_PATH']
-                storePassword properties['ALFIO_KEYSTORE_PWD']
-                keyAlias "alf.io"
-                keyPassword properties['ALFIO_KEY_PWD']
-            }
-        }
     }
 }
 
@@ -113,6 +112,7 @@ project.afterEvaluate {
 }
 
 release {
+    buildTasks = ['build', 'assembleRelease']
     git {
         requireBranch = ''
         pushToRemote = 'origin'
