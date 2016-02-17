@@ -75,16 +75,14 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
 
 }
 
-class SwipeCallback(val adapter: ConfigurationViewAdapter): ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+class SwipeCallback(val adapter: ConfigurationViewAdapter): ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.END) {
 
     override fun onMove(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?, target: RecyclerView.ViewHolder?): Boolean {
         return false;
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, swipeDir: Int) {
-        if(swipeDir == ItemTouchHelper.RIGHT && viewHolder != null) {
-            adapter.remove(viewHolder.adapterPosition);
-        }
+        adapter.remove(viewHolder!!.adapterPosition);
     }
 
     override fun isLongPressDragEnabled() = false;
