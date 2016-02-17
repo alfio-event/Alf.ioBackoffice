@@ -40,7 +40,7 @@ abstract class BaseActivity: AppCompatActivity() {
 
     fun BaseActivity.scanQRCode(resId: Int) : () -> Unit = {
         val integrator: IntentIntegrator = IntentIntegrator(this);
-        integrator.setCaptureActivity(CustomCaptureActivity::class.java);
+        integrator.captureActivity = CustomCaptureActivity::class.java;
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
         integrator.setOrientationLocked(false);
         integrator.setBeepEnabled(true);
