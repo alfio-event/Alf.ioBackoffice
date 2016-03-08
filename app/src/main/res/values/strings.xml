@@ -33,7 +33,7 @@
     <string name="title_activity_event_detail">Check-in process</string>
     <string name="title_activity_event_detail_sponsor">Scan attendees\' badge</string>
     <string name="event_logo">event logo</string>
-    <string name="attendee_name">Attendee</string>
+    <string name="attendee_data">Scan Result (Name, E-Mail)</string>
     <string name="attendee_mail">E-Mail</string>
     <string name="reservation_id">Reservation ID</string>
     <string name="rescan">Rescan</string>

@@ -40,30 +40,26 @@
 
                 <TableRow>
                     <TextView
-                        android:text="@string/attendee_name"
+                        android:text="@string/attendee_data"
                         android:padding="3dip"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        android:gravity="center"/>
+                </TableRow>
+                <TableRow>
                     <TextView
                         android:id="@+id/attendeeName"
                         android:text=""
-                        android:gravity="end"
-                        android:padding="3dip"
+                        android:gravity="start"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textStyle="bold"/>
                 </TableRow>
 
                 <TableRow>
                     <TextView
-                        android:text="@string/attendee_mail"
-                        android:padding="3dip"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textStyle="bold"/>
-                    <TextView
                         android:id="@+id/attendeeEmail"
                         android:text=""
-                        android:gravity="end"
-                        android:padding="3dip"
+                        android:gravity="start"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textStyle="bold"/>
                 </TableRow>
@@ -74,8 +70,7 @@
                         android:text=""
                         android:gravity="end"
                         android:padding="3dip"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:layout_span="2"/>
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
                 </TableRow>
 
             </TableLayout>
