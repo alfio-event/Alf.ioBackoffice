@@ -18,6 +18,7 @@ package alfio.backoffice.task
 
 import alfio.backoffice.Common
 import alfio.backoffice.R
+import alfio.backoffice.data.ConnectionState
 import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.Event
 import android.content.Context
@@ -36,16 +37,32 @@ class EventDetailLoader(c: Context, showProgressDialog: Boolean = true, val isSp
     override fun emptyResult() = EventDetailResult(false, null, ByteArray(0));
 
     override fun work(param: EventDetailParam): Pair<EventDetailParam, EventDetailResult> {
-        val response = eventService.loadSingleEvent(param.baseUrl, param.eventName);
-        val body = response.body();
-        if(response.isSuccessful) {
-            val event = Common.gson.fromJson(body.string(), Event::class.java);
-            val image = EventImageLoader(caller).work(EventImageParam(param.baseUrl, event)).second;
-            return param to EventDetailResult(true, event, image.image);
+        val event = loadEvent(param);
+        return if(event.first) {
+            val image = EventImageLoader(caller).work(EventImageParam(param.baseUrl, event.second)).second;
+            param to EventDetailResult(true, event.second, image.image);
+        } else {
+            param to emptyResult();
         }
-        body.close();
-        return param to emptyResult();
     }
+
+    private fun loadEvent(param: EventDetailParam): Pair<Boolean, Event> {
+        try {
+            if(!ConnectionState.active || isSponsor) {
+                return true to param.configuration.event;
+            }
+            val response = eventService.loadSingleEvent(param.baseUrl, param.eventName);
+            val body = response.body();
+            if(response.isSuccessful) {
+                return true to Common.gson.fromJson(body.string(), Event::class.java);
+            }
+            body.close();
+            return false to param.configuration.event;
+        } catch(e: Exception) {
+            return true to param.configuration.event;
+        }
+    }
+
 }
 
 data class EventDetailParam(val configuration: AlfioConfiguration) : TaskParam {
@@ -85,7 +102,12 @@ class EventImageLoader(c: Context) : AlfioAsyncTask<ByteArray, EventImageParam, 
         } catch(e: Exception) {
             Log.e(javaClass.canonicalName, "cannot load image", e);
         }
-        return loadRemoteImage(baseUrl, imageUrl, event);
+
+        return if(ConnectionState.active) {
+            loadRemoteImage(baseUrl, imageUrl, event);
+        } else {
+            ByteArray(0);
+        }
     }
 
     private fun saveImageFile(baseUrl: String, event: Event, image: ByteArray) : ByteArray {
