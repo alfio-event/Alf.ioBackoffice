@@ -40,7 +40,8 @@ class CheckInResult {
     var currency: String = "";
 }
 
-enum class CheckInStatus(val succesful: Boolean = false) {
+enum class CheckInStatus(val successful: Boolean = false) {
+    RETRY(),
     EVENT_NOT_FOUND(),
     TICKET_NOT_FOUND(),
     EMPTY_TICKET_CODE(),

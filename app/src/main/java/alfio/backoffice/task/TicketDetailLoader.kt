@@ -61,6 +61,6 @@ class TicketDetailParam(val conf: AlfioConfiguration, val code: String) : TaskPa
 class TicketDetailResult(val status: CheckInStatus, val ticket: Ticket?, val dueAmount: BigDecimal = BigDecimal.ZERO, val currency: String = "", error: Throwable? = null) : TaskResult<Ticket>(ticket, error), Serializable {
 
     override fun isSuccessful(): Boolean {
-        return status.succesful;
+        return status.successful;
     }
 };

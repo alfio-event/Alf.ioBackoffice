@@ -36,6 +36,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {
         addPreferencesFromResource(R.xml.pref_general);
+        addPreferencesFromResource(R.xml.pref_sponsor);
     }
 
 }

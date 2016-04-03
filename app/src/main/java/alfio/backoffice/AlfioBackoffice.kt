@@ -16,6 +16,8 @@
  */
 package alfio.backoffice
 
+import alfio.backoffice.data.ConnectivityManager
+import alfio.backoffice.service.SponsorScanBackgroundUploader
 import android.app.Application
 import android.content.Context
 
@@ -23,11 +25,17 @@ class AlfioBackoffice : Application() {
 
     override fun onCreate() {
         Companion.ctx = applicationContext;
+        ConnectivityManager.checkConnectivity(applicationContext);
+        startBackgroundServices();
+    }
+
+    private fun startBackgroundServices() {
+        SponsorScanBackgroundUploader.start();
     }
 
     companion object {
         private var ctx: Context? = null;
-        public val context: Context
+        val context: Context
             get() {
                 val c = ctx;
                 if(c != null) {

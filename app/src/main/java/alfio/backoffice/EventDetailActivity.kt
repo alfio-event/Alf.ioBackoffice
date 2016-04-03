@@ -16,11 +16,11 @@
  */
 package alfio.backoffice
 
+import alfio.backoffice.data.PreferencesManager
 import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.CheckInStatus.*
 import alfio.backoffice.model.Ticket
 import alfio.backoffice.model.UserType
-import alfio.backoffice.service.DataService
 import alfio.backoffice.task.*
 import android.content.Context
 import android.content.Intent
@@ -55,6 +55,7 @@ class EventDetailActivity : BaseActivity() {
     var sensorManager by Delegates.notNull<SensorManager>();
     var accelerometer by Delegates.notNull<Sensor>();
     var shakeDetector by Delegates.notNull<ShakeDetector>();
+    var isSponsor= false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState);
@@ -62,15 +63,16 @@ class EventDetailActivity : BaseActivity() {
         setContentView(R.layout.activity_event_detail);
         setSupportActionBar(toolbar);
         config = intent.extras.get("config") as AlfioConfiguration;
+        isSponsor = config.userType == UserType.SPONSOR;
         eventDetailSection.visibility = GONE;
         progressIndicator.visibility = VISIBLE;
         supportActionBar!!.setDisplayHomeAsUpEnabled(true);
-        EventDetailLoader(this, false)
+        EventDetailLoader(this, false, isSponsor)
                 .then(success = { eventLoaded(it, savedInstanceState); }, error = { param, result ->
                     loadingIndicator.visibility = GONE;
                     loadingDataFailed.visibility = VISIBLE;
                 })
-                .execute(EventDetailParam(config.url, config.eventName));
+                .execute(EventDetailParam(config));
         requestPermissionForAction(listOf(android.Manifest.permission.DISABLE_KEYGUARD), {window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)});
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager;
@@ -87,7 +89,7 @@ class EventDetailActivity : BaseActivity() {
     }
 
     private fun initView() {
-        title = when (config.userType) { UserType.SPONSOR -> getString(R.string.title_activity_event_detail_sponsor); else -> getString(R.string.title_activity_event_detail); };
+        title = if(isSponsor) getString(R.string.title_activity_event_detail_sponsor); else getString(R.string.title_activity_event_detail);
     }
 
     private fun eventLoaded(eventDetail: EventDetailResult, savedInstanceState: Bundle?) {
@@ -117,7 +119,7 @@ class EventDetailActivity : BaseActivity() {
 
     private fun requestScan() {
         requestPermissionForAction(listOf(android.Manifest.permission.VIBRATE), {vibratorService.vibrateIfEnabled(50)}, false);
-        scanQRCode(R.string.message_scan_attendee_badge)();
+        scanQRCode(if(isSponsor) R.string.message_scan_attendee_badge; else R.string.message_scan_ticket)();
     }
 
 
@@ -133,8 +135,15 @@ class EventDetailActivity : BaseActivity() {
 
     private fun scanAttendeeBadge(scanResult : IntentResult) {
         SponsorScanUpload(this)
-            .then(success = sponsorScanSuccessHandler, error = errorHandler)
-            .execute(TicketDetailParam(config, scanResult.contents));
+            .then(success = sponsorScanSuccessHandler, error = {param,result ->
+                ticketDetailButtons.visibility = GONE;
+                signalFailure();
+                errorButton2.visibility = GONE;
+                errorMessage.text = getString(R.string.sponsor_scan_failed);
+                errorButton1.setOnClickListener { requestScan(); }
+                errorCard.visibility = VISIBLE;
+            })
+            .execute(SponsorScanUploadParam(config, scanResult.contents));
     }
 
     private fun requestTicketDetailForCheckIn(scanResult : IntentResult) {
@@ -201,13 +210,13 @@ class EventDetailActivity : BaseActivity() {
         Snackbar.make(initCheckInCard, R.string.message_check_in_successful, Snackbar.LENGTH_LONG).setAction(R.string.message_dismiss, {}).show();
     }
 
-    private val sponsorScanSuccessHandler: (TicketDetailResult) -> Unit = {result ->
-        displayTicketDetails(result.ticket!!, null);
+    private val sponsorScanSuccessHandler: (SponsorScanResult) -> Unit = {result ->
         errorCard.visibility = GONE;
         rescan.visibility = GONE;
         confirm.text = getString(R.string.ok);
         signalSuccess();
-        Snackbar.make(initCheckInCard, R.string.message_scan_successful, Snackbar.LENGTH_LONG).setAction(R.string.message_dismiss, {}).show();
+        val message = if(result.hasTicket()) getString(R.string.message_sponsor_direct_scan_successful).format(result.ticket!!.fullName) else getString(R.string.message_sponsor_scan_successful);
+        Snackbar.make(initCheckInCard, message, Snackbar.LENGTH_LONG).setAction(R.string.message_dismiss, {}).show();
     }
 
     private val errorHandler: (TicketDetailParam?, TicketDetailResult?) -> Unit = { param, result ->
@@ -250,7 +259,7 @@ class ShakeDetector(val listener: OnShakeListener) : SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent) {
-        if(!DataService.shakeToCheckInEnabled) {
+        if(!PreferencesManager.shakeToCheckInEnabled) {
             return;
         }
         val gx = event.values[0].div(SensorManager.GRAVITY_EARTH).toDouble();
@@ -283,13 +292,13 @@ interface OnShakeListener {
 }
 
 fun Vibrator.vibrateIfEnabled(milliseconds: Long) {
-    if(DataService.vibrationFeedbackEnabled) {
+    if(PreferencesManager.vibrationFeedbackEnabled) {
         vibrate(milliseconds);
     }
 }
 
 fun Vibrator.vibrateIfEnabled(pattern: LongArray, repeat: Int) {
-    if(DataService.vibrationFeedbackEnabled) {
+    if(PreferencesManager.vibrationFeedbackEnabled) {
         vibrate(pattern, repeat);
     }
 }

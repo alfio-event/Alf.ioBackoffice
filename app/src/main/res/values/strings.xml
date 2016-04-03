@@ -7,11 +7,15 @@
     <string name="message_accept_permissions">The requested permission are required to run the application</string>
     <string name="message_check_in_successful">Check-in successful</string>
     <string name="message_scan_successful">Scan successful</string>
+    <string name="message_sponsor_scan_successful">Scan enqueued successfully</string>
+    <string name="message_sponsor_direct_scan_successful">Badge scanned: %s</string>
+    <string name="sponsor_scan_failed">Something went wrong. Please retry.</string>
     <string name="message_dismiss">Dismiss</string>
     <string name="message_rescan">Rescan</string>
     <string name="message_already_checked_in">Ticket already checked in!!</string>
     <string name="message_scan_your_qrcode">Scan your Alf.io QR-Code</string>
     <string name="message_scan_attendee_badge">Scan Attendee Badge</string>
+    <string name="message_scan_ticket">Scan Ticket</string>
     <string name="title_activity_insert_user">Add user</string>
     <string name="dialog_select_event_title">Event selection</string>
     <string name="dialog_select_event_text">Please select the event from the list</string>
@@ -51,7 +55,7 @@
     <string name="vibration_feedback_summary">Speed-up the check-in process! 1 long vibration for check-in OK, 3 short for KO</string>
     <string name="vibration_feedback_resource">Vibration feedback</string>
     <string name="shake_to_checkin_summary">On event detail, shake the phone to start the ticket scan</string>
-    <string name="shake_to_checkin_title">Shake to check-in</string>
+    <string name="shake_to_checkin_title">Shake to scan</string>
     <string name="title_activity_settings">Settings</string>
     <string name="unexpected_error_title">Unexpected error</string>
     <string name="action_about">About</string>
@@ -69,5 +73,10 @@
     </string>
     <string name="item_removed_successfully">Configuration for "%s" deleted</string>
     <string name="item_removed_undo">UNDO</string>
+    <string name="sponsor_scan_in_progress">Badge scanning in progress</string>
+    <string name="sponsor_scan_enqueued">Scan enqueued, will be uploaded asap</string>
+    <string name="sponsor_offline_scan_summary">Enable offline scan for sponsors, with asynchronous bulk synchronization</string>
+    <string name="sponsor_offline_scan_title">Sponsor offline scan</string>
+
 
 </resources>

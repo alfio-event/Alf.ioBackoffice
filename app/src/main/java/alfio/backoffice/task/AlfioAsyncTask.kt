@@ -25,6 +25,7 @@ import android.content.Context
 import android.os.AsyncTask
 import android.support.v7.app.AlertDialog
 import android.util.Log
+import com.squareup.okhttp.Response
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -139,4 +140,10 @@ abstract class TaskResult<R>(val response: R?, val error: Throwable?) {
     open fun getErrorDetail(): Throwable? = null;
 };
 
+fun <R, V:TaskResult<R>> Response.successOrEmpty(call: (Response) -> V, emptyResult: V): V {
+    if(isSuccessful) {
+        return call.invoke(this);
+    }
+    return emptyResult;
+};
 

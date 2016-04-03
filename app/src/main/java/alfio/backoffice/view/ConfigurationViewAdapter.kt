@@ -18,8 +18,8 @@ package alfio.backoffice.view
 
 import alfio.backoffice.BaseActivity
 import alfio.backoffice.R
+import alfio.backoffice.data.AccountManager
 import alfio.backoffice.model.AlfioConfiguration
-import alfio.backoffice.service.DataService
 import alfio.backoffice.task.EventImageLoader
 import alfio.backoffice.task.EventImageParam
 import alfio.backoffice.task.EventImageResult
@@ -39,11 +39,11 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
     var itemRemovedListener: ((AlfioConfiguration) -> Unit)? = null;
 
     override fun getItemCount(): Int {
-        return DataService.alfioConfigurations.size;
+        return AccountManager.accounts.size;
     }
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        val configuration = DataService.alfioConfigurations[position];
+        val configuration = AccountManager.accounts[position];
         if(holder != null) {
             holder.setOnClickListener {
                 clickHandler.invoke(configuration);
@@ -59,14 +59,14 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
     }
 
     fun remove(position: Int) {
-        val removed = DataService.alfioConfigurations[position];
-        DataService.blacklistConfiguration(removed);
+        val removed = AccountManager.accounts[position];
+        AccountManager.blacklistConfiguration(removed);
         notifyItemRemoved(position);
         itemRemovedListener?.invoke(removed);
     }
 
     fun rangeChanged() {
-        super.notifyItemRangeChanged(0, DataService.alfioConfigurations.size);
+        super.notifyItemRangeChanged(0, AccountManager.accounts.size);
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder? {

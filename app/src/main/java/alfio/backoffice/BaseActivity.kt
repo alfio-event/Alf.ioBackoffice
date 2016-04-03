@@ -16,9 +16,9 @@
  */
 package alfio.backoffice
 
+import alfio.backoffice.data.AccountManager
 import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.Event
-import alfio.backoffice.service.DataService
 import alfio.backoffice.task.EventListLoader
 import alfio.backoffice.task.EventListLoaderCommand
 import alfio.backoffice.task.EventListLoaderResult
@@ -80,7 +80,7 @@ abstract class BaseActivity: AppCompatActivity() {
             resp, which ->
             val event = resp.results[which];
             val configuration = AlfioConfiguration(resp.param!!.baseUrl, resp.param.username, resp.param.password, resp.userType, event);
-            DataService.saveAlfioConfiguration(configuration);
+            AccountManager.saveAlfioConfiguration(configuration);
             onSuccess.invoke(configuration);
         };
         EventListLoader(this)

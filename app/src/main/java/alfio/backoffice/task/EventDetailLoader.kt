@@ -18,6 +18,7 @@ package alfio.backoffice.task
 
 import alfio.backoffice.Common
 import alfio.backoffice.R
+import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.Event
 import android.content.Context
 import android.graphics.Bitmap
@@ -28,7 +29,7 @@ import java.io.ByteArrayOutputStream
 import java.io.Serializable
 import java.nio.ByteBuffer
 
-class EventDetailLoader(c: Context, showProgressDialog: Boolean = true) : AlfioAsyncTask<Event, EventDetailParam, EventDetailResult>(c, showProgressDialog) {
+class EventDetailLoader(c: Context, showProgressDialog: Boolean = true, val isSponsor: Boolean = false) : AlfioAsyncTask<Event, EventDetailParam, EventDetailResult>(c, showProgressDialog) {
 
     override fun errorResult(error: Throwable) = EventDetailResult(false, null, ByteArray(0), error);
 
@@ -47,14 +48,17 @@ class EventDetailLoader(c: Context, showProgressDialog: Boolean = true) : AlfioA
     }
 }
 
-data class EventDetailParam(val baseUrl: String, val eventName: String) : TaskParam;
+data class EventDetailParam(val configuration: AlfioConfiguration) : TaskParam {
+    val baseUrl: String
+        get() = configuration.url;
+    val eventName: String
+        get() = configuration.eventName;
+};
 class EventDetailResult(val success: Boolean, val event: Event?, val image: ByteArray, error: Throwable? = null) : TaskResult<Event>(event, error), Serializable {
     override fun isSuccessful(): Boolean {
         return success;
     }
 };
-
-
 
 class EventImageLoader(c: Context) : AlfioAsyncTask<ByteArray, EventImageParam, EventImageResult>(c, false) {
 

@@ -16,8 +16,8 @@
  */
 package alfio.backoffice
 
+import alfio.backoffice.data.AccountManager
 import alfio.backoffice.model.AlfioConfiguration
-import alfio.backoffice.service.DataService
 import alfio.backoffice.view.ConfigurationViewAdapter
 import alfio.backoffice.view.SwipeCallback
 import android.content.Intent
@@ -60,10 +60,10 @@ class MainActivity : BaseActivity() {
                     .setCallback(object: Snackbar.Callback() {
                         override fun onDismissed(snackbar: Snackbar?, event: Int) {
                             if(event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT || event == Snackbar.Callback.DISMISS_EVENT_SWIPE) {
-                                DataService.removeAlfioConfiguration(it);
+                                AccountManager.removeAlfioConfiguration(it);
                             }
-                            if(DataService.blacklistedConfigurationsCount() > 0) {
-                                DataService.whitelistConfiguration(it);
+                            if(AccountManager.blacklistedConfigurationsCount() > 0) {
+                                AccountManager.whitelistConfiguration(it);
                                 listAdapter.rangeChanged();
                             }
                         }
