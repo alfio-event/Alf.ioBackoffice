@@ -29,13 +29,10 @@ class ConnectivityManager : BroadcastReceiver() {
         }
     }
 
-    companion object {
-        fun checkConnectivity(context: Context) {
-            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager;
-            val state = cm.activeNetworkInfo?.isConnectedOrConnecting ?: false;
-            Log.w(ConnectivityManager::class.java.canonicalName, "setting ConnectionState.active to $state");
-            ConnectionState.active = state;
-        }
+    fun checkConnectivity(context: Context) {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager;
+        val state = cm.activeNetworkInfo?.isConnectedOrConnecting ?: false;
+        Log.w(ConnectivityManager::class.java.canonicalName, "setting ConnectionState.active to $state");
+        ConnectionState.active = state;
     }
-
 }

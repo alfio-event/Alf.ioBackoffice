@@ -7,5 +7,7 @@
     <dimen name="event_detail_card_height">100dp</dimen>
     <dimen name="event_image_width">150dp</dimen>
     <dimen name="card_elevation">2dp</dimen>
+    <dimen name="attendee_descriptor_card_height">50dp</dimen>
+    <dimen name="attendee_descriptor_icon_margin">5dp</dimen>
 
 </resources>

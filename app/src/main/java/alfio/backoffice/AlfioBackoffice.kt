@@ -20,13 +20,21 @@ import alfio.backoffice.data.ConnectivityManager
 import alfio.backoffice.service.SponsorScanBackgroundUploader
 import android.app.Application
 import android.content.Context
+import android.content.IntentFilter
 
 class AlfioBackoffice : Application() {
 
+    var connectivityManager = ConnectivityManager();
+
     override fun onCreate() {
         Companion.ctx = applicationContext;
-        ConnectivityManager.checkConnectivity(applicationContext);
+        connectivityManager.checkConnectivity(applicationContext);
+        registerReceiver(ConnectivityManager(), IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         startBackgroundServices();
+    }
+
+    override fun onTerminate() {
+        unregisterReceiver(connectivityManager);
     }
 
     private fun startBackgroundServices() {

@@ -33,8 +33,11 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Vibrator
 import android.support.design.widget.Snackbar
+import android.support.v4.app.NavUtils
 import android.util.Log
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.WindowManager
@@ -86,6 +89,29 @@ class EventDetailActivity : BaseActivity() {
             }
         });
         initView();
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if(isSponsor) {
+            menuInflater.inflate(R.menu.menu_sponsor, menu);
+        }
+        return true;
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.action_scanned_badges -> {
+                val dest = Intent(baseContext, CollectedContactsActivity::class.java);
+                dest.putExtras(this.intent.extras);
+                startActivity(dest);
+                return true;
+            }
+            android.R.id.home -> {
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            }
+        }
+        return true;
     }
 
     private fun initView() {

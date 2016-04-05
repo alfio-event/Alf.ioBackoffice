@@ -29,4 +29,38 @@ class Event : Serializable {
     var end: Date? = null;
     var oneDay: Boolean = false;
     var location: String? = null;
+
+    override fun equals(other: Any?): Boolean{
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+
+        other as Event
+
+        if (key != other.key) return false
+        if (url != other.url) return false
+        if (external != other.external) return false
+        if (name != other.name) return false
+        if (imageUrl != other.imageUrl) return false
+        if (begin != other.begin) return false
+        if (end != other.end) return false
+        if (oneDay != other.oneDay) return false
+        if (location != other.location) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int{
+        var result = key?.hashCode() ?: 0
+        result += 31 * result + (url?.hashCode() ?: 0)
+        result += 31 * result + external.hashCode()
+        result += 31 * result + (name?.hashCode() ?: 0)
+        result += 31 * result + (imageUrl?.hashCode() ?: 0)
+        result += 31 * result + (begin?.hashCode() ?: 0)
+        result += 31 * result + (end?.hashCode() ?: 0)
+        result += 31 * result + oneDay.hashCode()
+        result += 31 * result + (location?.hashCode() ?: 0)
+        return result
+    }
+
+
 }

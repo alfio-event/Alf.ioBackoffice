@@ -77,6 +77,11 @@
     <string name="sponsor_scan_enqueued">Scan enqueued, will be uploaded asap</string>
     <string name="sponsor_offline_scan_summary">Enable offline scan for sponsors, with asynchronous bulk synchronization</string>
     <string name="sponsor_offline_scan_title">Sponsor offline scan</string>
+    <string name="title_activity_scanned_attendees">Review collected contacts</string>
+    <string name="action_scanned_badges">Show collected contacts</string>
+    <string name="image_status">Synchronization status</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="send_list_by_email">Send by email</string>
 
 
 </resources>

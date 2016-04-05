@@ -21,6 +21,7 @@ import alfio.backoffice.model.Ticket
 import alfio.backoffice.model.TicketAndCheckInResult
 import android.util.Log
 import com.google.gson.reflect.TypeToken
+import java.util.*
 import java.util.concurrent.ConcurrentSkipListSet
 
 object SponsorScanManager {
@@ -41,6 +42,8 @@ object SponsorScanManager {
         SharedPreferencesHolder.sharedPreferences.synchronizedPersist(sponsorScan, KEY_PENDING_SPONSOR_SCAN);
         return elements.groupBy({ it.configuration }, {it.code});
     };
+
+    fun retrieveAllSponsorScan() : List<SponsorScanDescriptor> = ArrayList(sponsorScan);
 
     fun enqueueSponsorScan(configuration: AlfioConfiguration, code: String) = enqueueScan(configuration, code, ScanStatus.NEW);
 
@@ -68,10 +71,6 @@ data class SponsorScanDescriptor(val configuration: AlfioConfiguration, val code
 
     override fun compareTo(other: SponsorScanDescriptor): Int {
         return code.compareTo(other.code);
-    }
-
-    fun hasTicket(): Boolean {
-        return ticket != null;
     }
 };
 class SerializedScans : TypeToken<MutableSet<SponsorScanDescriptor>>();

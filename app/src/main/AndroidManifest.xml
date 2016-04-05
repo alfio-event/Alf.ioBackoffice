@@ -70,12 +70,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="alfio.backoffice.MainActivity" />
         </activity>
-
-        <receiver android:name=".data.ConnectivityManager">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
-    </application>
+        <activity android:name=".CollectedContactsActivity"
+            android:label="@string/title_activity_scanned_attendees"
+            android:parentActivityName=".EventDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="alfio.backoffice.EventDetailActivity" />
+        </activity>
+     </application>
 
 </manifest>

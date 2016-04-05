@@ -34,7 +34,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import kotlin.properties.Delegates
 
-class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) : RecyclerView.Adapter<ViewHolder>() {
+class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) : RecyclerView.Adapter<ConfigurationViewHolder>() {
 
     var itemRemovedListener: ((AlfioConfiguration) -> Unit)? = null;
 
@@ -42,7 +42,7 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
         return AccountManager.accounts.size;
     }
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: ConfigurationViewHolder?, position: Int) {
         val configuration = AccountManager.accounts[position];
         if(holder != null) {
             holder.setOnClickListener {
@@ -69,8 +69,8 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
         super.notifyItemRangeChanged(0, AccountManager.accounts.size);
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder? {
-        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.event_descriptor, parent, false));
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConfigurationViewHolder? {
+        return ConfigurationViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.event_descriptor, parent, false));
     }
 
 }
@@ -89,7 +89,7 @@ class SwipeCallback(val adapter: ConfigurationViewAdapter): ItemTouchHelper.Simp
     override fun isItemViewSwipeEnabled(): Boolean = adapter.itemRemovedListener != null;
 }
 
-class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class ConfigurationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     var mainComponent by Delegates.notNull<View>();
     var eventDates by Delegates.notNull<TextView>();
