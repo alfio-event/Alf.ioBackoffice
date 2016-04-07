@@ -29,6 +29,7 @@ class Event : Serializable {
     var end: Date? = null;
     var oneDay: Boolean = false;
     var location: String? = null;
+    var apiVersion: Int = 0;
 
     override fun equals(other: Any?): Boolean{
         if (this === other) return true
@@ -45,6 +46,7 @@ class Event : Serializable {
         if (end != other.end) return false
         if (oneDay != other.oneDay) return false
         if (location != other.location) return false
+        if (apiVersion != other.apiVersion) return false
 
         return true
     }
@@ -59,6 +61,7 @@ class Event : Serializable {
         result += 31 * result + (end?.hashCode() ?: 0)
         result += 31 * result + oneDay.hashCode()
         result += 31 * result + (location?.hashCode() ?: 0)
+        result += 31 * result + apiVersion
         return result
     }
 

@@ -48,7 +48,7 @@ class EventDetailLoader(c: Context, showProgressDialog: Boolean = true, val isSp
 
     private fun loadEvent(param: EventDetailParam): Pair<Boolean, Event> {
         try {
-            if(!ConnectionState.active || isSponsor) {
+            if(!ConnectionState.active) {
                 return true to param.configuration.event;
             }
             val response = eventService.loadSingleEvent(param.baseUrl, param.eventName);

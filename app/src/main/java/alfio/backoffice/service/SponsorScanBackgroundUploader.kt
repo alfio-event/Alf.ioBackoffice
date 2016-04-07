@@ -4,6 +4,7 @@ import alfio.backoffice.Common
 import alfio.backoffice.data.ConnectionState
 import alfio.backoffice.data.SponsorScanManager
 import alfio.backoffice.model.AlfioConfiguration
+import alfio.backoffice.model.CheckInResult
 import alfio.backoffice.model.TicketAndCheckInResult
 import android.util.Log
 import com.google.gson.reflect.TypeToken
@@ -54,7 +55,8 @@ object SponsorScanBackgroundUploader {
     private fun doBackgroundWork() {
         SponsorScanManager.retrievePendingSponsorScan(50).flatMap {
             val key = it.key;
-            it.value.zip(parseResponse(performScan(it.value, key))).map { key to it }
+            val responses = performUpload(key, it.value);
+            it.value.zip(responses).map { key to it }
         }.filter {
             it.second.second.result != null && it.second.second.result!!.status.successful
         }.groupBy({it.first}, {it.second})
@@ -62,6 +64,26 @@ object SponsorScanBackgroundUploader {
             val result = SponsorScanManager.confirmSponsorsScan(it.key, it.value);
             Log.d(this.javaClass.canonicalName, "confirmed ${it.value.size} scans: $result");
         };
+    }
+
+    private fun performUpload(conf: AlfioConfiguration, codes: List<String>) : List<TicketAndCheckInResult> {
+        if(conf.event.apiVersion >= 17) {
+            return parseResponse(performBulkUpload(codes, conf));
+        }
+        return codes.map {
+            performSingleUpload(it, conf);
+        }.map {
+            val body = it.body();
+            val result: TicketAndCheckInResult;
+            if(it.isSuccessful) {
+                result = Common.gson.fromJson(body.string(), TicketAndCheckInResult::class.java);
+            } else {
+                result = TicketAndCheckInResult();
+                result.result = CheckInResult();//ticket not found
+            }
+            body.close();
+            result;
+        }
     }
 
     private fun parseResponse(response: Response) : List<TicketAndCheckInResult> {
@@ -77,10 +99,18 @@ object SponsorScanBackgroundUploader {
         return emptyList();
     }
 
-    private fun performScan(codes: List<String>, conf: AlfioConfiguration): Response {
+    private fun performSingleUpload(code: String, conf: AlfioConfiguration): Response {
+        return performCall { sponsorScanService.scanAttendee(code, conf) };
+    }
+
+    private fun performBulkUpload(codes: List<String>, conf: AlfioConfiguration): Response {
+        return performCall { sponsorScanService.bulkScanUpload(codes, conf) };
+    }
+
+    private fun performCall(call: () -> Response) : Response {
         try {
-            return sponsorScanService.bulkScanUpload(codes, conf);
-        } catch(e: Exception) {
+            return call.invoke();
+        } catch (e: Exception) {
             return Response.Builder().code(500).build();
         }
     }
