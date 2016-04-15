@@ -15,14 +15,15 @@
         android:baselineAligned="false">
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginRight="@dimen/attendee_descriptor_icon_margin"
             android:layout_marginEnd="@dimen/attendee_descriptor_icon_margin">
             <ImageView
                 android:id="@+id/statusImage"
+                android:tint="@color/colorPrimary"
                 android:contentDescription="@string/image_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="32dp"
+                android:layout_height="match_parent" />
         </LinearLayout>
 
         <LinearLayout

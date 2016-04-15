@@ -38,15 +38,17 @@ import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.WindowManager
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import kotlinx.android.synthetic.main.activity_event_detail.*
 import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.android.synthetic.main.content_event_detail.*
+import kotlinx.android.synthetic.main.error.*
 import kotlinx.android.synthetic.main.event_descriptor.*
+import kotlinx.android.synthetic.main.init_check_in.*
+import kotlinx.android.synthetic.main.ticket_result.*
 import kotlin.properties.Delegates
 
 class EventDetailActivity : BaseActivity() {
@@ -101,9 +103,7 @@ class EventDetailActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.action_scanned_badges -> {
-                val dest = Intent(baseContext, CollectedContactsActivity::class.java);
-                dest.putExtras(this.intent.extras);
-                startActivity(dest);
+                openCollectedContacts();
                 return true;
             }
             android.R.id.home -> {
@@ -112,6 +112,12 @@ class EventDetailActivity : BaseActivity() {
             }
         }
         return true;
+    }
+
+    private fun openCollectedContacts() {
+        val dest = Intent(baseContext, CollectedContactsActivity::class.java);
+        dest.putExtras(this.intent.extras);
+        startActivity(dest);
     }
 
     private fun initView() {
@@ -130,9 +136,15 @@ class EventDetailActivity : BaseActivity() {
         };
         rescan.setOnClickListener {
             requestScan();
+        };
+        if(isSponsor) {
+            showCollectedContacts.visibility = VISIBLE;
         }
+        showCollectedContacts.setOnClickListener {
+            openCollectedContacts();
+        };
         confirm.setOnClickListener {
-            if(config.userType == UserType.SPONSOR) {
+            if(isSponsor) {
                 requestScan();
             } else {
                 confirmCheckIn(qrCode!!);
@@ -253,6 +265,7 @@ class EventDetailActivity : BaseActivity() {
             MUST_PAY -> {
                 errorMessage.text = getString(R.string.checkin_error_must_pay).format(result!!.dueAmount, result.currency);
                 errorButton2.visibility = VISIBLE;
+                errorButtonSpacer.visibility = INVISIBLE;
                 errorButton2.text = getString(R.string.check_in);
                 errorButton2.setOnClickListener { confirmDeskPayment(qrCode!!); }
             }

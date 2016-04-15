@@ -3,8 +3,7 @@ package alfio.backoffice.view
 import alfio.backoffice.R
 import alfio.backoffice.data.ScanStatus
 import alfio.backoffice.data.SponsorScanDescriptor
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -20,14 +19,16 @@ class AttendeesViewAdapter(val scanDescriptors : List<SponsorScanDescriptor>) : 
             val descriptor = scanDescriptors[position];
             holder.attendeeName.text = descriptor.ticket?.fullName ?: descriptor.code;
             holder.attendeeEmail.text = descriptor.ticket?.email ?: "";
-            holder.statusImage.setImageDrawable(BitmapDrawable(holder.itemView.resources, BitmapFactory.decodeResource(holder.itemView.resources, getIcon(descriptor.status))));
+            val icon = ContextCompat.getDrawable(holder.itemView.context, getIcon(descriptor.status));
+            icon.setTint(R.color.colorPrimary);
+            holder.statusImage.setImageDrawable(icon);
         }
     }
 
     private fun getIcon(status: ScanStatus) : Int {
         return when(status) {
-            ScanStatus.DONE -> R.mipmap.ic_contact_mail;
-            ScanStatus.NEW, ScanStatus.IN_PROCESS -> R.mipmap.ic_import_export;
+            ScanStatus.DONE -> R.drawable.ic_account_circle;
+            ScanStatus.NEW, ScanStatus.IN_PROCESS -> R.drawable.ic_import_export;
         }
     }
 

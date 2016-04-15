@@ -43,7 +43,9 @@
     <string name="rescan">Rescan</string>
     <string name="check_in">Check-in</string>
     <string name="init_checkin">Initiate Check-in</string>
+    <string name="sponsor_scan_title">Scan attendees\' badges</string>
     <string name="checkin_description">Start check-in process for this event by clicking on the button below</string>
+    <string name="sponsor_scan_description">Collect contacts by scanning attendees\' badge</string>
     <string name="checkin_error_must_pay" formatted="false">Not yet paid. Amount due: %1.2f %s</string>
     <string name="checkin_error_ticket_not_found">Ticket not found</string>
     <string name="checkin_error_invalid_code">Invalid Ticket Code.</string>
@@ -68,8 +70,9 @@
     <string name="credits_sw_text">The application logo is based on <a href="https://openclipart.org/detail/183401/event-tickets">event-tickets by barrettward</a></string>
     <string name="credits_people_title">Thanks to…</string>
     <string name="credits_people_text">We would like to say "thank you" to all the people who contributed to this project:\n\n
-        - Matthijs (<a href="https://github.com/mg-1999">@mg-1999</a>) - application testing\n
-        - Giannandrea (<a href="https://github.com/gcastaldi">@gcastaldi</a>) - tips &amp; tricks, app testing
+        - Matthijs (<a href="https://github.com/mg-1999">@mg-1999</a>) - app testing\n
+        - Giannandrea (<a href="https://github.com/gcastaldi">@gcastaldi</a>) - tips &amp; tricks, app testing\n
+        - Michele (<a href="https://github.com/mikispag">@mikispag</a>) - bug hunting, app testing
     </string>
     <string name="item_removed_successfully">Configuration for "%s" deleted</string>
     <string name="item_removed_undo">UNDO</string>
@@ -82,6 +85,7 @@
     <string name="image_status">Synchronization status</string>
     <string name="shuffle">Shuffle</string>
     <string name="send_list_by_email">Send by email</string>
+    <string name="show_collected_contacts">collected contacts</string>
 
 
 </resources>

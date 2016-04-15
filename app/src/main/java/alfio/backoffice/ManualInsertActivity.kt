@@ -21,7 +21,6 @@ import android.support.design.widget.Snackbar
 import android.util.Patterns
 import android.view.View
 import android.widget.TextView
-import kotlinx.android.synthetic.main.activity_manual_insert.*
 import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.android.synthetic.main.content_manual_insert.*
 
@@ -40,7 +39,7 @@ class ManualInsertActivity : BaseActivity() {
         manualInsertPassword.onFocusChangeListener = passwordValidator;
         val validators = listOf(urlValidator, usernameValidator, passwordValidator);
 
-        fab.setOnClickListener {
+        save.setOnClickListener {
             if(validators.any { !it.isValid() }) {
                 Snackbar.make(it, R.string.message_check_fields, Snackbar.LENGTH_LONG).show();
             } else {

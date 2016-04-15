@@ -43,10 +43,10 @@
 
             <Button
                 android:id="@+id/sendEmail"
-                style="?attr/buttonBarPositiveButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/send_list_by_email"/>
+                android:text="@string/send_list_by_email"
+                android:theme="@style/SuccessButton"/>
 
         </android.support.v7.widget.ButtonBarLayout>
     </LinearLayout>

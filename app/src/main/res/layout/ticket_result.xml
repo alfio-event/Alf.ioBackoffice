@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:showIn="@layout/content_event_detail">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <ImageView
+            android:contentDescription="@string/attendee_data"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_account_circle" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ticket details -->
+        <TableLayout
+            android:id="@+id/ticketDetailPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:stretchColumns="1">
+
+            <TableRow>
+                <TextView
+                    android:id="@+id/attendeeName"
+                    android:text=""
+                    android:gravity="start"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/attendeeEmail"
+                    android:text=""
+                    android:gravity="start"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/reservationId"
+                    android:text=""
+                    android:gravity="end"
+                    android:padding="3dip"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            </TableRow>
+
+        </TableLayout>
+
+        <android.support.v7.widget.ButtonBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ticketDetailButtons">
+
+
+            <Button
+                android:id="@+id/rescan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rescan"
+                style="?attr/buttonBarNegativeButtonStyle"/>
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/check_in"
+                android:theme="@style/SuccessButton" />
+        </android.support.v7.widget.ButtonBarLayout>
+    </LinearLayout>
+
+</LinearLayout>
