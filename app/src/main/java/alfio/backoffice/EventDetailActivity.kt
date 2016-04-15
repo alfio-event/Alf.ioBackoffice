@@ -139,6 +139,8 @@ class EventDetailActivity : BaseActivity() {
         };
         if(isSponsor) {
             showCollectedContacts.visibility = VISIBLE;
+            initTitle.text = getText(R.string.init_sponsor_scan);
+            checkInDescription.text = getText(R.string.sponsor_scan_description);
         }
         showCollectedContacts.setOnClickListener {
             openCollectedContacts();
