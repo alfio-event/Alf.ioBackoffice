@@ -17,12 +17,15 @@
         android:layout_margin="5dp" />
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.ButtonBarLayout
+            android:id="@+id/multipleButtonBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/errorButton1"
@@ -36,15 +39,33 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:visibility="gone" />
+                android:visibility="invisible" />
 
             <Button
                 android:id="@+id/errorButton2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:text=""
                 android:theme="@style/SuccessButton" />
+
+        </android.support.v7.widget.ButtonBarLayout>
+        <android.support.v7.widget.ButtonBarLayout
+            android:id="@+id/singleButtonBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/singleErrorButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rescan"
+                style="?attr/buttonBarNegativeButtonStyle"/>
 
         </android.support.v7.widget.ButtonBarLayout>
     </LinearLayout>

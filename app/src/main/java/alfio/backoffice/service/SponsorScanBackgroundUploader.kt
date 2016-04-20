@@ -53,16 +53,20 @@ object SponsorScanBackgroundUploader {
     }
 
     private fun doBackgroundWork() {
-        SponsorScanManager.retrievePendingSponsorScan(50).flatMap {
+        val partitioned = SponsorScanManager.retrievePendingSponsorScan(50).flatMap {
             val key = it.key;
             val responses = performUpload(key, it.value);
             it.value.zip(responses).map { key to it }
-        }.filter {
-            it.second.second.result != null && it.second.second.result!!.status.successful
-        }.groupBy({it.first}, {it.second})
-        .forEach {
-            val result = SponsorScanManager.confirmSponsorsScan(it.key, it.value);
-            Log.d(this.javaClass.canonicalName, "confirmed ${it.value.size} scans: $result");
+        }.partition { it.second.second.result != null && it.second.second.result!!.status.successful };
+
+        partitioned.first
+                .groupBy({it.first}, {it.second})
+                .forEach {
+                    val result = SponsorScanManager.confirmSponsorsScan(it.key, it.value);
+                    Log.d(this.javaClass.canonicalName, "confirmed ${it.value.size} scans: $result");
+                };
+        partitioned.second.forEach {
+            SponsorScanManager.registerScanError(it.first, it.second);
         };
     }
 

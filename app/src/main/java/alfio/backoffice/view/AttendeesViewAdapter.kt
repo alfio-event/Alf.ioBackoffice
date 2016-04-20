@@ -19,16 +19,18 @@ class AttendeesViewAdapter(val scanDescriptors : List<SponsorScanDescriptor>) : 
             val descriptor = scanDescriptors[position];
             holder.attendeeName.text = descriptor.ticket?.fullName ?: descriptor.code;
             holder.attendeeEmail.text = descriptor.ticket?.email ?: "";
-            val icon = ContextCompat.getDrawable(holder.itemView.context, getIcon(descriptor.status));
-            icon.setTint(R.color.colorPrimary);
+            val iconDetails = getIcon(descriptor.status);
+            val icon = ContextCompat.getDrawable(holder.itemView.context, iconDetails.first);
+            icon.setTint(iconDetails.second);
             holder.statusImage.setImageDrawable(icon);
         }
     }
 
-    private fun getIcon(status: ScanStatus) : Int {
+    private fun getIcon(status: ScanStatus) : Pair<Int, Int> {
         return when(status) {
-            ScanStatus.DONE -> R.drawable.ic_account_circle;
-            ScanStatus.NEW, ScanStatus.IN_PROCESS -> R.drawable.ic_import_export;
+            ScanStatus.DONE -> R.drawable.ic_account_circle to R.color.colorPrimary;
+            ScanStatus.NEW, ScanStatus.IN_PROCESS -> R.drawable.ic_import_export to R.color.colorPrimary;
+            else -> R.drawable.ic_report_problem to R.color.yellow;
         }
     }
 

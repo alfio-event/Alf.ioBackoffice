@@ -39,7 +39,7 @@ class CollectedContactsActivity : BaseActivity() {
 
     fun loadScanDescriptors(configuration: AlfioConfiguration, shuffle: Boolean = false) : List<SponsorScanDescriptor> {
         val result = SponsorScanManager.retrieveAllSponsorScan()
-                .filter { it.configuration.equals(configuration) };
+                .filter { it.configuration!!.equals(configuration) };
         if(shuffle) {
             Collections.shuffle(result);
         }

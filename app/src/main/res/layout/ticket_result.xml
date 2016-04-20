@@ -11,9 +11,10 @@
         android:layout_height="match_parent">
         <ImageView
             android:contentDescription="@string/attendee_data"
-            android:layout_width="32dp"
+            android:layout_width="48dp"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_account_circle" />
+            android:src="@drawable/ic_account_circle"
+            android:tint="@color/colorPrimary"/>
     </LinearLayout>
 
     <LinearLayout

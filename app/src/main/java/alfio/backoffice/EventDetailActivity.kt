@@ -219,7 +219,7 @@ class EventDetailActivity : BaseActivity() {
         if(ticket != null) {
             attendeeName.text = ticket.fullName;
             attendeeEmail.text = ticket.email;
-            reservationId.text = ticket.ticketsReservationId;
+            reservationId.text = ticket.uuid;
             resultCard.visibility = VISIBLE;
             initCheckInCard.visibility = GONE;
             ticketDetailButtons.visibility = VISIBLE;
@@ -265,11 +265,14 @@ class EventDetailActivity : BaseActivity() {
         errorButton2.visibility = GONE;
         when(result?.status) {
             MUST_PAY -> {
+                singleButtonBar.visibility = GONE;
+                multipleButtonBar.visibility = VISIBLE;
                 errorMessage.text = getString(R.string.checkin_error_must_pay).format(result!!.dueAmount, result.currency);
                 errorButton2.visibility = VISIBLE;
                 errorButtonSpacer.visibility = INVISIBLE;
                 errorButton2.text = getString(R.string.check_in);
                 errorButton2.setOnClickListener { confirmDeskPayment(qrCode!!); }
+                errorButton1.setOnClickListener { requestScan(); }
             }
             EMPTY_TICKET_CODE, INVALID_TICKET_CODE -> errorMessage.text = getString(R.string.checkin_error_invalid_code);
             TICKET_NOT_FOUND, EVENT_NOT_FOUND, INVALID_TICKET_STATE -> errorMessage.text = getString(R.string.checkin_error_ticket_not_found);
@@ -277,7 +280,7 @@ class EventDetailActivity : BaseActivity() {
                 errorMessage.text = getString(R.string.message_already_checked_in);
             }
         }
-        errorButton1.setOnClickListener { requestScan(); }
+        singleErrorButton.setOnClickListener { requestScan(); };
         errorCard.visibility = VISIBLE;
     };
 
