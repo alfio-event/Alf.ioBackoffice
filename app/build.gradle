@@ -27,7 +27,7 @@ android {
         applicationId "alfio.backoffice"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 1030001//buildVersionCode()
+        versionCode buildVersionCode()
         versionName project.version
     }
     signingConfigs {
