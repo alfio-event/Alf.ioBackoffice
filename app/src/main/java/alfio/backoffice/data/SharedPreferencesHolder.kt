@@ -23,10 +23,14 @@ import android.preference.PreferenceManager
 import com.google.gson.reflect.TypeToken
 
 object SharedPreferencesHolder {
-    val sharedPreferences: SharedPreferences;
-    init {
-        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AlfioBackoffice.context);
-    }
+    private var preferences: SharedPreferences? = null;
+    val sharedPreferences: SharedPreferences
+        get() = if(preferences != null) {
+                    preferences!!;
+                } else {
+                    preferences = PreferenceManager.getDefaultSharedPreferences(AlfioBackoffice.context);
+                    preferences!!;
+                }
 }
 
 fun SharedPreferences.persist(obj: Any, key: String) {

@@ -78,6 +78,7 @@ dependencies {
     // ZXING: https://github.com/journeyapps/zxing-android-embedded
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    testCompile "com.nhaarman:mockito-kotlin:0.4.0"
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
     compile 'com.android.support:appcompat-v7:23.1.1'

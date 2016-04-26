@@ -26,7 +26,7 @@ object SponsorScanBackgroundUploader {
         if(scheduled == null || scheduled.isDone) {
             val task = executor.scheduleWithFixedDelay({
                 if (ConnectionState.active) {
-                    Log.d(this.javaClass.canonicalName, "trying to upload...");
+                    Log.i(this.javaClass.canonicalName, "trying to upload sponsors scan...");
                     doBackgroundWork();
                 } else {
                     Log.w(this.javaClass.canonicalName, "data connection is not active. Skipping execution");
@@ -91,7 +91,6 @@ object SponsorScanBackgroundUploader {
     }
 
     private fun parseResponse(response: Response) : List<TicketAndCheckInResult> {
-
         val body = response.body();
         try {
             if(response.isSuccessful) {

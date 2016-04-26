@@ -23,6 +23,7 @@ import alfio.backoffice.task.EventListLoader
 import alfio.backoffice.task.EventListLoaderCommand
 import alfio.backoffice.task.EventListLoaderResult
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Build
@@ -31,6 +32,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.TextView
 import com.google.zxing.integration.android.IntentIntegrator
+import kotlinx.android.synthetic.main.content_settings.*
 import java.text.SimpleDateFormat
 
 abstract class BaseActivity: AppCompatActivity() {
@@ -62,13 +64,13 @@ abstract class BaseActivity: AppCompatActivity() {
         }
     }
 
-    //@TargetApi(Build.VERSION_CODES.M) //FIXME: why this annotation is not recognized during build?
+    @TargetApi(Build.VERSION_CODES.M)
     @SuppressLint("NewApi")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         val action = pendingActions[requestCode] ?: Pair(false, {super.onRequestPermissionsResult(requestCode, permissions, grantResults)});
         if(grantResults.any { !it.equals(PackageManager.PERMISSION_GRANTED) } && action.first) {
             Log.d(this.javaClass.canonicalName, "The user didn't grant all the permissions");
-            Snackbar.make(findViewById(android.R.id.content), R.string.message_accept_permissions, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(content, R.string.message_accept_permissions, Snackbar.LENGTH_LONG).show();
             return;
         }
         action.second();
