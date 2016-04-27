@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.android.synthetic.main.content_collected_contacts.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 class CollectedContactsActivity : BaseActivity() {
@@ -34,7 +35,10 @@ class CollectedContactsActivity : BaseActivity() {
             intent.putExtra(Intent.EXTRA_SUBJECT, "Scan export for ${config.event.name} (${config.eventName})");
             intent.type = "text/plain";
             startActivity(Intent.createChooser(intent, "Scan export for ${config.eventName}"));
-        })
+        });
+        val updateDate = SponsorScanManager.latestUpdate;
+        val date = if(updateDate != null) SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(updateDate) else "-"
+        lastUpdate.text = getString(R.string.collected_item_last_update).format(date);
     }
 
     fun loadScanDescriptors(configuration: AlfioConfiguration, shuffle: Boolean = false) : List<SponsorScanDescriptor> {

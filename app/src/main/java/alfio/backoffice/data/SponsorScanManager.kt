@@ -41,6 +41,13 @@ object SponsorScanManager {
             savedSponsorScan!!;
         };
 
+    val latestUpdate: Date?
+        get() = if(SharedPreferencesHolder.sharedPreferences.contains(KEY_LATEST_UPDATE)) {
+            SharedPreferencesHolder.sharedPreferences.loadSavedValue(KEY_LATEST_UPDATE, SerializedDate(), {it});
+        } else {
+            null
+        }
+
     val offlineScanEnabled: Boolean
         get() = SharedPreferencesHolder.sharedPreferences.getBoolean(KEY_OFFLINE_SCAN_ENABLED, true);
 
@@ -69,6 +76,7 @@ object SponsorScanManager {
     fun confirmSponsorsScan(configuration: AlfioConfiguration, results: List<Pair<String, TicketAndCheckInResult>>) : Boolean {
         val result = replaceSponsorsScan(configuration, results, sponsorScan)
         if(result) {
+            SharedPreferencesHolder.sharedPreferences.persist(Date(), KEY_LATEST_UPDATE);
             SharedPreferencesHolder.sharedPreferences.synchronizedPersist(sponsorScan, KEY_PENDING_SPONSOR_SCAN);
         }
         return result;
@@ -148,7 +156,9 @@ class SponsorScanDescriptor() : Comparable<SponsorScanDescriptor> {
 
 };
 class SerializedScans : TypeToken<MutableSet<SponsorScanDescriptor>>();
+class SerializedDate: TypeToken<Date?>();
 private val KEY_PENDING_SPONSOR_SCAN = "alfio-pending-sponsor-scan";
+private val KEY_LATEST_UPDATE = "alfio-sponsor-scan-latest-update";
 private val KEY_OFFLINE_SCAN_ENABLED = "enable_sponsor_offline_scan";
 
 private val ONE_MINUTE = TimeUnit.MINUTES.toMillis(1L);

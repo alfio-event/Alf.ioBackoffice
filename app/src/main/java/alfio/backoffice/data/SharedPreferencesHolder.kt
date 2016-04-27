@@ -45,3 +45,7 @@ fun <T> SharedPreferences.loadSavedValue(key: String, typeToken: TypeToken<T>, s
     val existing:T? = Common.gson.fromJson(this.getString(key, ""), typeToken.type);
     return supplier(existing);
 }
+fun <T> SharedPreferences.loadSavedValue(key: String, typeToken: Class<T>, supplier: (T?) -> T) : T {
+    val existing:T? = Common.gson.fromJson(this.getString(key, ""), typeToken);
+    return supplier(existing);
+}
