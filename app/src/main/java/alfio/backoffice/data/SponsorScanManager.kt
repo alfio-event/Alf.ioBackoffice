@@ -69,7 +69,7 @@ object SponsorScanManager {
     fun enqueueSuccessfulSponsorScan(configuration: AlfioConfiguration, code: String, ticket: Ticket) = enqueueScan(configuration, code, ScanStatus.DONE, ticket);
 
     private fun enqueueScan(configuration: AlfioConfiguration, code: String, status: ScanStatus, ticket: Ticket? = null) {
-        sponsorScan.add(SponsorScanDescriptor.build(configuration, code, status));
+        sponsorScan.add(SponsorScanDescriptor.build(configuration, code, status, ticket));
         SharedPreferencesHolder.sharedPreferences.synchronizedPersist(sponsorScan, KEY_PENDING_SPONSOR_SCAN);
     }
 
