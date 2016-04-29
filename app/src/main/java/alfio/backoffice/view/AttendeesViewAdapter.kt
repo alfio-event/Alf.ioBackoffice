@@ -20,9 +20,11 @@ class AttendeesViewAdapter(val scanDescriptors : List<SponsorScanDescriptor>) : 
             holder.attendeeName.text = descriptor.ticket?.fullName ?: descriptor.code;
             holder.attendeeEmail.text = descriptor.ticket?.email ?: "";
             val iconDetails = getIcon(descriptor.status);
-            val icon = ContextCompat.getDrawable(holder.itemView.context, iconDetails.first);
-            icon.setTint(iconDetails.second);
-            holder.statusImage.setImageDrawable(icon);
+            try {//temporary fix for Android 4.2.2. Maybe we should raise the bar to Android 5.0+? :p
+                val icon = ContextCompat.getDrawable(holder.itemView.context, iconDetails.first);
+                icon.setTint(iconDetails.second);
+                holder.statusImage.setImageDrawable(icon);
+            } catch(ignore: Throwable) {}
         }
     }
 
