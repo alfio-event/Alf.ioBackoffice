@@ -37,92 +37,92 @@ import kotlin.properties.Delegates
 
 class MainActivity : BaseActivity() {
 
-    private var listAdapter: ConfigurationViewAdapter by Delegates.notNull();
+    private var listAdapter: ConfigurationViewAdapter by Delegates.notNull()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setSupportActionBar(toolbar);
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        setSupportActionBar(toolbar)
         button_insert_data_manually.setOnClickListener {
-            floating_menu.close(true);
-            manualInsertClicked();
-        };
+            floating_menu.close(true)
+            manualInsertClicked()
+        }
         button_scan_qrcode.setOnClickListener {
-            floating_menu.close(true);
-            scanQRCodeClicked();
-        };
-        listAdapter = ConfigurationViewAdapter({configuration -> startEventDetailActivity(configuration)});
+            floating_menu.close(true)
+            scanQRCodeClicked()
+        }
+        listAdapter = ConfigurationViewAdapter({configuration -> startEventDetailActivity(configuration)})
         listAdapter.itemRemovedListener = {
-            var snackbar: Snackbar? = null;
+            var snackbar: Snackbar? = null
             snackbar = Snackbar.make(textView, getString(R.string.item_removed_successfully, it.name), Snackbar.LENGTH_LONG)
                     .setAction(R.string.item_removed_undo, {snackbar?.dismiss()})
                     .setCallback(object: Snackbar.Callback() {
                         override fun onDismissed(snackbar: Snackbar?, event: Int) {
                             if(event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT || event == Snackbar.Callback.DISMISS_EVENT_SWIPE) {
-                                AccountManager.removeAlfioConfiguration(it);
+                                AccountManager.removeAlfioConfiguration(it)
                             }
                             if(AccountManager.blacklistedConfigurationsCount() > 0) {
-                                AccountManager.whitelistConfiguration(it);
-                                listAdapter.rangeChanged();
+                                AccountManager.whitelistConfiguration(it)
+                                listAdapter.rangeChanged()
                             }
                         }
-                    });
-            snackbar.show();
-        };
-        listView.adapter = listAdapter;
-        ItemTouchHelper(SwipeCallback(listAdapter)).attachToRecyclerView(listView);
-        listView.layoutManager = LinearLayoutManager(this);
+                    })
+            snackbar.show()
+        }
+        listView.adapter = listAdapter
+        ItemTouchHelper(SwipeCallback(listAdapter)).attachToRecyclerView(listView)
+        listView.layoutManager = LinearLayoutManager(this)
         Thread.setDefaultUncaughtExceptionHandler({ thread, throwable ->
-            throwable.printStackTrace();
-            Snackbar.make(listView, "An unexpected error has occurred: ${throwable.message}", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            throwable.printStackTrace()
+            Snackbar.make(listView, "An unexpected error has occurred: ${throwable.message}", Snackbar.LENGTH_LONG).setAction("Action", null).show()
         })
     }
 
     private fun startEventDetailActivity(config: AlfioConfiguration) {
-        val intent = Intent(baseContext, EventDetailActivity::class.java);
-        intent.putExtra("config", config);
-        startActivity(intent);
+        val intent = Intent(baseContext, EventDetailActivity::class.java)
+        intent.putExtra("config", config)
+        startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu);
-        return true;
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.action_settings -> {
-                startActivity(Intent(baseContext, SettingsActivity::class.java));
-                return true;
+                startActivity(Intent(baseContext, SettingsActivity::class.java))
+                return true
             }
             R.id.action_about -> {
-                startActivity(Intent(baseContext, AboutActivity::class.java));
-                return true;
+                startActivity(Intent(baseContext, AboutActivity::class.java))
+                return true
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
-        super.onResume();
-        listAdapter.rangeChanged();
+        super.onResume()
+        listAdapter.rangeChanged()
     }
 
     fun scanQRCodeClicked(): Unit {
-        requestPermissionForAction(listOf(android.Manifest.permission.CAMERA), scanQRCode(R.string.message_scan_your_qrcode));
+        requestPermissionForAction(listOf(android.Manifest.permission.CAMERA), scanQRCode(R.string.message_scan_your_qrcode))
     }
 
     fun manualInsertClicked() : Unit {
-        startActivity(Intent(baseContext, ManualInsertActivity::class.java));
+        startActivity(Intent(baseContext, ManualInsertActivity::class.java))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        val scanResult : IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        val scanResult : IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent)
         if(scanResult != null && scanResult.contents != null) {
-            val result: Map<String, String> = Common.gson.fromJson(scanResult.contents, MapStringStringTypeToken().type);
-            loadAndSelectEvent(result["baseUrl"]!!, result["username"]!!, result["password"]!!, {listAdapter.rangeChanged();});
+            val result: Map<String, String> = Common.gson.fromJson(scanResult.contents, MapStringStringTypeToken().type)
+            loadAndSelectEvent(result["baseUrl"]!!, result["username"]!!, result["password"]!!, {listAdapter.rangeChanged();})
         }
     }
 

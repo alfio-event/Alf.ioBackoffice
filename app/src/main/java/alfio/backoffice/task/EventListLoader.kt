@@ -24,36 +24,36 @@ import android.content.Context
 
 class EventListLoader(caller: Context): AlfioAsyncTask<List<Event>, EventListLoaderCommand, EventListLoaderResult>(caller) {
 
-    override fun emptyResult() = EventListLoaderResult(false, emptyList(), null);
-    override fun errorResult(error: Throwable) = EventListLoaderResult(false, emptyList(), null, error = error);
+    override fun emptyResult() = EventListLoaderResult(false, emptyList(), null)
+    override fun errorResult(error: Throwable) = EventListLoaderResult(false, emptyList(), null, error = error)
 
     override fun work(param: EventListLoaderCommand): Pair<EventListLoaderCommand, EventListLoaderResult> {
-        val userRoleResponse = userService.loadUserType(param.baseUrl, param.username, param.password);
+        val userRoleResponse = userService.loadUserType(param.baseUrl, param.username, param.password)
         if(!userRoleResponse.isSuccessful) {
-            return param to emptyResult();
+            return param to emptyResult()
         }
         val userRoleResponseBody = userRoleResponse.body()
-        val userType = UserType.fromString(Common.gson.fromJson(userRoleResponseBody.string(), String::class.java));
-        val response = eventService.loadUserEvents(param.baseUrl, param.username, param.password);
-        val responseBody = response.body();
+        val userType = UserType.fromString(Common.gson.fromJson(userRoleResponseBody.string(), String::class.java))
+        val response = eventService.loadUserEvents(param.baseUrl, param.username, param.password)
+        val responseBody = response.body()
         try {
             if(response.isSuccessful) {
-                val events: List<Event> = Common.gson.fromJson(responseBody.string(), EventService.ListOfEvents().type);
-                return param to EventListLoaderResult(true, events.filter { !it.external; }, param, userType);
+                val events: List<Event> = Common.gson.fromJson(responseBody.string(), EventService.ListOfEvents().type)
+                return param to EventListLoaderResult(true, events.filter { !it.external; }, param, userType)
             }
-            return param to emptyResult();
+            return param to emptyResult()
         } finally {
-            userRoleResponseBody.close();
-            responseBody.close();
+            userRoleResponseBody.close()
+            responseBody.close()
         }
     }
 
     override fun getProgressMessage(): String {
-        return "loading events...";
+        return "loading events..."
     }
 }
 
-data class EventListLoaderCommand(val baseUrl: String, val username: String, val password: String) : TaskParam;
+data class EventListLoaderCommand(val baseUrl: String, val username: String, val password: String) : TaskParam
 class EventListLoaderResult(val success: Boolean, val results: List<Event>, val param: EventListLoaderCommand?, val userType: UserType = UserType.STAFF, error: Throwable? = null) : TaskResult<List<Event>>(results, error) {
-    override fun isSuccessful(): Boolean = success;
-};
+    override fun isSuccessful(): Boolean = success
+}

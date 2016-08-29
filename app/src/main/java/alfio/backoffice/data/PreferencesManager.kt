@@ -18,9 +18,9 @@ package alfio.backoffice.data
 
 object PreferencesManager {
     val vibrationFeedbackEnabled: Boolean
-        get() = SharedPreferencesHolder.sharedPreferences.getBoolean(KEY_VIBRATION_FEEDBACK_ENABLED, true);
+        get() = SharedPreferencesHolder.sharedPreferences.getBoolean(KEY_VIBRATION_FEEDBACK_ENABLED, true)
     val shakeToCheckInEnabled: Boolean
-        get() = SharedPreferencesHolder.sharedPreferences.getBoolean(KEY_SHAKE_TO_CHECK_IN_ENABLED, true);
+        get() = SharedPreferencesHolder.sharedPreferences.getBoolean(KEY_SHAKE_TO_CHECK_IN_ENABLED, true)
 }
 
 private val KEY_VIBRATION_FEEDBACK_ENABLED = "enable_vibration_feedback"

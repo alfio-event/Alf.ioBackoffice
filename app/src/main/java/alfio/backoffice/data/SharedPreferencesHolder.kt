@@ -23,29 +23,29 @@ import android.preference.PreferenceManager
 import com.google.gson.reflect.TypeToken
 
 object SharedPreferencesHolder {
-    private var preferences: SharedPreferences? = null;
+    private var preferences: SharedPreferences? = null
     val sharedPreferences: SharedPreferences
         get() = if(preferences != null) {
-                    preferences!!;
+                    preferences!!
                 } else {
-                    preferences = PreferenceManager.getDefaultSharedPreferences(AlfioBackoffice.context);
-                    preferences!!;
+                    preferences = PreferenceManager.getDefaultSharedPreferences(AlfioBackoffice.context)
+                    preferences!!
                 }
 }
 
 fun SharedPreferences.persist(obj: Any, key: String) {
-    this.edit().putString(key, Common.gson.toJson(obj)).apply();
+    this.edit().putString(key, Common.gson.toJson(obj)).apply()
 }
 
 fun SharedPreferences.synchronizedPersist(obj: Any, key: String) {
-    synchronized(obj, {this.edit().putString(key, Common.gson.toJson(obj)).apply()});
+    synchronized(obj, {this.edit().putString(key, Common.gson.toJson(obj)).apply()})
 }
 
 fun <T> SharedPreferences.loadSavedValue(key: String, typeToken: TypeToken<T>, supplier: (T?) -> T) : T {
-    val existing:T? = Common.gson.fromJson(this.getString(key, ""), typeToken.type);
-    return supplier(existing);
+    val existing:T? = Common.gson.fromJson(this.getString(key, ""), typeToken.type)
+    return supplier(existing)
 }
 fun <T> SharedPreferences.loadSavedValue(key: String, typeToken: Class<T>, supplier: (T?) -> T) : T {
-    val existing:T? = Common.gson.fromJson(this.getString(key, ""), typeToken);
-    return supplier(existing);
+    val existing:T? = Common.gson.fromJson(this.getString(key, ""), typeToken)
+    return supplier(existing)
 }

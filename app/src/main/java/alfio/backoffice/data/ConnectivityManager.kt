@@ -25,14 +25,14 @@ import android.util.Log
 class ConnectivityManager : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if(context != null) {
-            checkConnectivity(context);
+            checkConnectivity(context)
         }
     }
 
     fun checkConnectivity(context: Context) {
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager;
-        val state = cm.activeNetworkInfo?.isConnectedOrConnecting ?: false;
-        Log.w(ConnectivityManager::class.java.canonicalName, "setting ConnectionState.active to $state");
-        ConnectionState.active = state;
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val state = cm.activeNetworkInfo?.isConnectedOrConnecting ?: false
+        Log.w(ConnectivityManager::class.java.canonicalName, "setting ConnectionState.active to $state")
+        ConnectionState.active = state
     }
 }

@@ -21,8 +21,8 @@ enum class UserType {
     companion object {
         fun fromString(name: String) : UserType {
             return when(name) {
-                SPONSOR.name -> SPONSOR;
-                else -> STAFF;
+                SPONSOR.name -> SPONSOR
+                else -> STAFF
             }
         }
     }

@@ -10,29 +10,29 @@ import java.io.Serializable
 
 class SponsorScanUpload(caller: Context) : AlfioAsyncTask<String, SponsorScanUploadParam, SponsorScanResult>(caller) {
 
-    override fun emptyResult(): SponsorScanResult = SponsorScanResult(null);
-    override fun errorResult(error: Throwable) = SponsorScanResult(null, error=error);
+    override fun emptyResult(): SponsorScanResult = SponsorScanResult(null)
+    override fun errorResult(error: Throwable) = SponsorScanResult(null, error=error)
 
-    override final fun work(param: SponsorScanUploadParam): Pair<SponsorScanUploadParam, SponsorScanResult> {
+    override fun work(param: SponsorScanUploadParam): Pair<SponsorScanUploadParam, SponsorScanResult> {
         if(SponsorScanManager.offlineScanEnabled) {
-            SponsorScanManager.enqueueSponsorScan(param.conf, param.code);
-            return param to SponsorScanResult(param.code);
+            SponsorScanManager.enqueueSponsorScan(param.conf, param.code)
+            return param to SponsorScanResult(param.code)
         } else {
-            val response = sponsorScanService.scanAttendee(param.code, param.conf);
-            val body = response.body();
+            val response = sponsorScanService.scanAttendee(param.code, param.conf)
+            val body = response.body()
             try {
                 if(response.isSuccessful) {
-                    val scanResult = Common.gson.fromJson(body.string(), TicketAndCheckInResult::class.java);
+                    val scanResult = Common.gson.fromJson(body.string(), TicketAndCheckInResult::class.java)
                     if(scanResult.result?.status?.successful ?: false) {
-                        SponsorScanManager.enqueueSuccessfulSponsorScan(param.conf, param.code, scanResult.ticket!!);
-                        return param to SponsorScanResult(param.code, ticket = scanResult.ticket);
+                        SponsorScanManager.enqueueSuccessfulSponsorScan(param.conf, param.code, scanResult.ticket!!)
+                        return param to SponsorScanResult(param.code, ticket = scanResult.ticket)
                     }
-                    return param to emptyResult();
+                    return param to emptyResult()
                 } else {
-                    return param to emptyResult();
+                    return param to emptyResult()
                 }
             } finally {
-                body.close();
+                body.close()
             }
         }
     }
@@ -40,9 +40,10 @@ class SponsorScanUpload(caller: Context) : AlfioAsyncTask<String, SponsorScanUpl
 
 class SponsorScanResult(code: String?, error: Throwable? = null, val ticket: Ticket? = null) : TaskResult<String>(code, error), Serializable {
     override fun isSuccessful(): Boolean {
-        return response != null && super.isSuccessful();
+        return response != null && super.isSuccessful()
     }
-    fun hasTicket() : Boolean = ticket != null;
+    fun hasTicket() : Boolean = ticket != null
 }
-class SponsorScanUploadParam(val conf: AlfioConfiguration, val code: String) : TaskParam;
-val SCAN_ENQUEUED_STATUS = 204;
+class SponsorScanUploadParam(val conf: AlfioConfiguration, val code: String) : TaskParam
+
+val SCAN_ENQUEUED_STATUS = 204

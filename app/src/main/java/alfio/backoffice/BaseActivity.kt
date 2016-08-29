@@ -37,89 +37,89 @@ import java.text.SimpleDateFormat
 
 abstract class BaseActivity: AppCompatActivity() {
 
-    private val pendingActions: MutableMap<Int, Pair<Boolean, () -> Unit>> = hashMapOf();
-    private var requestId: Int = 0;
+    private val pendingActions: MutableMap<Int, Pair<Boolean, () -> Unit>> = hashMapOf()
+    private var requestId: Int = 0
 
     fun BaseActivity.scanQRCode(resId: Int) : () -> Unit = {
-        val integrator: IntentIntegrator = IntentIntegrator(this);
-        integrator.captureActivity = CustomCaptureActivity::class.java;
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-        integrator.setOrientationLocked(false);
-        integrator.setBeepEnabled(true);
-        integrator.setPrompt(getString(resId));
-        integrator.initiateScan();
+        val integrator: IntentIntegrator = IntentIntegrator(this)
+        integrator.captureActivity = CustomCaptureActivity::class.java
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
+        integrator.setOrientationLocked(false)
+        integrator.setBeepEnabled(true)
+        integrator.setPrompt(getString(resId))
+        integrator.initiateScan()
     }
 
     @SuppressLint("NewApi")
     fun BaseActivity.requestPermissionForAction(permissions: List<String>, action: () -> Unit, required: Boolean = true) : Unit {
         val missingPermissions: List<String> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            permissions.filter {checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED};
-        } else listOf<String>();
+            permissions.filter {checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED}
+        } else listOf<String>()
         if(missingPermissions.size > 0) {
-            val id = ++requestId;
-            requestPermissions(missingPermissions.toTypedArray(), id);
-            pendingActions.put(id, required to action);
+            val id = ++requestId
+            requestPermissions(missingPermissions.toTypedArray(), id)
+            pendingActions.put(id, required to action)
         } else {
-            action();
+            action()
         }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     @SuppressLint("NewApi")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        val action = pendingActions[requestCode] ?: Pair(false, {super.onRequestPermissionsResult(requestCode, permissions, grantResults)});
+        val action = pendingActions[requestCode] ?: Pair(false, {super.onRequestPermissionsResult(requestCode, permissions, grantResults)})
         if(grantResults.any { !it.equals(PackageManager.PERMISSION_GRANTED) } && action.first) {
-            Log.d(this.javaClass.canonicalName, "The user didn't grant all the permissions");
-            Snackbar.make(content, R.string.message_accept_permissions, Snackbar.LENGTH_LONG).show();
-            return;
+            Log.d(this.javaClass.canonicalName, "The user didn't grant all the permissions")
+            Snackbar.make(content, R.string.message_accept_permissions, Snackbar.LENGTH_LONG).show()
+            return
         }
-        action.second();
+        action.second()
     }
 
     fun loadAndSelectEvent(baseUrl: String, username: String, password: String, onSuccess: (AlfioConfiguration) -> Unit) {
 
         val resultHandler: (EventListLoaderResult, Int) -> Unit = {
             resp, which ->
-            val event = resp.results[which];
-            val configuration = AlfioConfiguration(resp.param!!.baseUrl, resp.param.username, resp.param.password, resp.userType, event);
-            AccountManager.saveAlfioConfiguration(configuration);
-            onSuccess.invoke(configuration);
-        };
+            val event = resp.results[which]
+            val configuration = AlfioConfiguration(resp.param!!.baseUrl, resp.param.username, resp.param.password, resp.userType, event)
+            AccountManager.saveAlfioConfiguration(configuration)
+            onSuccess.invoke(configuration)
+        }
         EventListLoader(this)
                 .then({
                     when(it.results.size) {
-                        1 -> resultHandler(it, 0);
+                        1 -> resultHandler(it, 0)
                         else -> AlertDialog.Builder(this)
                                 .setTitle(R.string.dialog_select_event_title)
                                 .setItems(it.results.map { it.name }.toTypedArray(), {
                                     dialog, which ->
-                                    resultHandler(it, which);
+                                    resultHandler(it, which)
                                 })
-                                .show();
+                                .show()
                     }
                 })
-                .execute(EventListLoaderCommand(baseUrl, username, password));
+                .execute(EventListLoaderCommand(baseUrl, username, password))
     }
 
     companion object {
         fun writeEventDetails(event: Event, config: AlfioConfiguration, eventDates: TextView, eventDescription: TextView, userDetail: TextView, url: TextView, eventName: TextView) {
-            val dates: String;
+            val dates: String
             if(event.oneDay) {
-                dates = "${SimpleDateFormat("EEE d MMM yyyy").format(event.begin)} ${SimpleDateFormat("HH:mm").format(event.begin)} - ${SimpleDateFormat("HH:mm").format(event.end)}";
+                dates = "${SimpleDateFormat("EEE d MMM yyyy").format(event.begin)} ${SimpleDateFormat("HH:mm").format(event.begin)} - ${SimpleDateFormat("HH:mm").format(event.end)}"
             } else {
-                dates = "${SimpleDateFormat("dd/MM/yyyy HH:mm").format(event.begin)} - ${SimpleDateFormat("dd/MM/yyyy HH:mm").format(event.end)}";
+                dates = "${SimpleDateFormat("dd/MM/yyyy HH:mm").format(event.begin)} - ${SimpleDateFormat("dd/MM/yyyy HH:mm").format(event.end)}"
             }
-            eventDates.text = "$dates";
-            eventDescription.text = event.location;
-            userDetail.text = "${config.userType}";
+            eventDates.text = "$dates"
+            eventDescription.text = event.location
+            userDetail.text = "${config.userType}"
             url.text = "${config.url}".replace("^https?://(.*?)(:\\d+)?$".toRegex(), {
                 if(it.groups[1] != null) {
                     it.groups[1]!!.value
                 } else {
                     it.value
                 }
-            });
-            eventName.text = config.event.name;
+            })
+            eventName.text = config.event.name
         }
     }
 

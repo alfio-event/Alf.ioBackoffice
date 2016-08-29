@@ -36,41 +36,41 @@ import kotlin.properties.Delegates
 
 class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) : RecyclerView.Adapter<ConfigurationViewHolder>() {
 
-    var itemRemovedListener: ((AlfioConfiguration) -> Unit)? = null;
+    var itemRemovedListener: ((AlfioConfiguration) -> Unit)? = null
 
     override fun getItemCount(): Int {
-        return AccountManager.accounts.size;
+        return AccountManager.accounts.size
     }
 
     override fun onBindViewHolder(holder: ConfigurationViewHolder?, position: Int) {
-        val configuration = AccountManager.accounts[position];
+        val configuration = AccountManager.accounts[position]
         if(holder != null) {
             holder.setOnClickListener {
-                clickHandler.invoke(configuration);
+                clickHandler.invoke(configuration)
             }
-            BaseActivity.writeEventDetails(configuration.event, configuration, holder.eventDates, holder.eventDescription, holder.userDetail, holder.url, holder.eventName);
+            BaseActivity.writeEventDetails(configuration.event, configuration, holder.eventDates, holder.eventDescription, holder.userDetail, holder.url, holder.eventName)
             EventImageLoader(holder.itemView.context)
                     .then({result: EventImageResult ->
-                        val drawable = BitmapDrawable(holder.itemView.resources, BitmapFactory.decodeByteArray(result.image, 0, result.image.size));
-                        drawable.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL;
-                        holder.mainComponent.background = drawable;
-                    }).execute(EventImageParam(configuration.url, configuration.event));
+                        val drawable = BitmapDrawable(holder.itemView.resources, BitmapFactory.decodeByteArray(result.image, 0, result.image.size))
+                        drawable.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL
+                        holder.mainComponent.background = drawable
+                    }).execute(EventImageParam(configuration.url, configuration.event))
         }
     }
 
     fun remove(position: Int) {
-        val removed = AccountManager.accounts[position];
-        AccountManager.blacklistConfiguration(removed);
-        notifyItemRemoved(position);
-        itemRemovedListener?.invoke(removed);
+        val removed = AccountManager.accounts[position]
+        AccountManager.blacklistConfiguration(removed)
+        notifyItemRemoved(position)
+        itemRemovedListener?.invoke(removed)
     }
 
     fun rangeChanged() {
-        super.notifyItemRangeChanged(0, AccountManager.accounts.size);
+        super.notifyItemRangeChanged(0, AccountManager.accounts.size)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConfigurationViewHolder? {
-        return ConfigurationViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.event_descriptor, parent, false));
+        return ConfigurationViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.event_descriptor, parent, false))
     }
 
 }
@@ -78,36 +78,36 @@ class ConfigurationViewAdapter(val clickHandler: (AlfioConfiguration) -> Unit) :
 class SwipeCallback(val adapter: ConfigurationViewAdapter): ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.END) {
 
     override fun onMove(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?, target: RecyclerView.ViewHolder?): Boolean {
-        return false;
+        return false
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, swipeDir: Int) {
-        adapter.remove(viewHolder!!.adapterPosition);
+        adapter.remove(viewHolder!!.adapterPosition)
     }
 
-    override fun isLongPressDragEnabled() = false;
-    override fun isItemViewSwipeEnabled(): Boolean = adapter.itemRemovedListener != null;
+    override fun isLongPressDragEnabled() = false
+    override fun isItemViewSwipeEnabled(): Boolean = adapter.itemRemovedListener != null
 }
 
 class ConfigurationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    var mainComponent by Delegates.notNull<View>();
-    var eventDates by Delegates.notNull<TextView>();
-    var eventDescription by Delegates.notNull<TextView>();
-    var userDetail by Delegates.notNull<TextView>();
-    var eventName by Delegates.notNull<TextView>();
-    var url by Delegates.notNull<TextView>();
+    var mainComponent by Delegates.notNull<View>()
+    var eventDates by Delegates.notNull<TextView>()
+    var eventDescription by Delegates.notNull<TextView>()
+    var userDetail by Delegates.notNull<TextView>()
+    var eventName by Delegates.notNull<TextView>()
+    var url by Delegates.notNull<TextView>()
 
     init {
-        mainComponent = itemView.findViewById(R.id.eventLogoContainer);
-        eventDates = itemView.findViewById(R.id.eventDates) as TextView;
-        eventDescription = itemView.findViewById(R.id.eventDescription) as TextView;
-        userDetail = itemView.findViewById(R.id.userDetail) as TextView;
-        eventName = itemView.findViewById(R.id.eventName) as TextView;
-        url = itemView.findViewById(R.id.baseUrl) as TextView;
+        mainComponent = itemView.findViewById(R.id.eventLogoContainer)
+        eventDates = itemView.findViewById(R.id.eventDates) as TextView
+        eventDescription = itemView.findViewById(R.id.eventDescription) as TextView
+        userDetail = itemView.findViewById(R.id.userDetail) as TextView
+        eventName = itemView.findViewById(R.id.eventName) as TextView
+        url = itemView.findViewById(R.id.baseUrl) as TextView
     }
 
     fun setOnClickListener(listener: (View) -> Unit) {
-        itemView.setOnClickListener(listener);
+        itemView.setOnClickListener(listener)
     }
 }

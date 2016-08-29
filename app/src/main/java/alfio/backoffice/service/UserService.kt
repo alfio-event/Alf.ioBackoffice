@@ -22,14 +22,14 @@ import com.squareup.okhttp.Response
 
 class UserService : RemoteService {
 
-    val client = OkHttpClient();
+    val client = OkHttpClient()
 
     fun loadUserType(baseUrl: String, username: String, password: String) : Response {
         val request = Request.Builder()
                 .addHeader("Authorization", getAuthorizationHeader(username, password))
                 .get()
                 .url("$baseUrl/admin/api/user-type")
-                .build();
-        return client.newCall(request).execute();
+                .build()
+        return client.newCall(request).execute()
     }
 }

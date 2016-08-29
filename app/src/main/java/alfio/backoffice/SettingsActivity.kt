@@ -23,11 +23,11 @@ import kotlinx.android.synthetic.main.app_bar.*
 class SettingsActivity: BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
-        setSupportActionBar(toolbar);
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true);
-        supportFragmentManager.beginTransaction().replace(R.id.content, SettingsFragment()).commit();
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_settings)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportFragmentManager.beginTransaction().replace(R.id.content, SettingsFragment()).commit()
     }
 
 }
@@ -35,8 +35,8 @@ class SettingsActivity: BaseActivity() {
 class SettingsFragment: PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {
-        addPreferencesFromResource(R.xml.pref_general);
-        addPreferencesFromResource(R.xml.pref_sponsor);
+        addPreferencesFromResource(R.xml.pref_general)
+        addPreferencesFromResource(R.xml.pref_sponsor)
     }
 
 }

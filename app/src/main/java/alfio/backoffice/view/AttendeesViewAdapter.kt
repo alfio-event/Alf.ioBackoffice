@@ -16,43 +16,43 @@ class AttendeesViewAdapter(val scanDescriptors : List<SponsorScanDescriptor>) : 
 
     override fun onBindViewHolder(holder: AttendeesViewHolder?, position: Int) {
         if(holder != null) {
-            val descriptor = scanDescriptors[position];
-            holder.attendeeName.text = descriptor.ticket?.fullName ?: descriptor.code;
-            holder.attendeeEmail.text = descriptor.ticket?.email ?: "";
-            val iconDetails = getIcon(descriptor.status);
+            val descriptor = scanDescriptors[position]
+            holder.attendeeName.text = descriptor.ticket?.fullName ?: descriptor.code
+            holder.attendeeEmail.text = descriptor.ticket?.email ?: ""
+            val iconDetails = getIcon(descriptor.status)
             try {//temporary fix for Android 4.2.2. Maybe we should raise the bar to Android 5.0+? :p
-                val icon = ContextCompat.getDrawable(holder.itemView.context, iconDetails.first);
-                icon.setTint(iconDetails.second);
-                holder.statusImage.setImageDrawable(icon);
+                val icon = ContextCompat.getDrawable(holder.itemView.context, iconDetails.first)
+                icon.setTint(iconDetails.second)
+                holder.statusImage.setImageDrawable(icon)
             } catch(ignore: Throwable) {}
         }
     }
 
     private fun getIcon(status: ScanStatus) : Pair<Int, Int> {
         return when(status) {
-            ScanStatus.DONE -> R.drawable.ic_account_circle to R.color.colorPrimary;
-            ScanStatus.NEW, ScanStatus.IN_PROCESS -> R.drawable.ic_import_export to R.color.colorPrimary;
-            else -> R.drawable.ic_report_problem to R.color.yellow;
+            ScanStatus.DONE -> R.drawable.ic_account_circle to R.color.colorPrimary
+            ScanStatus.NEW, ScanStatus.IN_PROCESS -> R.drawable.ic_import_export to R.color.colorPrimary
+            else -> R.drawable.ic_report_problem to R.color.yellow
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttendeesViewHolder? {
-        return AttendeesViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attendee_descriptor, parent, false));
+        return AttendeesViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attendee_descriptor, parent, false))
     }
 
     override fun getItemCount(): Int {
-        return scanDescriptors.size;
+        return scanDescriptors.size
     }
 }
 
 class AttendeesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    var attendeeName by Delegates.notNull<TextView>();
-    var attendeeEmail by Delegates.notNull<TextView>();
-    var statusImage by Delegates.notNull<ImageView>();
+    var attendeeName by Delegates.notNull<TextView>()
+    var attendeeEmail by Delegates.notNull<TextView>()
+    var statusImage by Delegates.notNull<ImageView>()
 
     init {
-        attendeeName = itemView.findViewById(R.id.attendeeName) as TextView;
-        attendeeEmail = itemView.findViewById(R.id.attendeeEmail) as TextView;
-        statusImage = itemView.findViewById(R.id.statusImage) as ImageView;
+        attendeeName = itemView.findViewById(R.id.attendeeName) as TextView
+        attendeeEmail = itemView.findViewById(R.id.attendeeEmail) as TextView
+        statusImage = itemView.findViewById(R.id.statusImage) as ImageView
     }
 }

@@ -20,24 +20,24 @@ import java.io.Serializable
 import java.math.BigDecimal
 
 class Ticket : Serializable {
-    var id: Long? = null;
-    var uuid: String? = null;
-    var status: String? = null;
-    var ticketsReservationId: String? = null;
-    var fullName: String? = null;
-    val email: String? = null;
+    var id: Long? = null
+    var uuid: String? = null
+    var status: String? = null
+    var ticketsReservationId: String? = null
+    var fullName: String? = null
+    val email: String? = null
 }
 
 class TicketAndCheckInResult {
-    var ticket: Ticket? = null;
-    var result: CheckInResult? = null;
+    var ticket: Ticket? = null
+    var result: CheckInResult? = null
 }
 
 class CheckInResult {
-    var status: CheckInStatus = CheckInStatus.TICKET_NOT_FOUND;
-    var message: String? = null;
-    var dueAmount: BigDecimal = BigDecimal.ZERO;
-    var currency: String = "";
+    var status: CheckInStatus = CheckInStatus.TICKET_NOT_FOUND
+    var message: String? = null
+    var dueAmount: BigDecimal = BigDecimal.ZERO
+    var currency: String = ""
 }
 
 enum class CheckInStatus(val successful: Boolean = false) {

@@ -29,17 +29,17 @@ interface RemoteService {
     fun callProtectedRequest(conf: AlfioConfiguration, serviceUrl: String, requestTransformer: (Request.Builder) -> Request.Builder = {builder -> builder.get()}) : (OkHttpClient) -> Response = { client ->
         val builder = requestTransformer(Request.Builder()
                 .addHeader("Authorization", getAuthorizationHeader(conf.username, conf.password))
-                .url(conf.url + serviceUrl));
-        client.newCall(builder.build()).execute();
+                .url(conf.url + serviceUrl))
+        client.newCall(builder.build()).execute()
     }
 
     fun getAuthorizationHeader(username: String, password: String): String {
-        val basicAuth = username + ":" + password;
-        val encoded: ByteArray = basicAuth.toByteArray(Charset.forName("UTF-8"));
-        return "Basic "+ Base64.encodeToString(encoded, Base64.NO_WRAP);
+        val basicAuth = username + ":" + password
+        val encoded: ByteArray = basicAuth.toByteArray(Charset.forName("UTF-8"))
+        return "Basic "+ Base64.encodeToString(encoded, Base64.NO_WRAP)
     }
 
-    fun parseQRCode(code: String) : Pair<String, String> = code.split("/".toRegex()).first() to Common.gson.toJson(TicketCode(code));
+    fun parseQRCode(code: String) : Pair<String, String> = code.split("/".toRegex()).first() to Common.gson.toJson(TicketCode(code))
 
     class TicketCode(val code: String) {
     }

@@ -23,42 +23,42 @@ import java.util.concurrent.ConcurrentHashMap
 
 object AccountManager {
 
-    private val blacklist: MutableSet<AlfioConfiguration> = hashSetOf();
-    val configurations: MutableMap<String, AlfioConfiguration>;
+    private val blacklist: MutableSet<AlfioConfiguration> = hashSetOf()
+    val configurations: MutableMap<String, AlfioConfiguration>
     val accounts: MutableList<AlfioConfiguration>
-        get() = ArrayList(configurations.values.filter { !blacklist.contains(it) });
+        get() = ArrayList(configurations.values.filter { !blacklist.contains(it) })
 
     init {
         this.configurations = SharedPreferencesHolder.sharedPreferences.loadSavedValue(KEY_ALFIO_CONFIGURATIONS, SerializedConfigurations(), {if(it != null) ConcurrentHashMap(it) else ConcurrentHashMap() })
     }
 
     fun persistAlfioConfigurations() {
-        SharedPreferencesHolder.sharedPreferences.persist(configurations, KEY_ALFIO_CONFIGURATIONS);
+        SharedPreferencesHolder.sharedPreferences.persist(configurations, KEY_ALFIO_CONFIGURATIONS)
     }
 
     fun saveAlfioConfiguration(alfioConfiguration: AlfioConfiguration) {
-        configurations.put(buildKey(alfioConfiguration), alfioConfiguration);
-        persistAlfioConfigurations();
+        configurations.put(buildKey(alfioConfiguration), alfioConfiguration)
+        persistAlfioConfigurations()
     }
 
     private fun buildKey(alfioConfiguration: AlfioConfiguration) = "${alfioConfiguration.username}@${alfioConfiguration.eventName}@${alfioConfiguration.url}"
 
     fun removeAlfioConfiguration(alfioConfiguration: AlfioConfiguration) {
-        configurations.remove(buildKey(alfioConfiguration));
-        persistAlfioConfigurations();
+        configurations.remove(buildKey(alfioConfiguration))
+        persistAlfioConfigurations()
     }
 
     fun blacklistConfiguration(configuration: AlfioConfiguration) {
-        blacklist.add(configuration);
+        blacklist.add(configuration)
     }
 
     fun whitelistConfiguration(configuration: AlfioConfiguration) {
-        blacklist.remove(configuration);
+        blacklist.remove(configuration)
     }
 
-    fun blacklistedConfigurationsCount() = blacklist.size;
+    fun blacklistedConfigurationsCount() = blacklist.size
 
 }
 
 private val KEY_ALFIO_CONFIGURATIONS = "alfio-configurations"
-class SerializedConfigurations: TypeToken<MutableMap<String, AlfioConfiguration>>();
+class SerializedConfigurations: TypeToken<MutableMap<String, AlfioConfiguration>>()

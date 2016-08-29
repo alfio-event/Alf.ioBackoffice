@@ -16,14 +16,15 @@
  */
 package alfio.backoffice
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
 class Common {
 
     companion object {
-        @JvmField val gson = GsonBuilder()
+        @JvmField val gson: Gson = GsonBuilder()
                 .disableHtmlEscaping()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
-                .create();
+                .create()
     }
 }

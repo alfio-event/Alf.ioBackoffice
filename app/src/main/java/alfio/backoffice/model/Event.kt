@@ -20,16 +20,16 @@ import java.io.Serializable
 import java.util.*
 
 class Event : Serializable {
-    var key: String? = null;
-    var url: String? = null;
-    var external: Boolean = false;
-    var name: String? = null;
-    var imageUrl: String? = null;
-    var begin: Date? = null;
-    var end: Date? = null;
-    var oneDay: Boolean = false;
-    var location: String? = null;
-    var apiVersion: Int = 0;
+    var key: String? = null
+    var url: String? = null
+    var external: Boolean = false
+    var name: String? = null
+    var imageUrl: String? = null
+    var begin: Date? = null
+    var end: Date? = null
+    var oneDay: Boolean = false
+    var location: String? = null
+    var apiVersion: Int = 0
 
     override fun equals(other: Any?): Boolean{
         if (this === other) return true

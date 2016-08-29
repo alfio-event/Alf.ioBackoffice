@@ -27,40 +27,40 @@ import java.io.Serializable
 import java.math.BigDecimal
 
 open class TicketDetailLoader(caller: Context) : AlfioAsyncTask<Ticket, TicketDetailParam, TicketDetailResult>(caller) {
-    override fun emptyResult(): TicketDetailResult = TicketDetailResult(CheckInStatus.TICKET_NOT_FOUND, null);
-    override fun errorResult(error: Throwable) = TicketDetailResult(CheckInStatus.TICKET_NOT_FOUND, null, error=error);
+    override fun emptyResult(): TicketDetailResult = TicketDetailResult(CheckInStatus.TICKET_NOT_FOUND, null)
+    override fun errorResult(error: Throwable) = TicketDetailResult(CheckInStatus.TICKET_NOT_FOUND, null, error=error)
 
     override final fun work(param: TicketDetailParam): Pair<TicketDetailParam, TicketDetailResult> {
-        val response = performRequest(param);
-        val body = response.body();
+        val response = performRequest(param)
+        val body = response.body()
         try {
             if(response.isSuccessful) {
-                val result = Common.gson.fromJson(body.string(), TicketAndCheckInResult::class.java);
-                return param to evaluateCheckInResult(result);
+                val result = Common.gson.fromJson(body.string(), TicketAndCheckInResult::class.java)
+                return param to evaluateCheckInResult(result)
             }
-            return param to emptyResult();
+            return param to emptyResult()
         } finally {
-            body.close();
+            body.close()
         }
     }
 
     protected open fun performRequest(param: TicketDetailParam) : Response {
-        return checkInService.getTicketDetail(param.code, param.conf);
+        return checkInService.getTicketDetail(param.code, param.conf)
     }
 
     fun evaluateCheckInResult(tcResult: TicketAndCheckInResult): TicketDetailResult {
-        val result = tcResult.result;
+        val result = tcResult.result
         if(result != null) {
-            return TicketDetailResult(result.status, tcResult.ticket, tcResult.result!!.dueAmount, tcResult.result!!.currency);
+            return TicketDetailResult(result.status, tcResult.ticket, tcResult.result!!.dueAmount, tcResult.result!!.currency)
         }
-        return TicketDetailResult(CheckInStatus.TICKET_NOT_FOUND, null);
+        return TicketDetailResult(CheckInStatus.TICKET_NOT_FOUND, null)
     }
 }
 
-class TicketDetailParam(val conf: AlfioConfiguration, val code: String) : TaskParam;
+class TicketDetailParam(val conf: AlfioConfiguration, val code: String) : TaskParam
 class TicketDetailResult(val status: CheckInStatus, val ticket: Ticket?, val dueAmount: BigDecimal = BigDecimal.ZERO, val currency: String = "", error: Throwable? = null) : TaskResult<Ticket>(ticket, error), Serializable {
 
     override fun isSuccessful(): Boolean {
-        return status.successful;
+        return status.successful
     }
-};
+}

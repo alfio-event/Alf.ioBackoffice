@@ -31,64 +31,64 @@ import kotlin.properties.Delegates
 
 abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val caller: Context, val showProgressDialog: Boolean = true) : AsyncTask<Param, Void, Result>() {
 
-    var progressDialog by Delegates.notNull<ProgressDialog>();
-    var param : Param? = null;
-    val successCallbacks = ArrayList<(Result) -> Unit>();
-    val failureCallbacks = ArrayList<(Param?, Result?) -> Unit>();
+    var progressDialog by Delegates.notNull<ProgressDialog>()
+    var param : Param? = null
+    val successCallbacks = ArrayList<(Result) -> Unit>()
+    val failureCallbacks = ArrayList<(Param?, Result?) -> Unit>()
     val defaultFailureCallback : (Param?, Result?) -> Unit = { param, result ->
         val message = if(result?.hasErrorDetail() ?: false) {
-            result!!.getErrorDetail()!!.message;
+            result!!.getErrorDetail()!!.message
         } else {
-            caller.getString(alfio.backoffice.R.string.loading_data_failed);
-        };
+            caller.getString(alfio.backoffice.R.string.loading_data_failed)
+        }
         AlertDialog.Builder(caller)
                 .setTitle(alfio.backoffice.R.string.unexpected_error_title)
                 .setMessage(message)
                 .create()
-                .show();
-    };
+                .show()
+    }
 
-    protected val eventService = EventService();
-    protected val userService = UserService();
-    protected val checkInService = CheckInService();
-    protected val sponsorScanService = SponsorScanService();
+    protected val eventService = EventService()
+    protected val userService = UserService()
+    protected val checkInService = CheckInService()
+    protected val sponsorScanService = SponsorScanService()
 
     init {
         if(showProgressDialog) {
-            progressDialog = ProgressDialog(caller);
+            progressDialog = ProgressDialog(caller)
         }
     }
 
     override final fun doInBackground(vararg params: Param?): Result {
         if(params.size > 0 && params[0] != null) {
-            param = params[0];
-            return internalDoInBackground();
+            param = params[0]
+            return internalDoInBackground()
         }
-        return emptyResult();
+        return emptyResult()
     }
 
     private fun internalDoInBackground() : Result {
         try {
-            return work(param!!).second;
+            return work(param!!).second
         } catch(e: Exception) {
-            Log.w(javaClass.simpleName, e);
-            return errorResult(e);
+            Log.w(javaClass.simpleName, e)
+            return errorResult(e)
         }
     }
 
-    protected abstract fun emptyResult() : Result;
+    protected abstract fun emptyResult() : Result
 
-    protected abstract fun errorResult(error: Throwable): Result;
+    protected abstract fun errorResult(error: Throwable): Result
 
-    internal abstract fun work(param: Param): Pair<Param, Result>;
+    internal abstract fun work(param: Param): Pair<Param, Result>
 
     override fun onCancelled(result: Result?) {
         super.onCancelled(result)
     }
 
     override fun onPostExecute(result: Result?) {
-        hideProgressDialog();
-        post(result);
+        hideProgressDialog()
+        post(result)
     }
 
     protected open fun post(result: Result?) {
@@ -100,50 +100,50 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
     }
 
     protected open fun evaluateResult(result: Result) : Boolean {
-        return result.isSuccessful();
+        return result.isSuccessful()
     }
 
     override final fun onPreExecute() {
         if(showProgressDialog) {
-            progressDialog.setMessage(getProgressMessage());
-            progressDialog.show();
+            progressDialog.setMessage(getProgressMessage())
+            progressDialog.show()
         }
     }
 
     protected open fun getProgressMessage() : String {
-        return "Loading...";
+        return "Loading..."
     }
 
     private fun hideProgressDialog() {
         if(showProgressDialog && progressDialog.isShowing) {
-            progressDialog.dismiss();
+            progressDialog.dismiss()
         }
     }
 
     override fun onCancelled() {
-        AlertDialog.Builder(caller).setTitle("error").setMessage("error").show();
+        AlertDialog.Builder(caller).setTitle("error").setMessage("error").show()
     }
 
     fun then(success: (Result) -> Unit, error: (Param?, Result?) -> Unit = defaultFailureCallback) : AlfioAsyncTask<R, Param, Result> {
-        successCallbacks.add(success);
-        failureCallbacks.add(error);
-        return this;
+        successCallbacks.add(success)
+        failureCallbacks.add(error)
+        return this
     }
 }
 
-interface TaskParam;
+interface TaskParam
 
 abstract class TaskResult<R>(val response: R?, val error: Throwable?) {
-    open fun isSuccessful() = hasError();
-    fun hasError() = error == null;
-    open fun hasErrorDetail() = false;
-    open fun getErrorDetail(): Throwable? = null;
-};
+    open fun isSuccessful() = hasError()
+    fun hasError() = error == null
+    open fun hasErrorDetail() = false
+    open fun getErrorDetail(): Throwable? = null
+}
 
 fun <R, V:TaskResult<R>> Response.successOrEmpty(call: (Response) -> V, emptyResult: V): V {
     if(isSuccessful) {
-        return call.invoke(this);
+        return call.invoke(this)
     }
-    return emptyResult;
-};
+    return emptyResult
+}
 

@@ -23,28 +23,28 @@ import com.squareup.okhttp.Request
 import com.squareup.okhttp.Response
 
 class EventService: RemoteService {
-    val client = OkHttpClient();
+    val client = OkHttpClient()
 
     fun loadUserEvents(baseUrl: String, username: String, password: String) : Response {
         val request = Request.Builder()
                 .addHeader("Authorization", getAuthorizationHeader(username, password))
                 .get()
                 .url("$baseUrl/admin/api/events")
-                .build();
-        return client.newCall(request).execute();
+                .build()
+        return client.newCall(request).execute()
     }
 
     fun loadSingleEvent(baseUrl: String, eventName: String) : Response {
         val request = Request.Builder()
                 .get()
                 .url("$baseUrl/api/events/$eventName")
-                .build();
-        return client.newCall(request).execute();
+                .build()
+        return client.newCall(request).execute()
     }
 
     fun loadEventImage(url: String) : Response {
-        return client.newCall(Request.Builder().get().url(url).build()).execute();
+        return client.newCall(Request.Builder().get().url(url).build()).execute()
     }
 
-    class ListOfEvents : TypeToken<List<Event>>();
+    class ListOfEvents : TypeToken<List<Event>>()
 }

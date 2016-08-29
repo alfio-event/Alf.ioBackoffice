@@ -20,9 +20,9 @@ import java.io.Serializable
 
 data class AlfioConfiguration(val url: String, val username: String, val password: String, val userType: UserType, val event: Event) : Serializable {
     val name : String
-        get() = event.name!!;
+        get() = event.name!!
     val eventName : String
-        get() = event.key!!;
+        get() = event.key!!
     val imageUrl : String?
-        get() = event.imageUrl;
+        get() = event.imageUrl
 }

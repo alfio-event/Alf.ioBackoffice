@@ -24,32 +24,32 @@ import android.content.IntentFilter
 
 class AlfioBackoffice : Application() {
 
-    var connectivityManager = ConnectivityManager();
+    var connectivityManager = ConnectivityManager()
 
     override fun onCreate() {
-        Companion.ctx = applicationContext;
-        connectivityManager.checkConnectivity(applicationContext);
-        registerReceiver(ConnectivityManager(), IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-        startBackgroundServices();
+        Companion.ctx = applicationContext
+        connectivityManager.checkConnectivity(applicationContext)
+        registerReceiver(ConnectivityManager(), IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"))
+        startBackgroundServices()
     }
 
     override fun onTerminate() {
-        unregisterReceiver(connectivityManager);
+        unregisterReceiver(connectivityManager)
     }
 
     private fun startBackgroundServices() {
-        SponsorScanBackgroundUploader.start();
+        SponsorScanBackgroundUploader.start()
     }
 
     companion object {
-        private var ctx: Context? = null;
+        private var ctx: Context? = null
         val context: Context
             get() {
-                val c = ctx;
+                val c = ctx
                 if(c != null) {
-                    return c;
+                    return c
                 }
-                throw AssertionError("Can't return a null value");
+                throw AssertionError("Can't return a null value")
             }
     }
 }

@@ -22,23 +22,23 @@ import java.net.URLEncoder
 
 class CheckInService : RemoteService {
 
-    val client = OkHttpClient();
+    val client = OkHttpClient()
 
     fun getTicketDetail(code: String, conf: AlfioConfiguration) : Response {
-        val ticketId = parseQRCode(code).first;
-        return callProtectedRequest(conf, "/admin/api/check-in/event/${conf.eventName}/ticket/$ticketId?qrCode=${URLEncoder.encode(code, "UTF-8")}").invoke(client);
+        val ticketId = parseQRCode(code).first
+        return callProtectedRequest(conf, "/admin/api/check-in/event/${conf.eventName}/ticket/$ticketId?qrCode=${URLEncoder.encode(code, "UTF-8")}").invoke(client)
     }
 
     fun checkInTicket(code: String, conf: AlfioConfiguration) : Response {
-        val parsed = parseQRCode(code);
-        return callProtectedRequest(conf, "/admin/api/check-in/event/${conf.eventName}/ticket/${parsed.first}", configurePost(parsed.second)).invoke(client);
+        val parsed = parseQRCode(code)
+        return callProtectedRequest(conf, "/admin/api/check-in/event/${conf.eventName}/ticket/${parsed.first}", configurePost(parsed.second)).invoke(client)
     }
 
     fun confirmDeskPayment(code: String, conf: AlfioConfiguration) : Response {
-        val parsed = parseQRCode(code);
-        return callProtectedRequest(conf, "/admin/api/check-in/event/${conf.eventName}/ticket/${parsed.first}/confirm-on-site-payment", configurePost(parsed.second)).invoke(client);
+        val parsed = parseQRCode(code)
+        return callProtectedRequest(conf, "/admin/api/check-in/event/${conf.eventName}/ticket/${parsed.first}/confirm-on-site-payment", configurePost(parsed.second)).invoke(client)
     }
 
-    private fun configurePost(ticketCode: String) : (Request.Builder) -> Request.Builder = {builder -> builder.post(RequestBody.create(MediaType.parse("application/json"), ticketCode));};
+    private fun configurePost(ticketCode: String) : (Request.Builder) -> Request.Builder = {builder -> builder.post(RequestBody.create(MediaType.parse("application/json"), ticketCode));}
 
 }
