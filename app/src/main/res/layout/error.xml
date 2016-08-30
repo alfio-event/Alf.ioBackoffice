@@ -6,6 +6,12 @@
     android:orientation="vertical"
     tools:showIn="@layout/content_event_detail">
 
+    <ImageView
+        android:contentDescription="@string/attendee_data"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_error_red"/>
+
     <TextView
         android:id="@+id/errorMessage"
         android:layout_width="match_parent"
@@ -54,11 +60,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.v4.widget.Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:visibility="invisible" />
 
             <Button
                 android:id="@+id/singleErrorButton"
@@ -66,6 +67,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/rescan"
                 style="?attr/buttonBarNegativeButtonStyle"/>
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:visibility="invisible" />
 
         </android.support.v7.widget.ButtonBarLayout>
     </LinearLayout>

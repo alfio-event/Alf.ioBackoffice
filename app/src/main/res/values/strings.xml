@@ -42,6 +42,8 @@
     <string name="reservation_id">Reservation ID</string>
     <string name="rescan">Rescan</string>
     <string name="check_in">Check-in</string>
+    <string name="confirm">Confirm</string>
+    <string name="next">Next</string>
     <string name="init_checkin">Initiate Check-in</string>
     <string name="init_sponsor_scan">Start collecting contacts</string>
     <string name="sponsor_scan_title">Scan attendees\' badges</string>
@@ -49,7 +51,7 @@
     <string name="sponsor_scan_description">Collect contacts by scanning attendees\' badge. Click on the button below to start</string>
     <string name="sponsor_scan_start">Scan badge</string>
     <string name="collected_item_last_update">Last successful sync: %s</string>
-    <string name="checkin_error_must_pay" formatted="false">Not yet paid. Amount due: %1.2f %s</string>
+    <string name="checkin_error_must_pay" formatted="false">Outstanding payment: %1.2f %s</string>
     <string name="checkin_error_ticket_not_found">Ticket not found</string>
     <string name="checkin_error_invalid_code">Invalid Ticket Code.</string>
     <string name="scan_tickets">Scan Tickets</string>

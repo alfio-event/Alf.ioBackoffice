@@ -38,7 +38,8 @@ import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.WindowManager
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
@@ -142,16 +143,12 @@ class EventDetailActivity : BaseActivity() {
             initTitle.text = getText(R.string.init_sponsor_scan)
             checkInDescription.text = getText(R.string.sponsor_scan_description)
             initScan.text = getText(R.string.sponsor_scan_start)
+            confirm.setOnClickListener {
+                requestScan()
+            }
         }
         showCollectedContacts.setOnClickListener {
             openCollectedContacts()
-        }
-        confirm.setOnClickListener {
-            if(isSponsor) {
-                requestScan()
-            } else {
-                confirmCheckIn(qrCode!!)
-            }
         }
         displayTicketDetails(savedInstanceState?.get("ticket") as Ticket?, savedInstanceState?.get("qrCode") as String?)
         progressIndicator.visibility = GONE
@@ -169,7 +166,7 @@ class EventDetailActivity : BaseActivity() {
         if(scanResult != null && scanResult.contents != null) {
             when(config.userType) {
                 UserType.SPONSOR -> scanAttendeeBadge(scanResult)
-                else -> requestTicketDetailForCheckIn(scanResult)
+                else -> confirmCheckIn(scanResult.contents)
             }
         }
     }
@@ -185,18 +182,6 @@ class EventDetailActivity : BaseActivity() {
                 errorCard.visibility = VISIBLE
             })
             .execute(SponsorScanUploadParam(config, scanResult.contents))
-    }
-
-    private fun requestTicketDetailForCheckIn(scanResult : IntentResult) {
-        TicketDetailLoader(this)
-                .then({
-                    displayTicketDetails(it.ticket!!, scanResult.contents)
-                }, {param, result ->
-                    if(result != null) {
-                        displayTicketDetails(result.ticket, scanResult.contents)
-                    }
-                    errorHandler(param, result)
-                }).execute(TicketDetailParam(config, scanResult.contents))
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -216,11 +201,20 @@ class EventDetailActivity : BaseActivity() {
         sensorManager.unregisterListener(shakeDetector)
     }
 
-    private fun displayTicketDetails(ticket: Ticket?, qrCode: String?) {
+    private fun displayTicketDetails(ticket: Ticket?, qrCode: String?, checkInAlreadyDone: Boolean = false) {
         if(ticket != null) {
             attendeeName.text = ticket.fullName
             attendeeEmail.text = ticket.email
             reservationId.text = ticket.uuid
+            if(checkInAlreadyDone) {
+                rescan.visibility = GONE
+                confirm.visibility = VISIBLE
+                confirm.text = getString(R.string.next)
+                confirm.setOnClickListener {
+                    requestScan()
+                }
+                scanStatusIcon.setImageResource(R.drawable.ic_verified_user_green)
+            }
             resultCard.visibility = VISIBLE
             initCheckInCard.visibility = GONE
             ticketDetailButtons.visibility = VISIBLE
@@ -238,15 +232,17 @@ class EventDetailActivity : BaseActivity() {
     }
 
     private fun confirmDeskPayment(qrCode: String) {
+        Log.i("EventDetailActivity", "performing check-in")
         performCheckIn.invoke(qrCode, DeskPaymentConfirmation(this), config)
     }
 
     private val performCheckIn : (String, CheckInConfirmation, AlfioConfiguration) -> Unit = {qrCode, task, config -> task.then(success = checkInSuccessHandler, error = errorHandler).execute(TicketDetailParam(config, qrCode));}
 
     private val checkInSuccessHandler: (TicketDetailResult) -> Unit = { result ->
-        this.ticket = null//reset ticket view
+        scanTicketErrorMessage.visibility = GONE
+        displayTicketDetails(result.ticket, null, true)
         errorCard.visibility = GONE
-        displayTicketDetails(null, null)
+        confirm.text = getString(R.string.next)
         signalSuccess()
         Snackbar.make(initCheckInCard, R.string.message_check_in_successful, Snackbar.LENGTH_LONG).setAction(R.string.message_dismiss, {}).show()
     }
@@ -255,6 +251,7 @@ class EventDetailActivity : BaseActivity() {
         errorCard.visibility = GONE
         rescan.visibility = GONE
         confirm.text = getString(R.string.ok)
+        confirm.setOnClickListener { requestScan(); }
         signalSuccess()
         val message = if(result.hasTicket()) getString(R.string.message_sponsor_direct_scan_successful).format(result.ticket!!.fullName) else getString(R.string.message_sponsor_scan_successful)
         Snackbar.make(initCheckInCard, message, Snackbar.LENGTH_LONG).setAction(R.string.message_dismiss, {}).show()
@@ -263,26 +260,34 @@ class EventDetailActivity : BaseActivity() {
     private val errorHandler: (TicketDetailParam?, TicketDetailResult?) -> Unit = { param, result ->
         ticketDetailButtons.visibility = GONE
         signalFailure()
-        errorButton2.visibility = GONE
+        rescan.visibility = VISIBLE
+        val ticketPresent = result?.ticket != null
+        val errorField = if(ticketPresent) { scanTicketErrorMessage } else { errorMessage }
+        val scannedCode = param!!.code
+        confirm.visibility = GONE
         when(result?.status) {
             MUST_PAY -> {
-                singleButtonBar.visibility = GONE
-                multipleButtonBar.visibility = VISIBLE
-                errorMessage.text = getString(R.string.checkin_error_must_pay).format(result!!.dueAmount, result.currency)
-                errorButton2.visibility = VISIBLE
-                errorButtonSpacer.visibility = INVISIBLE
-                errorButton2.text = getString(R.string.check_in)
-                errorButton2.setOnClickListener { confirmDeskPayment(qrCode!!); }
-                errorButton1.setOnClickListener { requestScan(); }
+                errorField.text = getString(R.string.checkin_error_must_pay).format(result!!.dueAmount, result.currency)
+                confirm.text = getString(R.string.confirm)
+                confirm.visibility = VISIBLE
+                confirm.setOnClickListener { confirmDeskPayment(scannedCode); }
+                scanStatusIcon.setImageResource(R.drawable.ic_help_red)
             }
-            EMPTY_TICKET_CODE, INVALID_TICKET_CODE -> errorMessage.text = getString(R.string.checkin_error_invalid_code)
-            TICKET_NOT_FOUND, EVENT_NOT_FOUND, INVALID_TICKET_STATE -> errorMessage.text = getString(R.string.checkin_error_ticket_not_found)
+            EMPTY_TICKET_CODE, INVALID_TICKET_CODE -> errorField.text = getString(R.string.checkin_error_invalid_code)
+            TICKET_NOT_FOUND, EVENT_NOT_FOUND, INVALID_TICKET_STATE -> errorField.text = getString(R.string.checkin_error_ticket_not_found)
             else -> {
-                errorMessage.text = getString(R.string.message_already_checked_in)
+                errorField.text = getString(R.string.message_already_checked_in)
+                scanStatusIcon.setImageResource(R.drawable.ic_error_red)
             }
         }
-        singleErrorButton.setOnClickListener { requestScan(); }
-        errorCard.visibility = VISIBLE
+        if(ticketPresent) {
+            displayTicketDetails(result?.ticket, scannedCode)
+            errorField.visibility = VISIBLE
+        } else {
+            singleErrorButton.setOnClickListener { requestScan(); }
+            errorCard.visibility = VISIBLE
+            initCheckInCard.visibility = GONE
+        }
     }
 
     private fun signalSuccess() {
