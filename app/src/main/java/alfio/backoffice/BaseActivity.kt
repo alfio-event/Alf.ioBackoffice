@@ -33,7 +33,9 @@ import android.util.Log
 import android.widget.TextView
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.android.synthetic.main.content_settings.*
-import java.text.SimpleDateFormat
+import java.text.DateFormat
+import java.text.DateFormat.MEDIUM
+import java.text.DateFormat.SHORT
 
 abstract class BaseActivity: AppCompatActivity() {
 
@@ -76,14 +78,14 @@ abstract class BaseActivity: AppCompatActivity() {
         action.second()
     }
 
-    fun loadAndSelectEvent(baseUrl: String, username: String, password: String, onSuccess: (AlfioConfiguration) -> Unit) {
+    fun loadAndSelectEvent(baseUrl: String, username: String, password: String, onSuccess: (AlfioConfiguration, Int) -> Unit) {
 
         val resultHandler: (EventListLoaderResult, Int) -> Unit = {
             resp, which ->
             val event = resp.results[which]
             val configuration = AlfioConfiguration(resp.param!!.baseUrl, resp.param.username, resp.param.password, resp.userType, event)
-            AccountManager.saveAlfioConfiguration(configuration)
-            onSuccess.invoke(configuration)
+            val index = AccountManager.saveAlfioConfiguration(configuration)
+            onSuccess.invoke(configuration, index)
         }
         EventListLoader(this)
                 .then({
@@ -105,9 +107,9 @@ abstract class BaseActivity: AppCompatActivity() {
         fun writeEventDetails(event: Event, config: AlfioConfiguration, eventDates: TextView, eventDescription: TextView, userDetail: TextView, url: TextView, eventName: TextView) {
             val dates: String
             if(event.oneDay) {
-                dates = "${SimpleDateFormat("EEE d MMM yyyy").format(event.begin)} ${SimpleDateFormat("HH:mm").format(event.begin)} - ${SimpleDateFormat("HH:mm").format(event.end)}"
+                dates = "${DateFormat.getDateTimeInstance(MEDIUM, MEDIUM).format(event.begin)} - ${DateFormat.getTimeInstance(MEDIUM).format(event.end)}"
             } else {
-                dates = "${SimpleDateFormat("dd/MM/yyyy HH:mm").format(event.begin)} - ${SimpleDateFormat("dd/MM/yyyy HH:mm").format(event.end)}"
+                dates = "${DateFormat.getDateTimeInstance(SHORT, SHORT).format(event.begin)} - ${DateFormat.getDateTimeInstance(SHORT, SHORT).format(event.end)}"
             }
             eventDates.text = "$dates"
             eventDescription.text = event.location

@@ -43,7 +43,7 @@ class ManualInsertActivity : BaseActivity() {
             if(validators.any { !it.isValid() }) {
                 Snackbar.make(it, R.string.message_check_fields, Snackbar.LENGTH_LONG).show()
             } else {
-                loadAndSelectEvent(manualInsertUrl.text.toString(), manualInsertUsername.text.toString(), manualInsertPassword.text.toString(), {finish();})
+                loadAndSelectEvent(manualInsertUrl.text.toString(), manualInsertUsername.text.toString(), manualInsertPassword.text.toString(), {item, index -> finish();})
             }
         }
     }

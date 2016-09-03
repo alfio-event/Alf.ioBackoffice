@@ -16,13 +16,14 @@
  */
 package alfio.backoffice
 
-import alfio.backoffice.data.AccountManager
 import alfio.backoffice.model.AlfioConfiguration
+import alfio.backoffice.view.ConfigurationItemDecoration
 import alfio.backoffice.view.ConfigurationViewAdapter
 import alfio.backoffice.view.SwipeCallback
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.Menu
@@ -52,26 +53,10 @@ class MainActivity : BaseActivity() {
             floating_menu.close(true)
             scanQRCodeClicked()
         }
-        listAdapter = ConfigurationViewAdapter({configuration -> startEventDetailActivity(configuration)})
-        listAdapter.itemRemovedListener = {
-            var snackbar: Snackbar? = null
-            snackbar = Snackbar.make(textView, getString(R.string.item_removed_successfully, it.name), Snackbar.LENGTH_LONG)
-                    .setAction(R.string.item_removed_undo, {snackbar?.dismiss()})
-                    .setCallback(object: Snackbar.Callback() {
-                        override fun onDismissed(snackbar: Snackbar?, event: Int) {
-                            if(event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT || event == Snackbar.Callback.DISMISS_EVENT_SWIPE) {
-                                AccountManager.removeAlfioConfiguration(it)
-                            }
-                            if(AccountManager.blacklistedConfigurationsCount() > 0) {
-                                AccountManager.whitelistConfiguration(it)
-                                listAdapter.rangeChanged()
-                            }
-                        }
-                    })
-            snackbar.show()
-        }
+        listAdapter = ConfigurationViewAdapter(this, {configuration -> startEventDetailActivity(configuration)})
         listView.adapter = listAdapter
         ItemTouchHelper(SwipeCallback(listAdapter)).attachToRecyclerView(listView)
+        listView.addItemDecoration(ConfigurationItemDecoration(ContextCompat.getColor(this, R.color.colorPrimary)))
         listView.layoutManager = LinearLayoutManager(this)
         Thread.setDefaultUncaughtExceptionHandler({ thread, throwable ->
             throwable.printStackTrace()
@@ -107,7 +92,7 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        listAdapter.rangeChanged()
+        listAdapter.notifyDataSetChanged()
     }
 
     fun scanQRCodeClicked(): Unit {
@@ -122,7 +107,7 @@ class MainActivity : BaseActivity() {
         val scanResult : IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent)
         if(scanResult != null && scanResult.contents != null) {
             val result: Map<String, String> = Common.gson.fromJson(scanResult.contents, MapStringStringTypeToken().type)
-            loadAndSelectEvent(result["baseUrl"]!!, result["username"]!!, result["password"]!!, {listAdapter.rangeChanged();})
+            loadAndSelectEvent(result["baseUrl"]!!, result["username"]!!, result["password"]!!, {item, position -> listAdapter.notifyItemInserted(position);})
         }
     }
 

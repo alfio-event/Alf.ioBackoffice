@@ -88,7 +88,7 @@ dependencies {
     compile 'com.android.support:preference-v7:24.2.0'
     compile 'com.android.support:support-v4:24.2.0'
     compile 'com.google.code.gson:gson:2.4'
-    compile 'com.github.clans:fab:1.6.2'
+    compile 'com.github.clans:fab:1.6.4'
     compile 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
     compile 'com.squareup.okhttp:okhttp:2.7.1'
     compile 'com.google.zxing:core:3.2.1'

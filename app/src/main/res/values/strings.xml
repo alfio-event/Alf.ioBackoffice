@@ -79,7 +79,7 @@
         - Giannandrea (<a href="https://github.com/gcastaldi">@gcastaldi</a>) - tips &amp; tricks, app testing\n
         - Michele (<a href="https://github.com/mikispag">@mikispag</a>) - bug hunting, app testing
     </string>
-    <string name="item_removed_successfully">Configuration for "%s" deleted</string>
+    <string name="item_removed_successfully">"%s" deleted</string>
     <string name="item_removed_undo">UNDO</string>
     <string name="sponsor_scan_in_progress">Badge scanning in progress</string>
     <string name="sponsor_scan_enqueued">Scan enqueued, will be uploaded asap</string>
@@ -91,6 +91,7 @@
     <string name="shuffle">Shuffle</string>
     <string name="send_list_by_email">Send by email</string>
     <string name="show_collected_contacts">collected contacts</string>
+    <string name="button_undo">Undo</string>
 
 
 </resources>

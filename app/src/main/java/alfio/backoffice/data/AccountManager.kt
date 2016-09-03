@@ -26,7 +26,7 @@ object AccountManager {
     private val blacklist: MutableSet<AlfioConfiguration> = hashSetOf()
     val configurations: MutableMap<String, AlfioConfiguration>
     val accounts: MutableList<AlfioConfiguration>
-        get() = ArrayList(configurations.values.filter { !blacklist.contains(it) })
+        get() = ArrayList(configurations.entries.sortedBy { it.key }.map { it.value })
 
     init {
         this.configurations = SharedPreferencesHolder.sharedPreferences.loadSavedValue(KEY_ALFIO_CONFIGURATIONS, SerializedConfigurations(), {if(it != null) ConcurrentHashMap(it) else ConcurrentHashMap() })
@@ -36,15 +36,18 @@ object AccountManager {
         SharedPreferencesHolder.sharedPreferences.persist(configurations, KEY_ALFIO_CONFIGURATIONS)
     }
 
-    fun saveAlfioConfiguration(alfioConfiguration: AlfioConfiguration) {
-        configurations.put(buildKey(alfioConfiguration), alfioConfiguration)
+    fun saveAlfioConfiguration(alfioConfiguration: AlfioConfiguration) : Int {
+        val key = buildKey(alfioConfiguration)
+        configurations.put(key, alfioConfiguration)
         persistAlfioConfigurations()
+        return configurations.keys.sorted().indexOf(key)
     }
 
     private fun buildKey(alfioConfiguration: AlfioConfiguration) = "${alfioConfiguration.username}@${alfioConfiguration.eventName}@${alfioConfiguration.url}"
 
     fun removeAlfioConfiguration(alfioConfiguration: AlfioConfiguration) {
         configurations.remove(buildKey(alfioConfiguration))
+        blacklist.remove(alfioConfiguration)
         persistAlfioConfigurations()
     }
 
@@ -57,6 +60,8 @@ object AccountManager {
     }
 
     fun blacklistedConfigurationsCount() = blacklist.size
+
+    fun isBlacklisted(configuration: AlfioConfiguration) = blacklist.contains(configuration)
 
 }
 
