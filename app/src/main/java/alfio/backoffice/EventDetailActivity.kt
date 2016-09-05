@@ -286,6 +286,7 @@ class EventDetailActivity : BaseActivity() {
         } else {
             singleErrorButton.setOnClickListener { requestScan(); }
             errorCard.visibility = VISIBLE
+            resultCard.visibility = GONE
             initCheckInCard.visibility = GONE
         }
     }
