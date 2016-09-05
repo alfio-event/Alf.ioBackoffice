@@ -107,7 +107,7 @@ abstract class BaseActivity: AppCompatActivity() {
         fun writeEventDetails(event: Event, config: AlfioConfiguration, eventDates: TextView, eventDescription: TextView, userDetail: TextView, url: TextView, eventName: TextView) {
             val dates: String
             if(event.oneDay) {
-                dates = "${DateFormat.getDateTimeInstance(MEDIUM, MEDIUM).format(event.begin)} - ${DateFormat.getTimeInstance(MEDIUM).format(event.end)}"
+                dates = "${DateFormat.getDateTimeInstance(MEDIUM, SHORT).format(event.begin)} - ${DateFormat.getTimeInstance(SHORT).format(event.end)}"
             } else {
                 dates = "${DateFormat.getDateTimeInstance(SHORT, SHORT).format(event.begin)} - ${DateFormat.getDateTimeInstance(SHORT, SHORT).format(event.end)}"
             }

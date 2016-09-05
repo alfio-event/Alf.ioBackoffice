@@ -79,6 +79,7 @@ class ConfigurationViewAdapter(val container: Activity, val clickHandler: (Alfio
                 // we need to show the "normal" state
                 holder.itemView.setBackgroundColor(Color.WHITE)
                 holder.undo.visibility = View.GONE
+                holder.eventData.visibility = View.VISIBLE
                 holder.setOnClickListener {
                     clickHandler.invoke(configuration)
                 }
@@ -102,6 +103,7 @@ class ConfigurationViewAdapter(val container: Activity, val clickHandler: (Alfio
             // let's create, store and post a runnable to remove the item
             val pendingRemovalRunnable = Runnable {
                 AccountManager.removeAlfioConfiguration(removed)
+                pendingItems.remove(removed)
                 notifyItemRemoved(position)
             }
             handler.postDelayed(pendingRemovalRunnable, 3000L)
@@ -232,7 +234,7 @@ class ConfigurationItemDecoration(val color: Int) : RecyclerView.ItemDecoration(
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
 
         // only if animation is in progress
-        if (parent.itemAnimator.isRunning) {
+        if (parent.isAnimating) {
 
             // some items might be animating down and some items might be animating up to close the gap left by the removed item
             // this is not exclusive, both movement can be happening at the same time
