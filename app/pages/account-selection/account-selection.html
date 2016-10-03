@@ -1,0 +1,21 @@
+
+<GridLayout rows="auto, *, auto">
+
+  <Label row="0" text='Select an existing account from the list, or configure a new one'></Label>
+
+  <ListView [items]="groceryList" row="1" class="small-spacing" [class.visible]="listLoaded">
+    <template let-item="item">
+      <GridLayout columns="*, auto">
+        <Label col="0" [text]="item.name" class="medium-spacing"></Label>        
+      </GridLayout>
+    </template>
+  </ListView>
+
+  <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="1" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
+
+  <GridLayout row="2" rows="auto, auto">
+    <Button text="Scan Credentials" class="submit-button" (tap)="requestQrScan()"></Button>
+    <Button text="Insert manually" (tap)="goToManualInsert()"></Button>
+  </GridLayout>
+
+</GridLayout>

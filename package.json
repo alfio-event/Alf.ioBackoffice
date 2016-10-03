@@ -1,0 +1,31 @@
+{
+  "description": "NativeScript Application",
+  "license": "SEE LICENSE IN <your-license-filename>",
+  "readme": "NativeScript Application",
+  "repository": "<fill-your-repository-here>",
+  "nativescript": {
+    "id": "alfio.backoffice"
+  },
+  "dependencies": {
+    "@angular/common": "2.0.1",
+    "@angular/compiler": "2.0.1",
+    "@angular/core": "2.0.1",
+    "@angular/forms": "2.0.1",
+    "@angular/http": "2.0.1",
+    "@angular/platform-browser": "2.0.1",
+    "@angular/platform-browser-dynamic": "2.0.1",
+    "@angular/platform-server": "2.0.1",
+    "@angular/router": "3.0.1",
+    "nativescript-angular": "1.0.1",
+    "nativescript-barcodescanner": "^1.4.1",
+    "nativescript-screen-orientation": "^1.0.2",
+    "reflect-metadata": "^0.1.8",
+    "tns-core-modules": "2.3.0"
+  },
+  "devDependencies": {
+    "nativescript-dev-typescript": "^0.3.2",
+    "typescript": "^2.0.3",
+    "zone.js": "^0.6.21"
+  },
+  "main": "main.js"
+}
