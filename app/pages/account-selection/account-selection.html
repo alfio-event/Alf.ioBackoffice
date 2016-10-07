@@ -4,7 +4,7 @@
   <ListView [items]="accounts" row="2" col="1" [class.visible]="hasAccounts && !isLoading">
     <template let-item="item">
       <GridLayout columns="*, auto">
-        <Label col="0" [text]="item.username" class="medium-spacing"></Label>
+        <Label col="0" [text]="item.username" class="medium-spacing" (tap)="manage(item)"></Label>
         <Label col="1" [text]="item.url" class="medium-spacing"></Label>
       </GridLayout>
     </template>

@@ -10,11 +10,22 @@ export class Account {
         return this.username + "@" + this.url;
     }
 
+    containsEvent(key: String) : boolean {
+        return this.configurations.some(ec => ec.key == key);
+    }
+
 }
 
 export class EventConfiguration {
     key: string;
     imageUrl: string;
+    name: string;
+    url: string;
+    begin: Date;
+    end: Date;
+    oneDay: boolean;
+    location: string;
+    apiVersion: number;
 }
 
 export enum AccountType {

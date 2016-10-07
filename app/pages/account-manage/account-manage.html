@@ -1,0 +1,22 @@
+<ActionBar title="Select Event">
+    <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackTap()"></NavigationButton>
+</ActionBar>
+
+<GridLayout rows="auto, *, auto, *">
+
+  <TextView text="Select the event(s) you want to add" row="0"></TextView>
+
+  <ListView [items]="events" row="1" class="small-spacing" [class.visible]="listLoaded">
+    <template let-item="item">
+      <GridLayout columns="auto, *">
+        <Switch col="0" [(ngModel)]="item.selected"></Switch>
+        <Label col="1" [text]="item.eventConfiguration.name" class="medium-spacing"></Label>
+      </GridLayout>
+    </template>
+  </ListView>
+
+  <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="1" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
+
+  <Button text="Update configuration" row="2" class="submit-button" (tap)="persistSelection()"></Button>
+
+</GridLayout>

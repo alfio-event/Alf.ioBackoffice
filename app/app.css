@@ -5,7 +5,7 @@ Page {
   font-size: 15;
 }
 ActionBar {
-  background-color: black;
+  background-color: #ff9800;
   color: white;
 }
 TextField {
@@ -17,4 +17,9 @@ TextField {
 }
 .medium-spacing {
   margin: 10;
+}
+.submit-button {
+  background-color: #ff9800;
+  color: white;
+  margin-top: 20;
 }
