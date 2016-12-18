@@ -10,3 +10,6 @@ Button, TextField {
   margin-right: 16;
   margin-bottom: 10;
 }
+.accountName {
+  font-weight: bold;
+}

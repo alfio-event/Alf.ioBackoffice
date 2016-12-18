@@ -23,3 +23,19 @@ TextField {
   color: white;
   margin-top: 20;
 }
+
+.pageTitle {
+  font-size: 18;
+  margin-top:10;
+  font-weight: bold;
+  text-align: center;
+}
+
+.material-icon {
+  font-family: 'Material-Design-Iconic-Font';
+  vertical-align: middle;
+}
+
+.icon-medium {
+  font-size: 32;
+}

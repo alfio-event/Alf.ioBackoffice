@@ -1,20 +1,21 @@
 import { Injectable, OnInit } from "@angular/core";
 import { Http, Headers, Response } from "@angular/http";
-import { Observable } from "rxjs/Rx";
+import { Observable, ReplaySubject } from "rxjs/Rx";
 import "rxjs/add/operator/do";
 import "rxjs/add/operator/map";
 var appSettings = require("application-settings");
 const ACCOUNTS_KEY = "ALFIO_ACCOUNTS";
 
-import { Account, AccountType, EventConfiguration } from "./account";
+import { Account, AccountType, EventConfiguration, AccountsArray, AccountResponse, Maybe, Pair, Some, Nothing } from "./account";
 
 @Injectable()
 export class AccountService {
-    private accounts: Map<string, Account> = new Map<string, Account>();
+    private accounts = new AccountsArray();
 
     constructor(private http: Http) {
         console.log("Calling AccountService constructor");
-        this.loadSavedAccounts();
+        this.accounts.push(...this.loadSavedAccounts());
+        console.log("loaded accounts array", typeof this.accounts, this.accounts.length);
     }
 
     public registerNewAccount(url: string, username: string, password: string) {
@@ -32,16 +33,18 @@ export class AccountService {
                 account.accountType = data === "SPONSOR" ? AccountType.SPONSOR : AccountType.STAFF;
                 account.configurations = [];
                 let newAccountKey = account.getKey();
-                if (this.accounts.has(newAccountKey)) {
-                    console.log("Account exists. Returning it...");
-                    return new AccountResponse(this.accounts.get(newAccountKey), true);
-                } else {
-                    console.log("account does not exist. Inserting...");
-                    this.accounts.set(newAccountKey, account);
-                    this.persistAccounts();
-                    console.log("accounts persisted.");
-                    return new AccountResponse(account, false);
-                }
+                return this.accounts.get(newAccountKey)
+                    .map(a => {
+                        console.log("Account exists. Returning it...");
+                        return new AccountResponse(a, true);
+                    }).orElse(() => {
+                        console.log("account does not exist. Inserting...");
+                        this.accounts.set(newAccountKey, account);
+                        console.log("set. Persisting...", JSON.stringify(this.accounts));
+                        this.persistAccounts();
+                        console.log("accounts persisted.");
+                        return new AccountResponse(account, false);
+                    });
             }).catch(error => {
                 console.log("got error! ");
                 console.log(JSON.stringify(error));
@@ -50,20 +53,12 @@ export class AccountService {
     }
 
     public getRegisteredAccounts(): Array<Account> {
-        let result = new Array<Account>();
-        console.log("loading accounts", this.accounts.size);
-        if (this.accounts.size == 0) {
-            return result;
-        }
-        this.accounts.forEach((value, key) => {
-            console.log("returning account with key", key);
-            result.push(value);
-        });
-        console.log("returning result of size ", result.length);
-        return result;
+        let elements = [];
+        this.accounts.forEach(elements.push);
+        return elements;
     }
 
-    public findAccountById(id: string): Account {
+    public findAccountById(id: string): Maybe<Account> {
         return this.accounts.get(id);
     }
 
@@ -73,9 +68,9 @@ export class AccountService {
         }).map(data => data.json());
     }
 
-    public updateEventsForAccount(account: Account, events: Array<EventConfiguration>) {
-        console.log("updating account configurations");
-        this.accounts.get(account.getKey()).configurations = events;
+    public updateEventsForAccount(key:string, events: Array<EventConfiguration>) {
+        console.log("updating account configurations, events size:", events.length);
+        this.accounts.get(key).ifPresent(v => v.configurations = events);
         console.log("done. Persisting...");
         this.persistAccounts();
     }
@@ -86,11 +81,11 @@ export class AccountService {
         return headers;
     }
 
-    private loadSavedAccounts() {
+    private loadSavedAccounts() :AccountsArray {
         let savedData = appSettings.getString(ACCOUNTS_KEY, "--");
         if (savedData !== "--") {
-            console.log("parsing saved data...");
-            let accountsArray = JSON.parse(savedData).map(obj => {
+            console.log("parsing saved data...", savedData);
+            return new AccountsArray(...JSON.parse(savedData).map(obj => {
                 let account = new Account();
                 account.url = obj.url;
                 account.username = obj.username;
@@ -98,16 +93,17 @@ export class AccountService {
                 account.accountType = <number>obj.accountType;
                 account.configurations = (<Array<any>>obj.configurations);
                 return account;
-            });
-            let accountsMap = new Map<string, Account>();
-            accountsArray.forEach(a => accountsMap.set(a.getKey(), a));
-            this.accounts = accountsMap;
+            }));
         }
+        let empty = new AccountsArray();
+        console.log("returning empty accounts array", empty.length);
+        return empty;
     }
 
     private persistAccounts() {
-        let elements = this.getRegisteredAccounts();
-        console.log("called persist accounts. Account size is ", this.accounts.size, elements.length);
+        let elements = [];
+        this.accounts.forEach(elements.push);
+        console.log("called persist accounts. Account size is ", elements.length);
         let serializedElements = JSON.stringify(elements);
         console.log("serializing...");
         appSettings.setString(ACCOUNTS_KEY, serializedElements);
@@ -151,16 +147,4 @@ export class AccountService {
         return b64Chars.join('');
     }
 
-}
-
-export class AccountResponse {
-    constructor(private account: Account, private existing: boolean) { }
-
-    getAccount() {
-        return this.account;
-    }
-
-    isExisting() {
-        return this.existing;
-    }
 }

@@ -7,13 +7,14 @@ import { TextField } from "ui/text-field";
 import { View } from "ui/core/view";
 import { Observable } from 'rxjs/Observable'
 
-import { Account, EventConfiguration } from "../../shared/account/account";
+import { Account, EventConfiguration, EventConfigurationSelection } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
+import { ImageService } from "../../shared/image/image.service";
 var barcodescanner = require("nativescript-barcodescanner");
 
 @Component({
     selector: "account-manage",
-    providers: [AccountService],
+    providers: [AccountService, ImageService],
     templateUrl: "pages/account-manage/account-manage.html",
     styleUrls: ["pages/account-manage/account-manage-common.css"],
 })
@@ -22,25 +23,33 @@ export class AccountManageComponent implements OnInit {
     events: Array<EventConfigurationSelection>;
     isLoading: boolean;
 
-    constructor(private route: ActivatedRoute, private routerExtensions: RouterExtensions, private accountService: AccountService) {
-    }
+    constructor(private route: ActivatedRoute,
+        private routerExtensions: RouterExtensions,
+        private accountService: AccountService,
+        private imageService: ImageService) { }
 
     ngOnInit() {
         this.isLoading = true;
         this.route.params.forEach((params: Params) => {
             let id = params['accountId'];
-            console.log("AccountManageComponent accountId:", id)
-            this.account = this.accountService.findAccountById(id);
-            this.accountService.loadEventsForAccount(this.account)
-                .subscribe(events => {
-                    console.log("received events");
-                    this.events = events.map(e => new EventConfigurationSelection(e, this.account.containsEvent(e.key)));
-                    this.isLoading = false;
-                }, error => {
-                    console.log("error while loading events", error);
-                    this.events = [];
-                    this.isLoading = false;
-                })
+            console.log("AccountManageComponent accountId:", id);
+            this.accountService.findAccountById(id).ifPresent(account => {
+                this.account = account;
+                this.accountService.loadEventsForAccount(this.account)
+                    .subscribe(events => {
+                        console.log("received events_");
+                        this.events = events.map(e => {
+                            let configuration = new EventConfigurationSelection(e, this.account.containsEvent(e.key));
+                            this.imageService.fillWithImage(this.account.url, e, configuration);
+                            return configuration;
+                        });
+                        this.isLoading = false;
+                    }, error => {
+                        console.log("error while loading events", error);
+                        this.events = [];
+                        this.isLoading = false;
+                    });
+            });
         });
     }
 
@@ -53,11 +62,8 @@ export class AccountManageComponent implements OnInit {
     }
 
     persistSelection() {
-        this.accountService.updateEventsForAccount(this.account, this.events.filter(e => e.selected).map(e => e.eventConfiguration));
+        this.accountService.updateEventsForAccount(this.account.getKey(), this.events.filter(e => e.selected).map(e => e.eventConfiguration));
+        this.routerExtensions.navigate(["/"])
     }
 
-}
-
-class EventConfigurationSelection {
-    constructor(public eventConfiguration: EventConfiguration, public selected: boolean) { }
 }

@@ -2,15 +2,21 @@
     <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackTap()"></NavigationButton>
 </ActionBar>
 
-<GridLayout rows="auto, *, auto, *">
+<GridLayout rows="50, *, auto, 60">
 
-  <TextView text="Select the event(s) you want to add" row="0"></TextView>
+  <Label class="pageTitle" text="Select the event(s) you want to add"></Label>
 
-  <ListView [items]="events" row="1" class="small-spacing" [class.visible]="listLoaded">
-    <template let-item="item">
-      <GridLayout columns="auto, *">
-        <Switch col="0" [(ngModel)]="item.selected"></Switch>
-        <Label col="1" [text]="item.eventConfiguration.name" class="medium-spacing"></Label>
+  <ListView [items]="events" row="1" [class.visible]="listLoaded">
+    <template let-item="item" class="event">
+      <GridLayout columns="70, auto, *">
+        <Image col="0" [src]="item.image" stretch="aspectFit" width="70" height="70"></Image>
+        <StackLayout col="1" class="medium-spacing" orientation="vertical">
+            <Label [text]="item.eventConfiguration.name" class="eventName"></Label>
+            <Label text="{{ item.eventConfiguration.begin | date:'medium' }} - {{ item.eventConfiguration.end | date:'medium' }}" *ngIf="!item.eventConfiguration.oneDay"></Label>
+            <Label text="{{ item.eventConfiguration.begin | date:'mediumDate' }} {{ item.eventConfiguration.begin | date:'shortTime' }} - {{ item.eventConfiguration.end | date:'shortTime' }}" *ngIf="item.eventConfiguration.oneDay"></Label>
+            <Label [text]="item.eventConfiguration.location"></Label>
+        </StackLayout>
+        <Switch col="2" [(ngModel)]="item.selected"></Switch>
       </GridLayout>
     </template>
   </ListView>
