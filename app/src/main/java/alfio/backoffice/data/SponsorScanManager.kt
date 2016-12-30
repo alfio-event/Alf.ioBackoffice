@@ -104,11 +104,11 @@ object SponsorScanManager {
     }
 
     private fun pendingDescriptorFinder(configuration: AlfioConfiguration, result: Pair<String, TicketAndCheckInResult>) : (SponsorScanDescriptor) -> Boolean {
-        return {it.status == ScanStatus.IN_PROCESS && it.code.equals(result.first) && it.configuration!!.equals(configuration)}
+        return {it.status == ScanStatus.IN_PROCESS && it.code == result.first && it.configuration!! == configuration }
     }
 }
 
-class SponsorScanDescriptor() : Comparable<SponsorScanDescriptor> {
+class SponsorScanDescriptor : Comparable<SponsorScanDescriptor> {
 
     var configuration: AlfioConfiguration? = null
     var code: String = ""
@@ -165,6 +165,6 @@ private val KEY_OFFLINE_SCAN_ENABLED = "enable_sponsor_offline_scan"
 
 private val ONE_MINUTE = TimeUnit.MINUTES.toMillis(1L)
 
-enum class ScanStatus() {
+enum class ScanStatus {
     NEW, IN_PROCESS, ERROR, DONE
 }

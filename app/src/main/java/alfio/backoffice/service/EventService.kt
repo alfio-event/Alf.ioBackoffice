@@ -16,35 +16,18 @@
  */
 package alfio.backoffice.service
 
+import alfio.backoffice.model.AlfioConfiguration
+import alfio.backoffice.model.ConnectionConfiguration
 import alfio.backoffice.model.Event
 import com.google.gson.reflect.TypeToken
-import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.Request
-import com.squareup.okhttp.Response
+import okhttp3.Response
 
 class EventService: RemoteService {
-    val client = OkHttpClient()
+    fun loadUserEvents(config: ConnectionConfiguration) : Response = callProtectedRequest(config, "/admin/api/events").invoke(httpClient)
 
-    fun loadUserEvents(baseUrl: String, username: String, password: String) : Response {
-        val request = Request.Builder()
-                .addHeader("Authorization", getAuthorizationHeader(username, password))
-                .get()
-                .url("$baseUrl/admin/api/events")
-                .build()
-        return client.newCall(request).execute()
-    }
+    fun loadSingleEvent(config: AlfioConfiguration) : Response = callUnprotectedRequest(config, "/api/events/${config.eventName}").invoke(httpClient)
 
-    fun loadSingleEvent(baseUrl: String, eventName: String) : Response {
-        val request = Request.Builder()
-                .get()
-                .url("$baseUrl/api/events/$eventName")
-                .build()
-        return client.newCall(request).execute()
-    }
-
-    fun loadEventImage(url: String) : Response {
-        return client.newCall(Request.Builder().get().url(url).build()).execute()
-    }
+    fun loadEventImage(config: AlfioConfiguration) : Response = callUnprotectedRequest(config, config.event.imageUrl!!).invoke(httpClient)
 
     class ListOfEvents : TypeToken<List<Event>>()
 }

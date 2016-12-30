@@ -18,6 +18,7 @@ package alfio.backoffice
 
 import alfio.backoffice.data.AccountManager
 import alfio.backoffice.model.AlfioConfiguration
+import alfio.backoffice.model.ConnectionConfiguration
 import alfio.backoffice.model.Event
 import alfio.backoffice.task.EventListLoader
 import alfio.backoffice.task.EventListLoaderCommand
@@ -57,7 +58,7 @@ abstract class BaseActivity: AppCompatActivity() {
         val missingPermissions: List<String> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             permissions.filter {checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED}
         } else listOf<String>()
-        if(missingPermissions.size > 0) {
+        if(missingPermissions.isNotEmpty()) {
             val id = ++requestId
             requestPermissions(missingPermissions.toTypedArray(), id)
             pendingActions.put(id, required to action)
@@ -70,7 +71,7 @@ abstract class BaseActivity: AppCompatActivity() {
     @SuppressLint("NewApi")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         val action = pendingActions[requestCode] ?: Pair(false, {super.onRequestPermissionsResult(requestCode, permissions, grantResults)})
-        if(grantResults.any { !it.equals(PackageManager.PERMISSION_GRANTED) } && action.first) {
+        if(grantResults.any { it != PackageManager.PERMISSION_GRANTED } && action.first) {
             Log.d(this.javaClass.canonicalName, "The user didn't grant all the permissions")
             Snackbar.make(content, R.string.message_accept_permissions, Snackbar.LENGTH_LONG).show()
             return
@@ -78,12 +79,13 @@ abstract class BaseActivity: AppCompatActivity() {
         action.second()
     }
 
-    fun loadAndSelectEvent(baseUrl: String, username: String, password: String, onSuccess: (AlfioConfiguration, Int) -> Unit) {
+    fun loadAndSelectEvent(connectionConfiguration: ConnectionConfiguration, onSuccess: (AlfioConfiguration, Int) -> Unit) {
 
         val resultHandler: (EventListLoaderResult, Int) -> Unit = {
             resp, which ->
             val event = resp.results[which]
-            val configuration = AlfioConfiguration(resp.param!!.baseUrl, resp.param.username, resp.param.password, resp.userType, event)
+            val src = resp.param!!.config
+            val configuration = AlfioConfiguration(src.url, src.username, src.password, src.sslCert, resp.userType, event)
             val index = AccountManager.saveAlfioConfiguration(configuration)
             onSuccess.invoke(configuration, index)
         }
@@ -100,7 +102,7 @@ abstract class BaseActivity: AppCompatActivity() {
                                 .show()
                     }
                 })
-                .execute(EventListLoaderCommand(baseUrl, username, password))
+                .execute(EventListLoaderCommand(connectionConfiguration))
     }
 
     companion object {
@@ -111,10 +113,10 @@ abstract class BaseActivity: AppCompatActivity() {
             } else {
                 dates = "${DateFormat.getDateTimeInstance(SHORT, SHORT).format(event.begin)} - ${DateFormat.getDateTimeInstance(SHORT, SHORT).format(event.end)}"
             }
-            eventDates.text = "$dates"
+            eventDates.text = dates
             eventDescription.text = event.location
             userDetail.text = "${config.userType}"
-            url.text = "${config.url}".replace("^https?://(.*?)(:\\d+)?$".toRegex(), {
+            url.text = config.url.replace("^https?://(.*?)(:\\d+)?$".toRegex(), {
                 if(it.groups[1] != null) {
                     it.groups[1]!!.value
                 } else {

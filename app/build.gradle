@@ -1,17 +1,15 @@
 buildscript {
-    ext.kotlin_version = '1.0.3'
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
     }
 }
 
 plugins {
     id 'com.github.hierynomus.license' version '0.12.1'
-    id 'net.researchgate.release' version '2.3.5'
+    id 'net.researchgate.release' version '2.4.1'
 }
 
 apply plugin: 'com.android.application'
@@ -78,20 +76,22 @@ dependencies {
     // ZXING: https://github.com/journeyapps/zxing-android-embedded
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    testCompile "com.nhaarman:mockito-kotlin:0.6.0"
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
-    compile 'com.android.support:cardview-v7:24.2.0'
-    compile 'com.android.support:recyclerview-v7:24.2.0'
-    compile 'com.android.support:preference-v7:24.2.0'
-    compile 'com.android.support:support-v4:24.2.0'
-    compile 'com.google.code.gson:gson:2.4'
+    testCompile("com.nhaarman:mockito-kotlin:0.6.2") {
+        exclude group: 'org.jetbrains.kotlin'
+    }
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:cardview-v7:24.2.1'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.android.support:preference-v7:24.2.1'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.google.code.gson:gson:2.7'
     compile 'com.github.clans:fab:1.6.4'
-    compile 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
-    compile 'com.squareup.okhttp:okhttp:2.7.1'
-    compile 'com.google.zxing:core:3.2.1'
+    compile 'com.journeyapps:zxing-android-embedded:3.3.0@aar'
+    compile 'com.squareup.okhttp3:okhttp:3.4.2'
+    compile 'com.google.zxing:core:3.3.0'
 }
 
 license {
@@ -113,7 +113,7 @@ project.afterEvaluate {
 }
 
 release {
-    buildTasks = ['build', 'assembleRelease']
+    buildTasks = ['build']
     git {
         requireBranch = ''
         pushToRemote = 'origin'

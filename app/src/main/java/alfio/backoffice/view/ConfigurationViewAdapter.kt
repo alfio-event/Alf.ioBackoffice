@@ -89,7 +89,7 @@ class ConfigurationViewAdapter(val container: Activity, val clickHandler: (Alfio
                             val drawable = BitmapDrawable(holder.itemView.resources, BitmapFactory.decodeByteArray(result.image, 0, result.image.size))
                             drawable.gravity = Gravity.START or Gravity.CENTER_VERTICAL
                             holder.mainComponent.background = drawable
-                        }).execute(EventImageParam(configuration.url, configuration.event))
+                        }).execute(EventImageParam(configuration))
             }
         }
     }

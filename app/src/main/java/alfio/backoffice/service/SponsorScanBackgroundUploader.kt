@@ -8,7 +8,7 @@ import alfio.backoffice.model.CheckInResult
 import alfio.backoffice.model.TicketAndCheckInResult
 import android.util.Log
 import com.google.gson.reflect.TypeToken
-import com.squareup.okhttp.Response
+import okhttp3.Response
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -91,13 +91,10 @@ object SponsorScanBackgroundUploader {
     }
 
     private fun parseResponse(response: Response) : List<TicketAndCheckInResult> {
-        val body = response.body()
-        try {
+        response.body().use { body ->
             if(response.isSuccessful) {
                 return Common.gson.fromJson(body.string(), ListOfTicketAndCheckInResult().type)
             }
-        } finally {
-            body.close()
         }
         return emptyList()
     }

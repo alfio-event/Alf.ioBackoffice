@@ -16,6 +16,7 @@
  */
 package alfio.backoffice
 
+import alfio.backoffice.model.ConnectionConfiguration
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.util.Patterns
@@ -43,7 +44,8 @@ class ManualInsertActivity : BaseActivity() {
             if(validators.any { !it.isValid() }) {
                 Snackbar.make(it, R.string.message_check_fields, Snackbar.LENGTH_LONG).show()
             } else {
-                loadAndSelectEvent(manualInsertUrl.text.toString(), manualInsertUsername.text.toString(), manualInsertPassword.text.toString(), {item, index -> finish();})
+                //ssl certificate is not supported on Manual Insert
+                loadAndSelectEvent(ConnectionConfiguration(manualInsertUrl.text.toString(), manualInsertUsername.text.toString(), manualInsertPassword.text.toString(), null), { item, index -> finish();})
             }
         }
     }

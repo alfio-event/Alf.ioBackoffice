@@ -25,7 +25,7 @@ import android.content.Context
 import android.os.AsyncTask
 import android.support.v7.app.AlertDialog
 import android.util.Log
-import com.squareup.okhttp.Response
+import okhttp3.Response
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -60,7 +60,7 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
     }
 
     override final fun doInBackground(vararg params: Param?): Result {
-        if(params.size > 0 && params[0] != null) {
+        if(params.isNotEmpty() && params[0] != null) {
             param = params[0]
             return internalDoInBackground()
         }
@@ -133,7 +133,7 @@ abstract class AlfioAsyncTask<R, Param : TaskParam, Result : TaskResult<R>>(val 
 
 interface TaskParam
 
-abstract class TaskResult<R>(val response: R?, val error: Throwable?) {
+abstract class TaskResult<out R>(val response: R?, val error: Throwable?) {
     open fun isSuccessful() = hasError()
     fun hasError() = error == null
     open fun hasErrorDetail() = false

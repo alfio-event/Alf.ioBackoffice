@@ -17,6 +17,7 @@
 package alfio.backoffice.task
 
 import alfio.backoffice.Common
+import alfio.backoffice.model.ConnectionConfiguration
 import alfio.backoffice.model.Event
 import alfio.backoffice.model.UserType
 import alfio.backoffice.service.EventService
@@ -28,13 +29,13 @@ class EventListLoader(caller: Context): AlfioAsyncTask<List<Event>, EventListLoa
     override fun errorResult(error: Throwable) = EventListLoaderResult(false, emptyList(), null, error = error)
 
     override fun work(param: EventListLoaderCommand): Pair<EventListLoaderCommand, EventListLoaderResult> {
-        val userRoleResponse = userService.loadUserType(param.baseUrl, param.username, param.password)
+        val userRoleResponse = userService.loadUserType(param.config)
         if(!userRoleResponse.isSuccessful) {
             return param to emptyResult()
         }
         val userRoleResponseBody = userRoleResponse.body()
         val userType = UserType.fromString(Common.gson.fromJson(userRoleResponseBody.string(), String::class.java))
-        val response = eventService.loadUserEvents(param.baseUrl, param.username, param.password)
+        val response = eventService.loadUserEvents(param.config)
         val responseBody = response.body()
         try {
             if(response.isSuccessful) {
@@ -53,7 +54,7 @@ class EventListLoader(caller: Context): AlfioAsyncTask<List<Event>, EventListLoa
     }
 }
 
-data class EventListLoaderCommand(val baseUrl: String, val username: String, val password: String) : TaskParam
+data class EventListLoaderCommand(val config: ConnectionConfiguration) : TaskParam
 class EventListLoaderResult(val success: Boolean, val results: List<Event>, val param: EventListLoaderCommand?, val userType: UserType = UserType.STAFF, error: Throwable? = null) : TaskResult<List<Event>>(results, error) {
     override fun isSuccessful(): Boolean = success
 }

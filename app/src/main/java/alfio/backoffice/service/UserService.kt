@@ -16,20 +16,9 @@
  */
 package alfio.backoffice.service
 
-import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.Request
-import com.squareup.okhttp.Response
+import alfio.backoffice.model.ConnectionConfiguration
+import okhttp3.Response
 
 class UserService : RemoteService {
-
-    val client = OkHttpClient()
-
-    fun loadUserType(baseUrl: String, username: String, password: String) : Response {
-        val request = Request.Builder()
-                .addHeader("Authorization", getAuthorizationHeader(username, password))
-                .get()
-                .url("$baseUrl/admin/api/user-type")
-                .build()
-        return client.newCall(request).execute()
-    }
+    fun loadUserType(config: ConnectionConfiguration) : Response = callProtectedRequest(config, "/admin/api/user-type").invoke(httpClient)
 }

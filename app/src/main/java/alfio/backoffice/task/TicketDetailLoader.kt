@@ -22,7 +22,7 @@ import alfio.backoffice.model.CheckInStatus
 import alfio.backoffice.model.Ticket
 import alfio.backoffice.model.TicketAndCheckInResult
 import android.content.Context
-import com.squareup.okhttp.Response
+import okhttp3.Response
 import java.io.Serializable
 import java.math.BigDecimal
 
@@ -33,14 +33,12 @@ open class TicketDetailLoader(caller: Context) : AlfioAsyncTask<Ticket, TicketDe
     override final fun work(param: TicketDetailParam): Pair<TicketDetailParam, TicketDetailResult> {
         val response = performRequest(param)
         val body = response.body()
-        try {
+        body.use { body ->
             if(response.isSuccessful) {
                 val result = Common.gson.fromJson(body.string(), TicketAndCheckInResult::class.java)
                 return param to evaluateCheckInResult(result)
             }
             return param to emptyResult()
-        } finally {
-            body.close()
         }
     }
 

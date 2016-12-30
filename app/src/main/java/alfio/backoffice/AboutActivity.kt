@@ -52,7 +52,7 @@ class AboutActivity : BaseActivity() {
             it.require(XmlPullParser.START_TAG, null, name)
             val result: MutableList<Item> = arrayListOf()
             while(it.next() != XmlPullParser.END_DOCUMENT) {
-                if (it.eventType == XmlPullParser.START_TAG && it.name.equals(name)) {
+                if (it.eventType == XmlPullParser.START_TAG && it.name == name) {
                     result.add(readElement(it))
                 }
             }

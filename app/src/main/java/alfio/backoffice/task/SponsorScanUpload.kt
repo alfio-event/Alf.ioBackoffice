@@ -19,8 +19,7 @@ class SponsorScanUpload(caller: Context) : AlfioAsyncTask<String, SponsorScanUpl
             return param to SponsorScanResult(param.code)
         } else {
             val response = sponsorScanService.scanAttendee(param.code, param.conf)
-            val body = response.body()
-            try {
+            response.body().use { body ->
                 if(response.isSuccessful) {
                     val scanResult = Common.gson.fromJson(body.string(), TicketAndCheckInResult::class.java)
                     if(scanResult.result?.status?.successful ?: false) {
@@ -31,8 +30,6 @@ class SponsorScanUpload(caller: Context) : AlfioAsyncTask<String, SponsorScanUpl
                 } else {
                     return param to emptyResult()
                 }
-            } finally {
-                body.close()
             }
         }
     }

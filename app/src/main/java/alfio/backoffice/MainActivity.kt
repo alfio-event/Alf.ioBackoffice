@@ -17,6 +17,7 @@
 package alfio.backoffice
 
 import alfio.backoffice.model.AlfioConfiguration
+import alfio.backoffice.model.ConnectionConfiguration
 import alfio.backoffice.view.ConfigurationItemDecoration
 import alfio.backoffice.view.ConfigurationViewAdapter
 import alfio.backoffice.view.SwipeCallback
@@ -107,9 +108,9 @@ class MainActivity : BaseActivity() {
         val scanResult : IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent)
         if(scanResult != null && scanResult.contents != null) {
             val result: Map<String, String> = Common.gson.fromJson(scanResult.contents, MapStringStringTypeToken().type)
-            loadAndSelectEvent(result["baseUrl"]!!, result["username"]!!, result["password"]!!, {item, position -> listAdapter.notifyItemInserted(position);})
+            loadAndSelectEvent(ConnectionConfiguration(result["baseUrl"]!!, result["username"]!!, result["password"]!!, result["sslCert"]), { item, position -> listAdapter.notifyItemInserted(position);})
         }
     }
 
-    class MapStringStringTypeToken : TypeToken<Map<String, String>>() {}
+    class MapStringStringTypeToken : TypeToken<Map<String, String>>()
 }

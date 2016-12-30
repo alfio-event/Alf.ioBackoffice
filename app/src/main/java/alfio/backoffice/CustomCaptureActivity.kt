@@ -18,6 +18,5 @@ package alfio.backoffice
 
 import com.journeyapps.barcodescanner.CaptureActivity
 
-class CustomCaptureActivity : CaptureActivity() {
-}
+class CustomCaptureActivity : CaptureActivity()
 

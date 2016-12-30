@@ -39,7 +39,7 @@ class EventDetailLoader(c: Context, showProgressDialog: Boolean = true, val isSp
     override fun work(param: EventDetailParam): Pair<EventDetailParam, EventDetailResult> {
         val event = loadEvent(param)
         return if(event.first) {
-            val image = EventImageLoader(caller).work(EventImageParam(param.baseUrl, event.second)).second
+            val image = EventImageLoader(caller).work(EventImageParam(param.configuration)).second
             param to EventDetailResult(true, event.second, image.image)
         } else {
             param to emptyResult()
@@ -51,7 +51,7 @@ class EventDetailLoader(c: Context, showProgressDialog: Boolean = true, val isSp
             if(!ConnectionState.active) {
                 return true to param.configuration.event
             }
-            val response = eventService.loadSingleEvent(param.baseUrl, param.eventName)
+            val response = eventService.loadSingleEvent(param.configuration)
             val body = response.body()
             if(response.isSuccessful) {
                 return true to Common.gson.fromJson(body.string(), Event::class.java)
@@ -85,14 +85,17 @@ class EventImageLoader(c: Context) : AlfioAsyncTask<ByteArray, EventImageParam, 
     override fun errorResult(error: Throwable) = EventImageResult(ByteArray(0))
 
     override fun work(param: EventImageParam): Pair<EventImageParam, EventImageResult> {
-        val imageUrl = param.event.imageUrl ?: return param to emptyResult()
-        val localImage = loadLocalImage(param.baseUrl, imageUrl, param.event)
-        return param to EventImageResult(localImage)
+        return if(param.configuration.event.imageUrl != null) {
+            val localImage = loadLocalImage(param.configuration)
+            param to EventImageResult(localImage)
+        } else {
+            param to emptyResult()
+        }
     }
 
-    private fun loadLocalImage(baseUrl: String, imageUrl: String, event: Event) : ByteArray {
+    private fun loadLocalImage(configuration: AlfioConfiguration) : ByteArray {
         try {
-            val fileName = evaluateFileName(baseUrl, event)
+            val fileName = evaluateFileName(configuration.url, configuration.event)
             if(caller.filesDir.resolve(fileName).exists()) {
                 val stream = caller.openFileInput(fileName)
                 val channel = stream.channel
@@ -105,14 +108,14 @@ class EventImageLoader(c: Context) : AlfioAsyncTask<ByteArray, EventImageParam, 
         }
 
         return if(ConnectionState.active) {
-            loadRemoteImage(baseUrl, imageUrl, event)
+            loadRemoteImage(configuration)
         } else {
             ByteArray(0)
         }
     }
 
     private fun saveImageFile(baseUrl: String, event: Event, image: ByteArray) : ByteArray {
-        if(image.size > 0) {
+        if(image.isNotEmpty()) {
             try {
                 val fileName = evaluateFileName(baseUrl, event)
                 val stream = caller.openFileOutput(fileName, Context.MODE_PRIVATE)
@@ -157,21 +160,21 @@ class EventImageLoader(c: Context) : AlfioAsyncTask<ByteArray, EventImageParam, 
     private fun evaluateFileName(baseUrl: String, event: Event) = "${event.key}-${baseUrl.replace("[^A-Za-z0-9]".toRegex(), "_")}"
 
 
-    private fun loadRemoteImage(baseUrl: String, imageUrl: String, event: Event) : ByteArray {
-        val url = if(imageUrl.startsWith("http")) imageUrl else "$baseUrl${event.imageUrl}"
-        val response = eventService.loadEventImage(url)
-        val body = response.body()
-        if(response.isSuccessful) {
-            val image = body.bytes()
-            return saveImageFile(baseUrl, event, image)
+    private fun loadRemoteImage(configuration: AlfioConfiguration) : ByteArray {
+        val response = eventService.loadEventImage(configuration)
+        return if(response.isSuccessful) {
+            response.body().use { body ->
+                val image = body.bytes()
+                saveImageFile(configuration.url, configuration.event, image)
+            }
+        } else {
+            ByteArray(0)
         }
-        body.close()
-        return ByteArray(0)
     }
 
 }
 
-data class EventImageParam(val baseUrl: String, val event: Event) : TaskParam
+data class EventImageParam(val configuration: AlfioConfiguration) : TaskParam
 
 class EventImageResult(val image: ByteArray, error: Throwable? = null) : TaskResult<ByteArray>(image, error), Serializable {
     override fun isSuccessful(): Boolean {
