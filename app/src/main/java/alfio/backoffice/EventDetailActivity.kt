@@ -30,6 +30,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Vibrator
 import android.support.design.widget.Snackbar
@@ -62,6 +64,7 @@ class EventDetailActivity : BaseActivity() {
     var accelerometer by Delegates.notNull<Sensor>()
     var shakeDetector by Delegates.notNull<ShakeDetector>()
     var isSponsor= false
+    var wiFiLock: WifiManager.WifiLock? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +84,13 @@ class EventDetailActivity : BaseActivity() {
                 .execute(EventDetailParam(config))
         requestPermissionForAction(listOf(android.Manifest.permission.DISABLE_KEYGUARD), {window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)})
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        if(config.needsSslConfig()) {
+            requestPermissionForAction(listOf(android.Manifest.permission.WAKE_LOCK), {
+                val wiFiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
+                wiFiLock = wiFiManager.createWifiLock("Alf.io-${config.name}")
+                wiFiLock?.acquire()
+            })
+        }
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         shakeDetector = ShakeDetector(object: OnShakeListener {
@@ -127,8 +137,10 @@ class EventDetailActivity : BaseActivity() {
 
     private fun eventLoaded(eventDetail: EventDetailResult, savedInstanceState: Bundle?) {
         val drawable = BitmapDrawable(resources, BitmapFactory.decodeByteArray(eventDetail.image, 0, eventDetail.image.size))
-        drawable.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL
-        eventLogoContainer.background = drawable
+        drawable.gravity = Gravity.START or Gravity.CENTER_VERTICAL
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            eventLogoContainer.background = drawable
+        }
         val event = eventDetail.event!!
         eventName.text = event.name
         writeEventDetails(event, config, eventDates, eventDescription, userDetail, baseUrl, eventName)
@@ -199,6 +211,7 @@ class EventDetailActivity : BaseActivity() {
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(shakeDetector)
+        wiFiLock?.release()
     }
 
     private fun displayTicketDetails(ticket: Ticket?, qrCode: String?, checkInAlreadyDone: Boolean = false) {
