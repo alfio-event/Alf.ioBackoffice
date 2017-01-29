@@ -54,7 +54,7 @@ abstract class BaseActivity: AppCompatActivity() {
     }
 
     @SuppressLint("NewApi")
-    fun BaseActivity.requestPermissionForAction(permissions: List<String>, action: () -> Unit, required: Boolean = true) : Unit {
+    fun requestPermissionForAction(permissions: List<String>, action: () -> Unit, required: Boolean = true) : Unit {
         val missingPermissions: List<String> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             permissions.filter {checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED}
         } else listOf<String>()

@@ -29,7 +29,7 @@ class AlfioBackoffice : Application() {
     override fun onCreate() {
         Companion.ctx = applicationContext
         connectivityManager.checkConnectivity(applicationContext)
-        registerReceiver(ConnectivityManager(), IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"))
+        registerReceiver(connectivityManager, IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"))
         startBackgroundServices()
     }
 

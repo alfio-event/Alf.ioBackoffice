@@ -18,6 +18,7 @@ package alfio.backoffice
 
 import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.ConnectionConfiguration
+import alfio.backoffice.service.WifiLockService
 import alfio.backoffice.view.ConfigurationItemDecoration
 import alfio.backoffice.view.ConfigurationViewAdapter
 import alfio.backoffice.view.SwipeCallback
@@ -94,6 +95,7 @@ class MainActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         listAdapter.notifyDataSetChanged()
+        WifiLockService.releaseLock()
     }
 
     fun scanQRCodeClicked(): Unit {

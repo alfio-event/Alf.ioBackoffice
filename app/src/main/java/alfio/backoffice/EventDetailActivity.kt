@@ -21,6 +21,7 @@ import alfio.backoffice.model.AlfioConfiguration
 import alfio.backoffice.model.CheckInStatus.*
 import alfio.backoffice.model.Ticket
 import alfio.backoffice.model.UserType
+import alfio.backoffice.service.WifiLockService
 import alfio.backoffice.task.*
 import android.content.Context
 import android.content.Intent
@@ -30,7 +31,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Vibrator
@@ -64,7 +64,6 @@ class EventDetailActivity : BaseActivity() {
     var accelerometer by Delegates.notNull<Sensor>()
     var shakeDetector by Delegates.notNull<ShakeDetector>()
     var isSponsor= false
-    var wiFiLock: WifiManager.WifiLock? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,11 +84,7 @@ class EventDetailActivity : BaseActivity() {
         requestPermissionForAction(listOf(android.Manifest.permission.DISABLE_KEYGUARD), {window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)})
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if(config.needsSslConfig()) {
-            requestPermissionForAction(listOf(android.Manifest.permission.WAKE_LOCK), {
-                val wiFiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
-                wiFiLock = wiFiManager.createWifiLock("Alf.io-${config.name}")
-                wiFiLock?.acquire()
-            })
+            WifiLockService.requestLock(this)
         }
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -211,7 +206,6 @@ class EventDetailActivity : BaseActivity() {
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(shakeDetector)
-        wiFiLock?.release()
     }
 
     private fun displayTicketDetails(ticket: Ticket?, qrCode: String?, checkInAlreadyDone: Boolean = false) {
