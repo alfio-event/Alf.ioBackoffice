@@ -10,7 +10,7 @@
     <template let-item="item" class="event">
       <GridLayout columns="70, auto">
         <Image col="0" [src]="item.image" stretch="aspectFit" width="70" height="70"></Image>
-        <StackLayout col="1" class="medium-spacing" orientation="vertical">
+        <StackLayout col="1" class="medium-spacing" orientation="vertical" (tap)="select(item)">
             <Label [text]="item.eventConfiguration.name" class="eventName"></Label>
             <Label text="{{ item.eventConfiguration.begin | date:'medium' }} - {{ item.eventConfiguration.end | date:'medium' }}" *ngIf="!item.eventConfiguration.oneDay"></Label>
             <Label text="{{ item.eventConfiguration.begin | date:'mediumDate' }} {{ item.eventConfiguration.begin | date:'shortTime' }} - {{ item.eventConfiguration.end | date:'shortTime' }}" *ngIf="item.eventConfiguration.oneDay"></Label>
