@@ -3,17 +3,9 @@
 </ActionBar>
 
 <GridLayout rows="10, *, auto, 60">
-  <ListView [items]="events" row="1" [class.visible]="listLoaded">
+  <ListView [items]="events" row="1" [class.visible]="listLoaded" *ngIf="account">
     <template let-item="item" class="event">
-      <GridLayout columns="70, auto">
-        <Image col="0" [src]="item.image" stretch="aspectFit" width="70" height="70"></Image>
-        <StackLayout col="1" class="medium-spacing" orientation="vertical" (tap)="select(item.eventConfiguration)">
-            <Label [text]="item.eventConfiguration.name" class="eventName"></Label>
-            <Label text="{{ item.eventConfiguration.begin | date:'medium' }} - {{ item.eventConfiguration.end | date:'medium' }}" *ngIf="!item.eventConfiguration.oneDay"></Label>
-            <Label text="{{ item.eventConfiguration.begin | date:'mediumDate' }} {{ item.eventConfiguration.begin | date:'shortTime' }} - {{ item.eventConfiguration.end | date:'shortTime' }}" *ngIf="item.eventConfiguration.oneDay"></Label>
-            <Label [text]="item.eventConfiguration.location"></Label>
-        </StackLayout>
-      </GridLayout>
+      <event-header [event]="item.eventConfiguration" [account]="account" (onTap)="select($event)"></event-header>
     </template>
   </ListView>
 

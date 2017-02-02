@@ -14,13 +14,10 @@ export class AccountService {
     private accounts: AccountsArray;
 
     constructor(private http: Http) {
-        console.log("Calling AccountService constructor");
         this.accounts = this.loadSavedAccounts();
-        console.log("loaded accounts array", typeof this.accounts, this.accounts.getAllAccounts().length);
     }
 
     public registerNewAccount(url: string, username: string, password: string): Observable<AccountResponse> {
-        console.log("calling: " + url);
         return this.http.get(url + "/admin/api/user-type", {
                 headers: this.authorization(username, password)
             })
@@ -46,7 +43,6 @@ export class AccountService {
             }).map(accountResponse => {
                 let account = accountResponse.getAccount();
                 this.accounts.set(account.getKey(), account);
-                console.log("set. Persisting...", JSON.stringify(this.accounts));
                 this.persistAccounts();
                 console.log("accounts persisted.");
                 return accountResponse;
@@ -89,7 +85,6 @@ export class AccountService {
     private loadSavedAccounts() :AccountsArray {
         let savedData = appSettings.getString(ACCOUNTS_KEY, "--");
         if (savedData !== "--") {
-            console.log("parsing saved data...", savedData);
             return new AccountsArray(JSON.parse(savedData).map(obj => {
                 let account = new Account();
                 account.url = obj.url;
@@ -101,13 +96,11 @@ export class AccountService {
             }));
         }
         let empty = new AccountsArray([]);
-        //console.log("returning empty accounts array", empty.length);
         return empty;
     }
 
     private persistAccounts() {
         let elements = this.accounts.getAllAccounts();
-        console.log("called persist accounts. Account size is ", elements.length);
         let serializedElements = JSON.stringify(elements);
         console.log("serializing...");
         appSettings.setString(ACCOUNTS_KEY, serializedElements);

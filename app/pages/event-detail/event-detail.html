@@ -3,15 +3,11 @@
 </ActionBar>
 
 <GridLayout rows="10, auto, *, 50">
-    <GridLayout columns="70, auto" row="1" *ngIf="event">
-        <Image col="0" [src]="eventImage" stretch="aspectFit" width="70" height="70"></Image>
-        <StackLayout col="1" class="medium-spacing" orientation="vertical">
-            <Label [text]="event.name" class="eventName"></Label>
-            <Label text="{{ event.begin | date:'medium' }} - {{ event.end | date:'medium' }}" *ngIf="!event.oneDay"></Label>
-            <Label text="{{ event.begin | date:'mediumDate' }} {{ event.begin | date:'shortTime' }} - {{ event.end | date:'shortTime' }}" *ngIf="event.oneDay"></Label>
-            <Label [text]="event.location"></Label>
-        </StackLayout>
-    </GridLayout>
+    
+    <CardView class="cardStyle" margin="10" elevation="5" radius="1" row="1">
+        <event-header [event]="event" [account]="account"></event-header>
+    </CardView>
+    
     <StackLayout row="2">
         
     </StackLayout>

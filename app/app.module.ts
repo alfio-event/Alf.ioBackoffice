@@ -1,3 +1,4 @@
+import { EventHeaderComponent } from './pages/event-header/event-header.component';
 import { NgModule } from "@angular/core";
 import { NativeScriptFormsModule } from "nativescript-angular/forms";
 import { NativeScriptHttpModule } from "nativescript-angular/http";
@@ -21,6 +22,7 @@ import { routes, navigatableComponents } from "./app.routing";
     declarations: [
         SIDEDRAWER_DIRECTIVES,
         AppComponent,
+        EventHeaderComponent,
         ...navigatableComponents
     ],
     bootstrap: [AppComponent]

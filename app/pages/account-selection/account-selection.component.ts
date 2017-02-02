@@ -9,7 +9,7 @@ import dialogs = require("ui/dialogs");
 import { Account, EventConfiguration } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import {AccountResponse} from "../../shared/account/account";
-import { BARCODE_SCANNER, BarcodeScanner } from '../../utils/barcodescanner';
+import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../utils/barcodescanner';
 
 @Component({
     selector: "account-selection",
@@ -26,8 +26,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         private page: Page, 
         private routerExtensions: RouterExtensions,
         @Inject(BARCODE_SCANNER) private barcodeScanner: BarcodeScanner) {
-        console.log("init completed. Loaded " + this.accounts.length + " accounts");
-        console.log(JSON.stringify(this.accounts));
     }
 
     ngOnInit() {
@@ -46,28 +44,20 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
 
     requestQrScan() {
         this.isLoading = true;
-        this.barcodeScanner.scan({
-            formats: "QR_CODE",   // Pass in of you want to restrict scanning to certain types
-            cancelLabel: "EXIT. Also, try the volume buttons!", // iOS only, default 'Close'
-            message: "Use the volume buttons for extra light", // Android only, default is 'Place a barcode inside the viewfinder rectangle to scan it.'
-            showFlipCameraButton: false,   // default false
-            preferFrontCamera: false,     // default false
-            showTorchButton: true,        // iOS only, default false
-            orientation: "portrait",     // Android only, optionally lock the orientation to either "portrait" or "landscape"
-            openSettingsIfPermissionWasPreviouslyDenied: true // On iOS you can send the user to the settings app if access was previously denied
-        }).then((result) => {
-            this.isLoading = true;
-            let scanResult = JSON.parse(result.text);
-            this.accountService.registerNewAccount(scanResult.baseUrl, scanResult.username, scanResult.password)
-                .subscribe(resp => this.processResponse(resp), () => {
-                    alert("error")
-                    this.isLoading = false;
-                });
+        this.barcodeScanner.scan(defaultScanOptions)
+            .then((result) => {
+                this.isLoading = true;
+                let scanResult = JSON.parse(result.text);
+                this.accountService.registerNewAccount(scanResult.baseUrl, scanResult.username, scanResult.password)
+                    .subscribe(resp => this.processResponse(resp), () => {
+                        alert("error")
+                        this.isLoading = false;
+                    });
 
-        }, (error) => {
-            console.log("No scan: " + error);
-            this.isLoading = false;
-        });
+            }, (error) => {
+                console.log("No scan: " + error);
+                this.isLoading = false;
+            });
     }
 
     manage(item: Account): void {

@@ -15,7 +15,7 @@ import { ImageService } from "../../shared/image/image.service";
 
 @Component({
     selector: "account-manage",
-    providers: [AccountService, ImageService],
+    providers: [AccountService],
     templateUrl: "pages/account-manage/account-manage.html",
     styleUrls: ["pages/account-manage/account-manage-common.css"],
 })
@@ -26,8 +26,7 @@ export class AccountManageComponent implements OnInit {
 
     constructor(private route: ActivatedRoute,
         private routerExtensions: RouterExtensions,
-        private accountService: AccountService,
-        private imageService: ImageService) { }
+        private accountService: AccountService) { }
 
     ngOnInit() {
         this.isLoading = true;
@@ -37,16 +36,8 @@ export class AccountManageComponent implements OnInit {
             this.accountService.findAccountById(id).ifPresent(account => {
                 this.account = account;
                 this.accountService.loadEventsForAccount(this.account)
-                    .switchMap(events => {
-                        let promises = events.map(e => this.imageService.getImage(this.account.url, e).map(img => {
-                            let selection = new EventConfigurationSelection(e, this.account.containsEvent(e.key))
-                            selection.image = img;
-                            return selection;
-                        }));
-                        return Observable.forkJoin(...promises);
-                    })
                     .subscribe(events => {
-                        this.events = events;
+                        this.events = events.map(e => new EventConfigurationSelection(e, this.account.containsEvent(e.key)));
                         this.isLoading = false;
                     }, error => {
                         console.log("error while loading events", error);

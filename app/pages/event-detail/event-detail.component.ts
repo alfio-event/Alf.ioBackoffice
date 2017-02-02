@@ -9,13 +9,12 @@ import { Observable } from "data/observable";
 import { RadSideDrawerComponent, SideDrawerType } from "nativescript-telerik-ui/sidedrawer/angular";
 import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../shared/account/account.service";
-import { ImageService } from "../../shared/image/image.service";
 import { Account, EventConfiguration, EventWithImage } from "../../shared/account/account";
 
 @Component({
     moduleId: module.id,
     selector: "event-detail",
-    providers: [ImageService],
+    providers: [AccountService],
     templateUrl: 'event-detail.html',
     styleUrls: ['event-detail-common.css']
 })
@@ -25,12 +24,10 @@ export class EventDetailComponent implements OnInit {
     isLoading: boolean;
     account: Account;
     event: EventConfiguration;
-    eventImage: string;
 
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
-                private accountService: AccountService,
-                private imageService: ImageService) {
+                private accountService: AccountService) {
     }
 
     onBackTap() {
@@ -45,13 +42,8 @@ export class EventDetailComponent implements OnInit {
             let eventId = params['eventId'];
             this.accountService.findAccountById(id).ifPresent(account => {
                 this.account = account;
-                let event = this.account.configurations.filter(c => c.key === eventId)[0];
-                this.imageService.getImage(account.url, event).subscribe(imgUrl => {
-                    this.event = event;
-                    this.eventImage = imgUrl;
-                    this.isLoading = false;
-                })
-                
+                this.event = this.account.configurations.filter(c => c.key === eventId)[0];
+                this.isLoading = false;
             });
         });        
     }
