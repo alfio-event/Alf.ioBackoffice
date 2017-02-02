@@ -4,7 +4,7 @@
 
 <GridLayout rows="50, *, auto, 60">
 
-  <Label class="pageTitle" text="Select the event(s) you want to add"></Label>
+  <Label class="pageTitle" text="Select the event"></Label>
 
   <ListView [items]="events" row="1" [class.visible]="listLoaded">
     <template let-item="item" class="event">
@@ -21,7 +21,5 @@
   </ListView>
 
   <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="1" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
-
-  <Button text="Update configuration" row="2" class="submit-button" (tap)="persistSelection()"></Button>
 
 </GridLayout>

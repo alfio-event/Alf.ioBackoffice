@@ -61,12 +61,6 @@ export class AccountManageComponent implements OnInit {
         this.routerExtensions.back();
     }
 
-    persistSelection() {
-        this.accountService.updateEventsForAccount(this.account.getKey(), this.events.filter(e => e.selected).map(e => e.eventConfiguration));
-        this.routerExtensions.navigate(["/"])
-    }
-
-
     select(item: EventConfiguration): void {
         this.routerExtensions.navigate(['/event-detail/', this.account.getKey(), item.key]);
     }
