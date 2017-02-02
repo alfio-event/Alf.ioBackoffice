@@ -33,7 +33,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     ngOnInit() {
         console.log("ngOnInit AccountSelection");
         this.accounts = this.accountService.getRegisteredAccounts();
-        this.page.actionBarHidden = true;
         this.isLoading = false;
     }
 

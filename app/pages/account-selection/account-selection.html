@@ -1,7 +1,6 @@
+<ActionBar title="Your accounts"></ActionBar>
 
 <GridLayout rows="*, auto, *, auto, *" columns="50, *, 50" class="account-selection">
-	<Label *ngIf="hasAccounts()" row="1" col="1" text="Select an account from the list" class="pageTitle"></Label>
-	<Label *ngIf="!hasAccounts()" row="1" col="1" text="Please create an account" class="pageTitle"></Label>
 	<ListView [items]="accounts" row="2" col="1" [class.visible]="hasAccounts && !isLoading">
 		<template let-item="item">
 			<StackLayout col="0" orientation="vertical" class="medium-spacing" (tap)="manage(item)">
