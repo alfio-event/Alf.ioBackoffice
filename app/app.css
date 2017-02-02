@@ -30,16 +30,6 @@ TextField {
   font-weight: bold;
   text-align: center;
 }
-
-.material-icon {
-  font-family: 'Material-Design-Iconic-Font';
-  vertical-align: middle;
-}
-
-.icon-medium {
-  font-size: 32;
-}
-
 .fab-button {
     height: 70;
     margin: 15;
