@@ -66,4 +66,23 @@ export class AccountManageComponent implements OnInit {
         this.routerExtensions.navigate(["/"])
     }
 
+
+    select(item: Account): void {
+        /*let eventsSize = item.configurations.length;
+        console.log("events size: ", eventsSize);
+        if (eventsSize == 0) {
+            this.routerExtensions.navigate(['/manage-account/', item.getKey()]);
+        } else if (eventsSize == 1) {
+            this.routerExtensions.navigate(['/event-detail/', item.getKey(), item.configurations[0].key]);
+        } else {
+            dialogs.action({
+                message: "Select the event",
+                cancelButtonText: "cancel",
+                actions: item.configurations.map(e => e.name)
+            }).then(result => {
+                console.log("Dialog result: " + result)
+            });
+        }*/
+    }
+
 }

@@ -75,24 +75,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         this.routerExtensions.navigate(['/manage-account/', item.getKey()]);
     }
 
-    select(item: Account): void {
-        let eventsSize = item.configurations.length;
-        console.log("events size: ", eventsSize);
-        if (eventsSize == 0) {
-            this.routerExtensions.navigate(['/manage-account/', item.getKey()]);
-        } else if (eventsSize == 1) {
-            this.routerExtensions.navigate(['/event-detail/', item.getKey(), item.configurations[0].key]);
-        } else {
-            dialogs.action({
-                message: "Select the event",
-                cancelButtonText: "cancel",
-                actions: item.configurations.map(e => e.name)
-            }).then(result => {
-                console.log("Dialog result: " + result)
-            });
-        }
-    }
-
     private processResponse(accountResponse: AccountResponse) {
         console.log("success!");
         if (!accountResponse.isExisting()) {

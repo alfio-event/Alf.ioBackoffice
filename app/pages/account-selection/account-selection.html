@@ -3,13 +3,10 @@
 	<Label *ngIf="!hasAccounts()" row="1" col="1" text="Please create an account" class="pageTitle"></Label>
 	<ListView [items]="accounts" row="2" col="1" [class.visible]="hasAccounts && !isLoading">
 		<template let-item="item">
-      <GridLayout columns="*, 50">
-        <StackLayout col="0" orientation="vertical" class="medium-spacing" (tap)="select(item)">
-          <Label [text]="item.username" class="accountName"></Label>
-				  <Label [text]="item.url"></Label>
-        </StackLayout>
-        <Label col="1" text="&#xf1c6;" class="material-icon icon-medium" (tap)="manage(item)"></Label>
-			</GridLayout>
+			<StackLayout col="0" orientation="vertical" class="medium-spacing" (tap)="manage(item)">
+				<Label [text]="item.username" class="accountName"></Label>
+				<Label [text]="item.url"></Label>
+			</StackLayout>
 		</template>
 	</ListView>
 	<ActivityIndicator row="2" col="1" [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" horizontalAlignment="center"
