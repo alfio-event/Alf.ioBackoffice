@@ -10,7 +10,6 @@ import { Observable } from 'rxjs/Observable'
 import { Account, EventConfiguration, EventConfigurationSelection } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import { ImageService } from "../../shared/image/image.service";
-var barcodescanner = require("nativescript-barcodescanner");
 
 @Component({
     selector: "account-manage",
