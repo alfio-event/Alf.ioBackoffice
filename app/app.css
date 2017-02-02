@@ -7,7 +7,6 @@ Page {
 ActionBar {
   background-color: #ff9800;
   color: white;
-  /*padding-top:15;*/
 }
 TextField {
   padding: 10;
@@ -39,4 +38,12 @@ TextField {
 
 .icon-medium {
   font-size: 32;
+}
+
+.fab-button {
+    height: 70;
+    margin: 15;
+    background-color: #ff4081; 
+    horizontal-align: right; 
+    vertical-align: bottom; 
 }

@@ -1,3 +1,4 @@
+
 <GridLayout rows="*, auto, *, auto, *" columns="50, *, 50" class="account-selection">
 	<Label *ngIf="hasAccounts()" row="1" col="1" text="Select an account from the list" class="pageTitle"></Label>
 	<Label *ngIf="!hasAccounts()" row="1" col="1" text="Please create an account" class="pageTitle"></Label>
@@ -12,6 +13,7 @@
 	<ActivityIndicator row="2" col="1" [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" horizontalAlignment="center"
 		verticalAlignment="center"></ActivityIndicator>
 	<StackLayout row="3" col="1" orientation="vertical">
-		<Button text="Scan Credentials" class="submit-button" (tap)="requestQrScan()"></Button>
+		<FAB icon="ic_menu_add" class="fab-button" (tap)="requestQrScan()"></FAB>
 	</StackLayout>
+
 </GridLayout>
