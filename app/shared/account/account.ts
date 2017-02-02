@@ -52,22 +52,35 @@ export class AccountResponse {
     }
 }
 
-export class AccountsArray extends Array<Account> {
+export class AccountsArray {
+
+    constructor(private accounts: Array<Account>) {}
+
+
+    getAllAccounts(): Array<Account> {
+        return this.accounts;
+    }
+
     get(key: string):Maybe<Account> {
-        return this.find(key).map(pair => pair.second);
+        try {
+            return this.find(key).map(pair => pair.second);
+        } catch(e) {
+            console.log(e);
+            return new Nothing<Account>();
+        }
     }
 
     set(key: string, value: Account) :void {
         let existing = this.find(key);
         if(existing.isPresent()) {
-            this[existing.value.first] = existing.value.second;
+            this.accounts[existing.value.first] = existing.value.second;
         } else {
-            this.push(value);
+            this.accounts.push(value);
         }
     }
 
     private find(key:string): Maybe<Pair<number, Account>> {
-        let result = this.map((v, i) => new Pair(i, v)).filter(a => a.second.getKey() === key);
+        let result = this.accounts.map((v, i) => new Pair(i, v)).filter(a => a.second.getKey() === key);
         if(result.length > 0) {
             return new Some(result[0]);
         }

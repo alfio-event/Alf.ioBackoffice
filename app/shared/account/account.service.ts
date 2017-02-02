@@ -10,12 +10,12 @@ import { Account, AccountType, EventConfiguration, AccountsArray, AccountRespons
 
 @Injectable()
 export class AccountService {
-    private accounts = new AccountsArray();
+    private accounts;
 
     constructor(private http: Http) {
         console.log("Calling AccountService constructor");
-        this.accounts.push(...this.loadSavedAccounts());
-        console.log("loaded accounts array", typeof this.accounts, this.accounts.length);
+        this.accounts = this.loadSavedAccounts();
+        console.log("loaded accounts array", typeof this.accounts, this.accounts.getAllAccounts().length);
     }
 
     public registerNewAccount(url: string, username: string, password: string) {
@@ -54,7 +54,7 @@ export class AccountService {
 
     public getRegisteredAccounts(): Array<Account> {
         let elements = [];
-        this.accounts.forEach(elements.push);
+        this.accounts.getAllAccounts().forEach(elements.push);
         return elements;
     }
 
@@ -85,7 +85,7 @@ export class AccountService {
         let savedData = appSettings.getString(ACCOUNTS_KEY, "--");
         if (savedData !== "--") {
             console.log("parsing saved data...", savedData);
-            return new AccountsArray(...JSON.parse(savedData).map(obj => {
+            return new AccountsArray(JSON.parse(savedData).map(obj => {
                 let account = new Account();
                 account.url = obj.url;
                 account.username = obj.username;
@@ -95,14 +95,13 @@ export class AccountService {
                 return account;
             }));
         }
-        let empty = new AccountsArray();
-        console.log("returning empty accounts array", empty.length);
+        let empty = new AccountsArray([]);
+        //console.log("returning empty accounts array", empty.length);
         return empty;
     }
 
     private persistAccounts() {
-        let elements = [];
-        this.accounts.forEach(elements.push);
+        let elements = this.accounts.getAllAccounts();
         console.log("called persist accounts. Account size is ", elements.length);
         let serializedElements = JSON.stringify(elements);
         console.log("serializing...");
