@@ -3,6 +3,7 @@ import { Http, Headers, Response } from "@angular/http";
 import { Observable, ReplaySubject } from "rxjs/Rx";
 import "rxjs/add/operator/do";
 import "rxjs/add/operator/map";
+import "rxjs/add/operator/switchMap";
 var appSettings = require("application-settings");
 const ACCOUNTS_KEY = "ALFIO_ACCOUNTS";
 
@@ -10,7 +11,7 @@ import { Account, AccountType, EventConfiguration, AccountsArray, AccountRespons
 
 @Injectable()
 export class AccountService {
-    private accounts;
+    private accounts: AccountsArray;
 
     constructor(private http: Http) {
         console.log("Calling AccountService constructor");
@@ -18,11 +19,11 @@ export class AccountService {
         console.log("loaded accounts array", typeof this.accounts, this.accounts.getAllAccounts().length);
     }
 
-    public registerNewAccount(url: string, username: string, password: string) {
+    public registerNewAccount(url: string, username: string, password: string): Observable<AccountResponse> {
         console.log("calling: " + url);
         return this.http.get(url + "/admin/api/user-type", {
-            headers: this.authorization(username, password)
-        })
+                headers: this.authorization(username, password)
+            })
             .map(response => response.text())
             .map(data => {
                 console.log("got user type", data);
@@ -33,18 +34,22 @@ export class AccountService {
                 account.accountType = data === "SPONSOR" ? AccountType.SPONSOR : AccountType.STAFF;
                 account.configurations = [];
                 let newAccountKey = account.getKey();
-                return this.accounts.get(newAccountKey)
-                    .map(a => {
-                        console.log("Account exists. Returning it...");
-                        return new AccountResponse(a, true);
-                    }).orElse(() => {
-                        console.log("account does not exist. Inserting...");
-                        this.accounts.set(newAccountKey, account);
-                        console.log("set. Persisting...", JSON.stringify(this.accounts));
-                        this.persistAccounts();
-                        console.log("accounts persisted.");
-                        return new AccountResponse(account, false);
+                let maybeExisting = this.accounts.get(newAccountKey);
+                return new AccountResponse(account, maybeExisting.isPresent());
+            }).switchMap(data => {
+                return this.loadEventsForAccount(data.getAccount())
+                    .map(configurations => {
+                        let account = data.getAccount();
+                        account.configurations = configurations;
+                        return new AccountResponse(account, data.isExisting());
                     });
+            }).map(accountResponse => {
+                let account = accountResponse.getAccount();
+                this.accounts.set(account.getKey(), account);
+                console.log("set. Persisting...", JSON.stringify(this.accounts));
+                this.persistAccounts();
+                console.log("accounts persisted.");
+                return accountResponse;
             }).catch(error => {
                 console.log("got error! ");
                 console.log(JSON.stringify(error));
@@ -62,7 +67,7 @@ export class AccountService {
         return this.accounts.get(id);
     }
 
-    public loadEventsForAccount(account: Account) {
+    public loadEventsForAccount(account: Account): Observable<Array<EventConfiguration>> {
         return this.http.get(account.url + "/admin/api/events", {
             headers: this.authorization(account.username, account.password)
         }).map(data => data.json());

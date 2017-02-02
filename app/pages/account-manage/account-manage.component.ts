@@ -5,7 +5,9 @@ import { Color } from "color";
 import { Page } from "ui/page";
 import { TextField } from "ui/text-field";
 import { View } from "ui/core/view";
-import { Observable } from 'rxjs/Observable'
+import { Observable } from 'rxjs/Observable';
+import "rxjs/add/operator/map";
+import "rxjs/add/operator/switchMap";
 
 import { Account, EventConfiguration, EventConfigurationSelection } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
@@ -35,13 +37,16 @@ export class AccountManageComponent implements OnInit {
             this.accountService.findAccountById(id).ifPresent(account => {
                 this.account = account;
                 this.accountService.loadEventsForAccount(this.account)
+                    .switchMap(events => {
+                        let promises = events.map(e => this.imageService.getImage(this.account.url, e).map(img => {
+                            let selection = new EventConfigurationSelection(e, this.account.containsEvent(e.key))
+                            selection.image = img;
+                            return selection;
+                        }));
+                        return Observable.forkJoin(...promises);
+                    })
                     .subscribe(events => {
-                        console.log("received events_");
-                        this.events = events.map(e => {
-                            let configuration = new EventConfigurationSelection(e, this.account.containsEvent(e.key));
-                            this.imageService.fillWithImage(this.account.url, e, configuration);
-                            return configuration;
-                        });
+                        this.events = events;
                         this.isLoading = false;
                     }, error => {
                         console.log("error while loading events", error);

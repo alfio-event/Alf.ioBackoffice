@@ -1,22 +1,24 @@
+<ActionBar title="Event Detail">
+    <NavigationButton icon="res://ic_arrow_back_white_24dp" (tap)="onBackTap()" text="Back to List"></NavigationButton>
+</ActionBar>
 
-<RadSideDrawer exampleTitle toggleNavButton>
-    <StackLayout tkDrawerContent class="sideStackLayout">
-        <StackLayout class="sideTitleStackLayout">
-            <Label text="Navigation Menu"></Label>
+<GridLayout rows="10, auto, *, 50">
+    <GridLayout columns="70, auto" row="1" *ngIf="event">
+        <Image col="0" [src]="eventImage" stretch="aspectFit" width="70" height="70"></Image>
+        <StackLayout col="1" class="medium-spacing" orientation="vertical">
+            <Label [text]="event.name" class="eventName"></Label>
+            <Label text="{{ event.begin | date:'medium' }} - {{ event.end | date:'medium' }}" *ngIf="!event.oneDay"></Label>
+            <Label text="{{ event.begin | date:'mediumDate' }} {{ event.begin | date:'shortTime' }} - {{ event.end | date:'shortTime' }}" *ngIf="event.oneDay"></Label>
+            <Label [text]="event.location"></Label>
         </StackLayout>
-        <StackLayout class="sideStackLayout">
-            <Label text="Primary" class="sideLabel sideLightGrayLabel"></Label>
-            <Label text="Social" class="sideLabel"></Label>
-            <Label text="Promotions" class="sideLabel"></Label>
-            <Label text="Labels" class="sideLabel sideLightGrayLabel"></Label>
-            <Label text="Important" class="sideLabel"></Label>
-            <Label text="Starred" class="sideLabel"></Label>
-            <Label text="Sent Mail" class="sideLabel"></Label>
-            <Label text="Drafts" class="sideLabel"></Label>
-        </StackLayout>
+    </GridLayout>
+    <StackLayout row="2">
+        
     </StackLayout>
-    <StackLayout tkMainContent>
-        <Label [text]="mainContentText" textWrap="true" class="drawerContentText"></Label>
-        <Button text="OPEN DRAWER" (tap)=openDrawer()></Button>
+    <StackLayout row="4" orientation="horizontal">
+        <Button text="Collected Contacts"></Button>
+        <Button text="Scan"></Button>
     </StackLayout>
-</RadSideDrawer>
+    <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="1" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
+
+</GridLayout>

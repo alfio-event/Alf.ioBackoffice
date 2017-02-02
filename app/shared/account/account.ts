@@ -35,9 +35,17 @@ export enum AccountType {
     SPONSOR
 }
 
-export class EventConfigurationSelection {
+export interface ImageContainer {
+    image: string;
+}
+
+export class EventConfigurationSelection implements ImageContainer {
     public image: string;
     constructor(public eventConfiguration: EventConfiguration, public selected: boolean) { }
+}
+
+export class EventWithImage implements ImageContainer {
+    constructor(public eventConfiguration: EventConfiguration, public image: string) {}
 }
 
 export class AccountResponse {
@@ -131,6 +139,8 @@ export class Some<X> implements Maybe<X> {
     }
 
     ifPresent(consumer: (X) => void) {
-        consumer.apply(this, [this.value]);
+        if(this.isPresent()) {
+            consumer(this.value);
+        }
     }
 }
