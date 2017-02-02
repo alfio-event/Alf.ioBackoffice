@@ -127,10 +127,10 @@ export class Some<X> implements Maybe<X> {
     }
 
     map<Y>(mapper: (X) => Y): Some<Y> {
-        return mapper.apply(this.value);
+        return new Some<Y>(mapper.apply(this, [this.value]));
     }
 
     ifPresent(consumer: (X) => void) {
-        consumer.apply(this.value);
+        consumer.apply(this, [this.value]);
     }
 }

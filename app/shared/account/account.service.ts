@@ -54,7 +54,7 @@ export class AccountService {
 
     public getRegisteredAccounts(): Array<Account> {
         let elements = [];
-        this.accounts.getAllAccounts().forEach(elements.push);
+        this.accounts.getAllAccounts().forEach(a => elements.push(a));
         return elements;
     }
 
