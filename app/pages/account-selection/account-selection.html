@@ -1,7 +1,7 @@
 <ActionBar title="Your accounts"></ActionBar>
 
 <GridLayout rows="auto, *">
-	<StackLayout row="1" *ngIf="!hasAccounts()" orientation="vertical" class="missing-accounts">
+	<StackLayout row="1" *ngIf="!hasAccounts()" orientation="vertical" class="missing-accounts" (tap)="requestQrScan()">
 		<Image src="res://ic_error_outline_black" stretch="aspectFit" width="50" height="50" class="missing-accounts"></Image>
 		<Label text="No accounts configured yet." class="missing-accounts"></Label>
 		<Label text="Please add one" class="missing-accounts"></Label>
