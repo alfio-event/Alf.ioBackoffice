@@ -1,6 +1,6 @@
 import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../utils/barcodescanner';
 import { SponsorScan } from '../../shared/scan/sponsor-scan';
-import { ChangeDetectorRef, Component, ElementRef, Inject, Injectable, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, Injectable, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import { View } from "ui/core/view";
 import { Page } from "ui/page";
@@ -21,7 +21,7 @@ import * as Vibrator from "nativescript-vibrate";
     styleUrls: ['event-detail-common.css']
 })
 @Injectable()
-export class EventDetailComponent implements OnInit {
+export class EventDetailComponent implements OnInit, OnDestroy {
 
     isLoading: boolean;
     account: Account;
@@ -57,6 +57,12 @@ export class EventDetailComponent implements OnInit {
             });
         });
         
+    }
+
+    ngOnDestroy() {
+        if(this.event && this.event.key) {
+            this.sponsorScanService.destroyForEvent(this.event.key);
+        }
     }
 
     requestQrScan() {

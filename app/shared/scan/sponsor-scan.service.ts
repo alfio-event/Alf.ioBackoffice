@@ -31,7 +31,11 @@ export class SponsorScanService  {
     }
 
     public destroyForEvent(eventKey: string) {
-        clearTimeout(this.timeoutIds[eventKey]);
+        if (this.timeoutIds[eventKey] !== undefined) {
+            console.log('Clear timeout for event ' + eventKey);
+            clearTimeout(this.timeoutIds[eventKey]);
+            this.timeoutIds[eventKey] = undefined;
+        }
     }
 
     private bulkScanUpload(eventKey: string, account: Account, toSend: Array<SponsorScan>) {
