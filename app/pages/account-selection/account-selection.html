@@ -1,4 +1,6 @@
-<ActionBar title="Your accounts"></ActionBar>
+<ActionBar title="Your accounts">
+	<ActionItem (tap)="requestQrScan()" icon="res://ic_add_circle_white" ios.position="right" text="Add new Configuration" android.position="actionBarIfRoom"></ActionItem>
+</ActionBar>
 
 <GridLayout rows="auto, *">
 	<StackLayout row="1" *ngIf="!hasAccounts()" orientation="vertical" class="missing-accounts" (tap)="requestQrScan()">
@@ -15,6 +17,5 @@
 			</StackLayout>
 		</template>
 	</ListView>
-	<FAB row="1" icon="res://ic_add_white" class="fab-button" (tap)="requestQrScan()"></FAB>
 	<ActivityIndicator row="1" [busy]="isLoading" class="loading-indicator"></ActivityIndicator>
 </GridLayout>
