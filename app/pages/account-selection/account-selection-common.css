@@ -16,3 +16,7 @@ Button, TextField {
 .list-item-padding {
   padding: 8
 }
+.missing-accounts {
+  horizontal-align: center; 
+  vertical-align: middle; 
+}

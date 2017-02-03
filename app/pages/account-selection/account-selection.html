@@ -1,7 +1,12 @@
 <ActionBar title="Your accounts"></ActionBar>
 
 <GridLayout rows="auto, *">
-	<Label row="1" text="Please add an account" *ngIf="!hasAccounts()"></Label>
+	<StackLayout row="1" *ngIf="!hasAccounts()" orientation="vertical" class="missing-accounts">
+		<Image src="res://ic_error_outline_black" stretch="aspectFit" width="50" height="50" class="missing-accounts"></Image>
+		<Label text="No accounts configured yet." class="missing-accounts"></Label>
+		<Label text="Please add one" class="missing-accounts"></Label>
+	</StackLayout>
+	
 	<ListView [items]="accounts" row="1" *ngIf="hasAccounts()" [class.visible]="!isLoading">
 		<template let-item="item">
 			<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding" (tap)="manage(item)">
