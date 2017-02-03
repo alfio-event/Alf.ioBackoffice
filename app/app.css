@@ -28,3 +28,6 @@ TextField {
     vertical-align: bottom; 
     background-color: #2962ff; 
 }
+.loading-indicator {
+  height: 50;
+}

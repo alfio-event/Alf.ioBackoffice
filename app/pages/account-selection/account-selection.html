@@ -1,7 +1,8 @@
 <ActionBar title="Your accounts"></ActionBar>
 
 <GridLayout rows="auto, *">
-	<ListView [items]="accounts" row="1" [class.visible]="hasAccounts && !isLoading">
+	<Label row="1" text="Please add an account" *ngIf="!hasAccounts()"></Label>
+	<ListView [items]="accounts" row="1" *ngIf="hasAccounts()" [class.visible]="!isLoading">
 		<template let-item="item">
 			<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding" (tap)="manage(item)">
 				<Label [text]="item.username" class="accountName"></Label>
@@ -10,5 +11,5 @@
 		</template>
 	</ListView>
 	<FAB row="1" icon="res://ic_add_white" class="fab-button" (tap)="requestQrScan()"></FAB>
-	<ActivityIndicator row="1" [busy]="isLoading"></ActivityIndicator>
+	<ActivityIndicator row="1" [busy]="isLoading" class="loading-indicator"></ActivityIndicator>
 </GridLayout>
