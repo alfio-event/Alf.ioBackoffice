@@ -11,7 +11,7 @@
 	</ListView>
 </GridLayout>
 <AbsoluteLayout verticalAlignment="bottom" horizontalAlignment="right">
-	<FAB icon="res://ic_add_white_24dp" class="fab-button" (tap)="requestQrScan()"></FAB>
+	<FAB icon="res://ic_add_white" class="fab-button" (tap)="requestQrScan()"></FAB>
 </AbsoluteLayout>
 <AbsoluteLayout  verticalAlignment="center" horizontalAlignment="center" [visibility]="isLoading ? 'visible' : 'collapse'">
 	<ActivityIndicator [busy]="isLoading" ></ActivityIndicator>
