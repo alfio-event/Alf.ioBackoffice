@@ -11,12 +11,9 @@ import {
 } from '@angular/core';
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import { View } from "ui/core/view";
-import { RadSideDrawer } from "nativescript-telerik-ui/sidedrawer";
 import { Page } from "ui/page";
 import { ActionItem } from "ui/action-bar";
-import sideDrawerModule = require('nativescript-telerik-ui/sidedrawer');
 import { Observable } from "data/observable";
-import { RadSideDrawerComponent, SideDrawerType } from "nativescript-telerik-ui/sidedrawer/angular";
 import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../shared/account/account.service";
 import { ImageService } from "../../shared/image/image.service";
