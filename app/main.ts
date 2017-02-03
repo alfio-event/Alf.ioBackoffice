@@ -7,6 +7,6 @@ import { registerElement } from "nativescript-angular/element-registry";
 registerElement("Fab", () => require("nativescript-floatingactionbutton").Fab);
 registerElement("CardView", () => require("nativescript-cardview").CardView);
 
-forcePortraitOrientation();
+//forcePortraitOrientation();
 
 platformNativeScriptDynamic().bootstrapModule(AppModule);
