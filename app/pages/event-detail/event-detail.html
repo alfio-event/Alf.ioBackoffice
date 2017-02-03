@@ -4,25 +4,30 @@
     <ActionItem (tap)="shuffle()" icon="res://ic_shuffle_white" ios.position="right" text="Shuffle" android.position="actionBarIfRoom"></ActionItem>
 </ActionBar>
 
-<GridLayout rows="auto, *">
-    
-    <CardView class="cardStyle" margin="10" elevation="5" radius="1" row="0">
-        <event-header [event]="event" [account]="account"></event-header>
-    </CardView>
-    <ListView [items]="scans" row="1" [class.visible]="listLoaded">
-        <template let-item="item">
-            <GridLayout columns="24, auto" *ngIf="event">
-                <Image col="0" src="res://ic_person_outline_black" stretch="aspectFit" width="24" height="24"></Image>
-                <StackLayout col="1" class="medium-spacing" orientation="vertical">
-                    <Label [text]="event.location"></Label>
-                </StackLayout>
-            </GridLayout>
-        </template>
-    </ListView>
+<GridLayout>
+
+    <GridLayout rows="auto, *">
+        
+        <CardView class="cardStyle" margin="10" elevation="5" radius="1" row="0">
+            <event-header [event]="event" [account]="account"></event-header>
+        </CardView>
+        <ListView [items]="scans" row="1" [class.visible]="listLoaded">
+            <template let-item="item">
+                <GridLayout columns="24, auto" *ngIf="event">
+                    <Image col="0" src="res://ic_person_outline_black" stretch="aspectFit" width="24" height="24"></Image>
+                    <StackLayout col="1" class="medium-spacing" orientation="vertical">
+                        <Label [text]="event.location"></Label>
+                    </StackLayout>
+                </GridLayout>
+            </template>
+        </ListView>
+    </GridLayout>
+    <AbsoluteLayout verticalAlignment="bottom" horizontalAlignment="right">
+        <FAB icon="res://ic_add_white" class="fab-button" (tap)="requestQrScan()"></FAB>
+    </AbsoluteLayout>
+    <AbsoluteLayout  verticalAlignment="center" horizontalAlignment="center" [visibility]="isLoading ? 'visible' : 'collapse'">
+        <ActivityIndicator [busy]="isLoading" ></ActivityIndicator>
+    </AbsoluteLayout>
+
+
 </GridLayout>
-<AbsoluteLayout verticalAlignment="bottom" horizontalAlignment="right">
-    <FAB icon="res://ic_add_white" class="fab-button" (tap)="requestQrScan()"></FAB>
-</AbsoluteLayout>
-<AbsoluteLayout  verticalAlignment="center" horizontalAlignment="center" [visibility]="isLoading ? 'visible' : 'collapse'">
-    <ActivityIndicator [busy]="isLoading" ></ActivityIndicator>
-</AbsoluteLayout>
