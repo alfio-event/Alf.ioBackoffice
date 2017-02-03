@@ -1,7 +1,6 @@
 import { EventConfiguration } from '../account/account';
 export class SponsorScan {
-    constructor(public configuration: EventConfiguration, 
-                public code: string,
+    constructor(public code: string,
                 public status: ScanStatus = ScanStatus.NEW,
                 public ticket: Ticket) {}
     isPending(): boolean {
