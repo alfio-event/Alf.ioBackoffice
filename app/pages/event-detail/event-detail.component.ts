@@ -49,7 +49,10 @@ export class EventDetailComponent implements OnInit {
             this.accountService.findAccountById(id).ifPresent(account => {
                 this.account = account;
                 this.event = this.account.configurations.filter(c => c.key === eventId)[0];
-                this.sponsorScanService.getForEvent(this.event.key, this.account).subscribe(list => this.scans = list);
+                this.sponsorScanService.getForEvent(this.event.key, this.account).subscribe(list => {
+                    console.log("received ", list.length)
+                    this.scans = list
+                });
                 this.isLoading = false;
             });
         });

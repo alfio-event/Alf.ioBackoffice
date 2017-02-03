@@ -1,20 +1,14 @@
 <ActionBar title="Your accounts"></ActionBar>
 
-<GridLayout>
-	<GridLayout>
-		<ListView [items]="accounts" [class.visible]="hasAccounts && !isLoading">
-			<template let-item="item">
-				<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding" (tap)="manage(item)">
-					<Label [text]="item.username" class="accountName"></Label>
-					<Label [text]="item.url"></Label>
-				</StackLayout>
-			</template>
-		</ListView>
-	</GridLayout>
-	<AbsoluteLayout verticalAlignment="bottom" horizontalAlignment="right">
-		<FAB icon="res://ic_add_white" class="fab-button" (tap)="requestQrScan()"></FAB>
-	</AbsoluteLayout>
-	<AbsoluteLayout  verticalAlignment="center" horizontalAlignment="center" [visibility]="isLoading ? 'visible' : 'collapse'">
-		<ActivityIndicator [busy]="isLoading" ></ActivityIndicator>
-	</AbsoluteLayout>
+<GridLayout rows="auto, *">
+	<ListView [items]="accounts" row="1" [class.visible]="hasAccounts && !isLoading">
+		<template let-item="item">
+			<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding" (tap)="manage(item)">
+				<Label [text]="item.username" class="accountName"></Label>
+				<Label [text]="item.url"></Label>
+			</StackLayout>
+		</template>
+	</ListView>
+	<FAB row="1" icon="res://ic_add_white" class="fab-button" (tap)="requestQrScan()"></FAB>
+	<ActivityIndicator row="1" [busy]="isLoading"></ActivityIndicator>
 </GridLayout>

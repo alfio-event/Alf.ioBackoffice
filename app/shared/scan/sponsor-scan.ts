@@ -18,5 +18,6 @@ export class Ticket {
                 public status: string,
                 public firstName: string,
                 public lastName: string,
+                public fullName: string,
                 public email: string) {}
 }
