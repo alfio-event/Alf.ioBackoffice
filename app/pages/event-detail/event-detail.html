@@ -4,9 +4,7 @@
     <ActionItem (tap)="shuffle()" icon="res://ic_shuffle_white" ios.position="right" text="Shuffle" android.position="actionBarIfRoom"></ActionItem>
 </ActionBar>
 
-<StackLayout orientation="vertical">
-
-    <Button text="Scan" (tap)="requestQrScan()"></Button>
+<GridLayout>
 
     <GridLayout rows="auto, *">
         
@@ -32,4 +30,4 @@
     </AbsoluteLayout>
 
 
-</StackLayout>
+</GridLayout>

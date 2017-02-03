@@ -1,7 +1,6 @@
 <ActionBar title="Your accounts"></ActionBar>
 
-<StackLayout orientation="vertical">
-	<Button text="Add new user" (tap)="requestQrScan()"></Button>
+<GridLayout>
 	<GridLayout>
 		<ListView [items]="accounts" [class.visible]="hasAccounts && !isLoading">
 			<template let-item="item">
@@ -18,4 +17,4 @@
 	<AbsoluteLayout  verticalAlignment="center" horizontalAlignment="center" [visibility]="isLoading ? 'visible' : 'collapse'">
 		<ActivityIndicator [busy]="isLoading" ></ActivityIndicator>
 	</AbsoluteLayout>
-</StackLayout>
+</GridLayout>
