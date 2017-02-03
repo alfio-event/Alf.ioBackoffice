@@ -20,3 +20,22 @@ Button, TextField {
   horizontal-align: center; 
   vertical-align: middle; 
 }
+.img-bg {
+  opacity: 0.4;
+}
+
+@keyframes editActivation {
+    from { background-color: white; }
+    to { background-color: #ff9800; }
+}
+.edit-active {
+    animation-name: editActivation;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    color: white;
+}
+.delete-item {
+  vertical-align: middle;
+  margin-right: 10;
+  margin-top: 10;
+}

@@ -3,18 +3,22 @@
 </ActionBar>
 
 <GridLayout rows="auto, *">
-	<StackLayout row="1" *ngIf="!hasAccounts()" orientation="vertical" class="missing-accounts" (tap)="requestQrScan()">
-		<Image src="res://ic_error_outline_black" stretch="aspectFit" width="50" height="50" class="missing-accounts"></Image>
+	<StackLayout row="1" *ngIf="!hasAccounts() && !isLoading" orientation="vertical" class="missing-accounts" (tap)="requestQrScan()">
+		<Image src="res://ic_error_outline_black" stretch="aspectFit" width="80" height="80" class="img-bg"></Image>
 		<Label text="No accounts configured yet." class="missing-accounts"></Label>
 		<Label text="Please add one" class="missing-accounts"></Label>
 	</StackLayout>
 	
 	<ListView [items]="accounts" row="1" *ngIf="hasAccounts()" [class.visible]="!isLoading">
 		<template let-item="item">
-			<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding" (tap)="manage(item)">
-				<Label [text]="item.username" class="accountName"></Label>
-				<Label [text]="item.url"></Label>
-			</StackLayout>
+			<GridLayout columns="*, auto" [class.edit-active]="isEditRequested(item)">
+				<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding" (longPress)="onLongPress(item)" (tap)="manage(item)">
+					<Label [text]="item.username" class="accountName"></Label>
+					<Label [text]="item.url"></Label>
+				</StackLayout>
+				<Image col="1" src="res://ic_delete_white" stretch="aspectFit" width="30" height="30" *ngIf="isEditRequested(item)" (tap)="delete(item)" class="delete-item"></Image>
+			</GridLayout>
+			
 		</template>
 	</ListView>
 	<ActivityIndicator row="1" [busy]="isLoading" class="loading-indicator"></ActivityIndicator>

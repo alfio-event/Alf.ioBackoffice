@@ -6,8 +6,7 @@
 
 
 
-    <GridLayout rows="auto, *">
-        
+    <GridLayout rows="auto, *, 70">
         <CardView class="cardStyle" margin="10" elevation="1" radius="1" >
             <event-header row="0" [event]="event" [account]="account"></event-header>
         </CardView>
@@ -22,8 +21,8 @@
                 </GridLayout>
             </template>
         </ListView>
-        <FAB row="1" icon="res://ic_add_white" class="fab-button" (tap)="requestQrScan()"></FAB>
         <ActivityIndicator row="1" [busy]="isLoading" ></ActivityIndicator>
+        <Button row="2" (tap)="requestQrScan()" class="submit-button" text="Scan"></Button>
     </GridLayout>
 
 

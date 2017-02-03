@@ -20,6 +20,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     accounts: Array<Account> = [];
     isLoading: boolean;
     displayEventSelection: boolean = false;
+    private editedAccount?: Account = null;
 
     constructor(private router: Router, 
         private accountService: AccountService, 
@@ -60,8 +61,25 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
             });
     }
 
-    manage(item: Account): void {
-        this.routerExtensions.navigate(['/manage-account/', item.getKey()]);
+    manage(account: Account): void {
+        if(this.isEditRequested(account)) {
+            this.editedAccount = null;
+        } else {
+            this.routerExtensions.navigate(['/manage-account/', account.getKey()]);
+        }
+        
+    }
+
+    onLongPress(account: Account): void {
+        this.editedAccount = account;
+    }
+
+    isEditRequested(account: Account): boolean {
+        return this.editedAccount === account;
+    }
+
+    delete(account: Account): void {
+        this.accounts = this.accountService.deleteAccount(account);
     }
 
     private processResponse(accountResponse: AccountResponse) {

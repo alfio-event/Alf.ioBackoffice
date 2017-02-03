@@ -59,6 +59,13 @@ export class AccountService {
         return elements;
     }
 
+    public deleteAccount(account: Account): Array<Account> {
+        let newArray = this.accounts.getAllAccounts().filter(it => it.getKey() != account.getKey());
+        this.accounts = new AccountsArray(newArray);
+        this.persistAccounts();
+        return newArray;
+    }
+
     public findAccountById(id: string): Maybe<Account> {
         return this.accounts.get(id);
     }
