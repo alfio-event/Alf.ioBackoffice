@@ -1,7 +1,7 @@
 <ActionBar title="Your accounts"></ActionBar>
 
-<GridLayout rows="*, auto, *, auto, *" columns="50, *, 50" class="account-selection">
-	<ListView [items]="accounts" row="2" col="1" [class.visible]="hasAccounts && !isLoading">
+<GridLayout>
+	<ListView [items]="accounts" [class.visible]="hasAccounts && !isLoading">
 		<template let-item="item">
 			<StackLayout col="0" orientation="vertical" class="medium-spacing" (tap)="manage(item)">
 				<Label [text]="item.username" class="accountName"></Label>
@@ -9,10 +9,10 @@
 			</StackLayout>
 		</template>
 	</ListView>
-	<ActivityIndicator row="2" col="1" [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" horizontalAlignment="center"
-		verticalAlignment="center"></ActivityIndicator>
-	<StackLayout row="3" col="1" orientation="vertical">
-		<FAB icon="res://ic_add_white_24dp" class="fab-button" (tap)="requestQrScan()"></FAB>
-	</StackLayout>
-
 </GridLayout>
+<AbsoluteLayout verticalAlignment="bottom" horizontalAlignment="right">
+	<FAB icon="res://ic_add_white_24dp" class="fab-button" (tap)="requestQrScan()"></FAB>
+</AbsoluteLayout>
+<AbsoluteLayout  verticalAlignment="center" horizontalAlignment="center" [visibility]="isLoading ? 'visible' : 'collapse'">
+	<ActivityIndicator [busy]="isLoading" ></ActivityIndicator>
+</AbsoluteLayout>
