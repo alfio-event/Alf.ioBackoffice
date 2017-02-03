@@ -13,3 +13,6 @@ Button, TextField {
 .accountName {
   font-weight: bold;
 }
+.list-item-padding {
+  padding: 8
+}

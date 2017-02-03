@@ -3,7 +3,7 @@
 <GridLayout>
 	<ListView [items]="accounts" [class.visible]="hasAccounts && !isLoading">
 		<template let-item="item">
-			<StackLayout col="0" orientation="vertical" class="medium-spacing" (tap)="manage(item)">
+			<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding" (tap)="manage(item)">
 				<Label [text]="item.username" class="accountName"></Label>
 				<Label [text]="item.url"></Label>
 			</StackLayout>

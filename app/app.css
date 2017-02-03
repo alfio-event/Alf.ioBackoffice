@@ -1,6 +1,4 @@
-﻿@import url("~/platform.css");
-
-Page {
+﻿Page {
   background-color: white;
   font-size: 15;
 }
@@ -22,13 +20,6 @@ TextField {
   background-color: #ff9800;
   color: white;
   margin-top: 20;
-}
-
-.pageTitle {
-  font-size: 18;
-  margin-top:10;
-  font-weight: bold;
-  text-align: center;
 }
 .fab-button {
     margin: 15;
