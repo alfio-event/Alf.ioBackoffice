@@ -19,7 +19,7 @@ export class AccountService {
 
     public registerNewAccount(url: string, username: string, password: string): Observable<AccountResponse> {
         return this.http.get(url + "/admin/api/user-type", {
-                headers: this.authorization(username, password)
+                headers: authorization(username, password)
             })
             .map(response => response.text())
             .map(data => {
@@ -65,7 +65,7 @@ export class AccountService {
 
     public loadEventsForAccount(account: Account): Observable<Array<EventConfiguration>> {
         return this.http.get(account.url + "/admin/api/events", {
-            headers: this.authorization(account.username, account.password)
+            headers: authorization(account.username, account.password)
         }).map(data => data.json());
     }
 
@@ -76,11 +76,7 @@ export class AccountService {
         this.persistAccounts();
     }
 
-    private authorization(username: string, password: string): Headers {
-        let headers = new Headers();
-        headers.append("Authorization", "Basic " + this.encodeBase64(username + ":" + password));
-        return headers;
-    }
+    
 
     private loadSavedAccounts() :AccountsArray {
         let savedData = appSettings.getString(ACCOUNTS_KEY, "--");
@@ -106,8 +102,17 @@ export class AccountService {
         appSettings.setString(ACCOUNTS_KEY, serializedElements);
         console.log("done.");
     }
+}
 
-    private encodeBase64(str: string) {
+
+export function authorization(username: string, password: string): Headers {
+    let headers = new Headers();
+    headers.append("Authorization", "Basic " + encodeBase64(username + ":" + password));
+    return headers;
+}
+
+
+ function encodeBase64(str: string) {
         var padChar = '=';
         var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
         var getByte = function (s, i) {
@@ -143,5 +148,3 @@ export class AccountService {
         }
         return b64Chars.join('');
     }
-
-}
