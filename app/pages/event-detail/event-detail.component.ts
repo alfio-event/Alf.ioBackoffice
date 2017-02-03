@@ -10,6 +10,7 @@ import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../shared/account/account.service";
 import { SponsorScanService } from "../../shared/scan/sponsor-scan.service"
 import { Account, EventConfiguration, EventWithImage } from "../../shared/account/account";
+import * as Toast from 'nativescript-toast';
 
 @Component({
     moduleId: module.id,
@@ -25,6 +26,7 @@ export class EventDetailComponent implements OnInit {
     account: Account;
     event: EventConfiguration;
     scans: Array<SponsorScan>;
+    private lastUpdate: number = 0;
 
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
@@ -56,9 +58,12 @@ export class EventDetailComponent implements OnInit {
     requestQrScan() {
         this.isLoading = true;
         let scanOptions = defaultScanOptions;
+        this.lastUpdate = new Date().getTime();
         scanOptions.continuousScanCallback = (res) => {
+            this.lastUpdate = new Date().getTime();
             console.log("scanned", res.text);
             this.sponsorScanService.scan(this.event.key, res.text);
+            Toast.makeText("Scan enqueued!").show();
         }
         this.barcodeScanner.scan(defaultScanOptions)
             .then((result) => {
@@ -67,6 +72,19 @@ export class EventDetailComponent implements OnInit {
                 console.log("No scan: " + error);
                 this.isLoading = false;
             });
+        let warningDisplayed = false;
+        let interval = setInterval(() => {
+            let current = new Date().getTime();
+            let elapsed = current - this.lastUpdate;
+            if(elapsed > 45 * 1000) {
+                clearInterval(interval);
+                this.barcodeScanner.stop()
+                    .then(() => Toast.makeText("Timed out").show());
+            } else if(elapsed > (30 * 1000) && !warningDisplayed) {
+                warningDisplayed = true;
+                Toast.makeText("Camera will be deactivated in 15 sec.").show();
+            }
+        }, 1000);
     }
 
 
