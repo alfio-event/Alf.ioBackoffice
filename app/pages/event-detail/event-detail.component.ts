@@ -11,6 +11,7 @@ import { AccountService } from "../../shared/account/account.service";
 import { SponsorScanService } from "../../shared/scan/sponsor-scan.service"
 import { Account, EventConfiguration, EventWithImage } from "../../shared/account/account";
 import * as Toast from 'nativescript-toast';
+import * as Vibrator from "nativescript-vibrate";
 
 @Component({
     moduleId: module.id,
@@ -63,10 +64,12 @@ export class EventDetailComponent implements OnInit {
             this.lastUpdate = new Date().getTime();
             console.log("scanned", res.text);
             this.sponsorScanService.scan(this.event.key, res.text);
+            Vibrator.vibration(250);
             Toast.makeText("Scan enqueued!").show();
         }
         this.barcodeScanner.scan(defaultScanOptions)
             .then((result) => {
+                clearInterval(interval);
                 this.isLoading = false;
             }, (error) => {
                 console.log("No scan: " + error);

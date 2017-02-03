@@ -25,6 +25,7 @@
     "nativescript-floatingactionbutton": "^2.2.7",
     "nativescript-screen-orientation": "^1.0.2",
     "nativescript-toast": "^1.4.5",
+    "nativescript-vibrate": "^1.1.2",
     "reflect-metadata": "^0.1.8",
     "tns-core-modules": "^2.5.0"
   },
