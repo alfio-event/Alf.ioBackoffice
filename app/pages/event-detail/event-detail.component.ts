@@ -8,12 +8,13 @@ import { ActionItem } from "ui/action-bar";
 import { Observable } from "data/observable";
 import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../shared/account/account.service";
+import { SponsorScanService } from "../../shared/scan/sponsor-scan.service"
 import { Account, EventConfiguration, EventWithImage } from "../../shared/account/account";
 
 @Component({
     moduleId: module.id,
     selector: "event-detail",
-    providers: [AccountService],
+    providers: [AccountService, SponsorScanService],
     templateUrl: 'event-detail.html',
     styleUrls: ['event-detail-common.css']
 })
@@ -28,7 +29,8 @@ export class EventDetailComponent implements OnInit {
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
                 private accountService: AccountService,
-                @Inject(BARCODE_SCANNER) private barcodeScanner: BarcodeScanner) {
+                @Inject(BARCODE_SCANNER) private barcodeScanner: BarcodeScanner,
+                private sponsorScanService: SponsorScanService) {
     }
 
     onBackTap() {
@@ -44,19 +46,24 @@ export class EventDetailComponent implements OnInit {
             this.accountService.findAccountById(id).ifPresent(account => {
                 this.account = account;
                 this.event = this.account.configurations.filter(c => c.key === eventId)[0];
+                this.sponsorScanService.getForEvent(this.event.key, this.account).subscribe(list => this.scans = list);
                 this.isLoading = false;
             });
-        });        
+        });
+        
     }
 
     requestQrScan() {
         this.isLoading = true;
         let scanOptions = defaultScanOptions;
         scanOptions.continuousScanCallback = (res) => {
-            console.log("scanned", res);
+            console.log("scanned", res.text);
+            this.sponsorScanService.scan(this.event.key, res.text);
         }
         this.barcodeScanner.scan(defaultScanOptions)
-            .then((result) => {}, (error) => {
+            .then((result) => {
+                this.isLoading = false;
+            }, (error) => {
                 console.log("No scan: " + error);
                 this.isLoading = false;
             });
