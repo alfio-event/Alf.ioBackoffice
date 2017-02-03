@@ -1,20 +1,26 @@
-<ActionBar title="Event Detail">
+<ActionBar title="Scan Attendees">
     <NavigationButton icon="res://ic_arrow_back_white_24dp" (tap)="onBackTap()" text="Back to List"></NavigationButton>
 </ActionBar>
 
-<GridLayout rows="10, auto, *, 50">
+<GridLayout rows="auto, *">
     
-    <CardView class="cardStyle" margin="10" elevation="5" radius="1" row="1">
+    <CardView class="cardStyle" margin="10" elevation="5" radius="1" row="0">
         <event-header [event]="event" [account]="account"></event-header>
     </CardView>
-    
-    <StackLayout row="2">
-        
-    </StackLayout>
-    <StackLayout row="4" orientation="horizontal">
-        <Button text="Collected Contacts"></Button>
-        <Button text="Scan"></Button>
-    </StackLayout>
-    <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="1" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
-
+    <ListView [items]="scans" row="1" [class.visible]="listLoaded">
+        <template let-item="item">
+            <GridLayout columns="24, auto" *ngIf="event">
+                <Image col="0" src="res://ic_person_outline_black_24dp" stretch="aspectFit" width="24" height="24"></Image>
+                <StackLayout col="1" class="medium-spacing" orientation="vertical">
+                    <Label [text]="event.location"></Label>
+                </StackLayout>
+            </GridLayout>
+        </template>
+    </ListView>
 </GridLayout>
+<AbsoluteLayout verticalAlignment="bottom" horizontalAlignment="right">
+    <FAB icon="res://ic_add_white_24dp" class="fab-button" (tap)="requestQrScan()"></FAB>
+</AbsoluteLayout>
+<AbsoluteLayout  verticalAlignment="center" horizontalAlignment="center" [visibility]="isLoading ? 'visible' : 'collapse'">
+    <ActivityIndicator [busy]="isLoading" ></ActivityIndicator>
+</AbsoluteLayout>

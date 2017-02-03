@@ -1,4 +1,6 @@
-import { Component, ElementRef, ViewChild, Injectable, OnInit, ChangeDetectorRef } from "@angular/core";
+import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../utils/barcodescanner';
+import { SponsorScan } from '../../shared/scan/sponsor-scan';
+import { ChangeDetectorRef, Component, ElementRef, Inject, Injectable, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import { View } from "ui/core/view";
 import { Page } from "ui/page";
@@ -21,10 +23,12 @@ export class EventDetailComponent implements OnInit {
     isLoading: boolean;
     account: Account;
     event: EventConfiguration;
+    scans: Array<SponsorScan>;
 
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
-                private accountService: AccountService) {
+                private accountService: AccountService,
+                @Inject(BARCODE_SCANNER) private barcodeScanner: BarcodeScanner) {
     }
 
     onBackTap() {
@@ -43,6 +47,19 @@ export class EventDetailComponent implements OnInit {
                 this.isLoading = false;
             });
         });        
+    }
+
+    requestQrScan() {
+        this.isLoading = true;
+        let scanOptions = defaultScanOptions;
+        scanOptions.continuousScanCallback = (res) => {
+            console.log("scanned", res);
+        }
+        this.barcodeScanner.scan(defaultScanOptions)
+            .then((result) => {}, (error) => {
+                console.log("No scan: " + error);
+                this.isLoading = false;
+            });
     }
 
 
