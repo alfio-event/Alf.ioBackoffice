@@ -6,6 +6,8 @@ import { SponsorScan, ScanStatus, Ticket } from "./sponsor-scan";
 import { authorization } from '../account/account.service';
 import { Account } from "../account/account";
 
+import * as AppSettings from 'application-settings';
+
 @Injectable()
 export class SponsorScanService  {
 
@@ -16,15 +18,40 @@ export class SponsorScanService  {
     constructor(private http: Http) {
     }
 
-    public scan(eventKey: string, uuid: string) : void {
-        if (this.sponsorScans[eventKey] === undefined) {
+    public scan(eventKey: string, account: Account, uuid: string) : void {
+        if (!this.sponsorScans[eventKey]) {
             this.sponsorScans[eventKey] = [];
         }
+
+        if(this.sponsorScans[eventKey].some(s => s.code === uuid)) {
+            console.log('already scanned');
+            return;
+        }
+
         this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, null));
+        this.persistSponsorScans(eventKey, account);
+        this.emitFor(eventKey);
+    }
+
+    private persistSponsorScans(eventKey: string, account: Account) {
+        if(this.sponsorScans[eventKey]) {
+            console.log('persist');
+            AppSettings.setString('ALFIO_SPONSOR_SCANS_'+account.getKey(), JSON.stringify(this.sponsorScans[eventKey]));
+        }
+    }
+
+    private loadIfExists(eventKey: string, account: Account): Array<SponsorScan> {
+        let stringified = AppSettings.getString('ALFIO_SPONSOR_SCANS_'+account.getKey(), null);
+        if(stringified != null) {
+            console.log('found ', stringified);
+            return <Array<SponsorScan>> JSON.parse(stringified);
+        } else {
+            return undefined;
+        }
     }
 
     private findAllStatusNew(eventKey: string) : Array<SponsorScan> {
-        if(this.sponsorScans[eventKey] === undefined) {
+        if(!this.sponsorScans[eventKey]) {
             return [];
         }
         return this.sponsorScans[eventKey].filter(e => e.status == ScanStatus.NEW);
@@ -44,10 +71,12 @@ export class SponsorScanService  {
         }).map(data => data.json()).subscribe(payload => {
             let a = <Array<any>> payload;
             a.forEach(scan => this.changeStatusFor(eventKey, (<Ticket> scan.ticket).uuid, ScanStatus.DONE, <Ticket> scan.ticket));
+            this.persistSponsorScans(eventKey, account);
             this.emitFor(eventKey);
             this.process(eventKey, account);
         }, error => {
             toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.ERROR, null));
+            this.persistSponsorScans(eventKey, account);
             this.emitFor(eventKey);
             console.log('error while bulk scanning:', error);
             this.process(eventKey, account);
@@ -62,7 +91,6 @@ export class SponsorScanService  {
     private process(eventKey: string, account: Account) {
         let toSend = this.findAllStatusNew(eventKey);
         if(toSend.length > 0) {
-            this.emitFor(eventKey);
             toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, null));
             this.bulkScanUpload(eventKey, account, toSend);
         } else {
@@ -91,12 +119,23 @@ export class SponsorScanService  {
             return this.sources[eventKey];
         }
 
+        
+
         let subj = new Subject<Array<SponsorScan>>();
         this.sources[eventKey] = subj;
+
+        let saved = this.loadIfExists(eventKey, account);
+        if(saved) {
+            this.sponsorScans[eventKey] = saved;
+        }
 
         this.doSetTimeoutProcess(eventKey, account);
 
         return subj.asObservable();
+    }
+
+    public loadInitial(eventKey: string) : Array<SponsorScan> {
+        return this.sponsorScans[eventKey];
     }
     
 }

@@ -15,7 +15,7 @@
             <template let-item="item" let-ticket="item.ticket">
                 <GridLayout columns="24, auto">
                     <Image col="0" src="res://ic_person_outline_black" stretch="aspectFit" width="24" height="24"></Image>
-                    <StackLayout col="1" class="medium-spacing" orientation="vertical">
+                    <StackLayout col="1" class="medium-spacing" orientation="vertical" *ngIf="ticket">
                         <Label [text]="ticket.fullName"></Label>
                         <Label [text]="ticket.email"></Label>
                     </StackLayout>

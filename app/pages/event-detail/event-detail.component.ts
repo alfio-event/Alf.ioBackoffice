@@ -53,6 +53,10 @@ export class EventDetailComponent implements OnInit, OnDestroy {
                     console.log("received ", list.length)
                     this.scans = list
                 });
+                let list = this.sponsorScanService.loadInitial(this.event.key);
+                if(list) {
+                    this.scans = list;
+                }
                 this.isLoading = false;
             });
         });
@@ -72,7 +76,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
         scanOptions.continuousScanCallback = (res) => {
             this.lastUpdate = new Date().getTime();
             console.log("scanned", res.text);
-            this.sponsorScanService.scan(this.event.key, res.text);
+            this.sponsorScanService.scan(this.event.key, this.account, res.text);
             Vibrator.vibration(250);
             Toast.makeText("Scan enqueued!").show();
         }
