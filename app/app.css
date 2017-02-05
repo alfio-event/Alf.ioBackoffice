@@ -31,3 +31,34 @@ TextField {
 .loading-indicator {
   height: 50;
 }
+
+.icon {
+  font-family: 'Material-Design-Iconic-Font';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24;
+}
+
+.icon-1-5x {
+  font-size: 36;
+}
+
+.icon-2x {
+  font-size: 48;
+}
+
+.icon-3x {
+  font-size: 72;
+}
+
+.text-muted {
+  color: #777;
+}
+
+.text-white {
+  color: white;
+}
+
+.text-center {
+  text-align: center;
+}
