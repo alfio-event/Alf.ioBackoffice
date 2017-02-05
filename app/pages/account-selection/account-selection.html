@@ -18,7 +18,6 @@
 				</StackLayout>
 				<Image col="1" src="res://ic_delete_white" stretch="aspectFit" width="30" height="30" *ngIf="isEditRequested(item)" (tap)="delete(item)" class="delete-item"></Image>
 			</GridLayout>
-			
 		</template>
 	</ListView>
 	<ActivityIndicator row="1" [busy]="isLoading" class="loading-indicator"></ActivityIndicator>
