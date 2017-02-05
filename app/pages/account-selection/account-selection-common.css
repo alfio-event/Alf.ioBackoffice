@@ -35,7 +35,5 @@ Button, TextField {
     color: white;
 }
 .delete-item {
-  vertical-align: middle;
-  margin-right: 10;
-  margin-top: 10;
+  margin-top: 20;
 }

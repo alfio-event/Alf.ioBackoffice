@@ -11,7 +11,7 @@
 	
 	<ListView [items]="accounts" row="1" *ngIf="hasAccounts()" [class.visible]="!isLoading">
 		<template let-item="item">
-			<GridLayout columns="*, auto" [class.edit-active]="isEditRequested(item)">
+			<GridLayout columns="*, 50" [class.edit-active]="isEditRequested(item)">
 				<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding" (longPress)="onLongPress(item)" (tap)="manage(item)">
 					<Label [text]="item.username" class="accountName"></Label>
 					<Label [text]="item.url"></Label>
