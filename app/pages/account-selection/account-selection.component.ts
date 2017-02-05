@@ -19,7 +19,6 @@ import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../utils
 export class AccountSelectionComponent implements OnInit, OnChanges {
     accounts: Array<Account> = [];
     isLoading: boolean;
-    displayEventSelection: boolean = false;
     private editedAccount?: Account = null;
 
     constructor(private router: Router, 
@@ -79,18 +78,18 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     }
 
     delete(account: Account): void {
-        this.accounts = this.accountService.deleteAccount(account);
+        let newAccounts = this.accountService.deleteAccount(account);
+        this.accounts = newAccounts;
     }
 
     private processResponse(accountResponse: AccountResponse) {
         console.log("success!");
         if (!accountResponse.isExisting()) {
-            console.log("pushing itemResult", JSON.stringify(this.accounts));
+            console.log("pushing itemResult");
             this.accounts.push(accountResponse.getAccount());
             console.log("done. current list size: " + this.accounts.length);
         }
         this.isLoading = false;
-        this.manage(accountResponse.getAccount());
     }
 
 }

@@ -63,7 +63,7 @@ export class AccountService {
         let newArray = this.accounts.getAllAccounts().filter(it => it.getKey() != account.getKey());
         this.accounts = new AccountsArray(newArray);
         this.persistAccounts();
-        return newArray;
+        return this.getRegisteredAccounts();
     }
 
     public findAccountById(id: string): Maybe<Account> {
