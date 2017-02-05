@@ -1,7 +1,7 @@
 <ActionBar title="Scan Attendees">
-    <NavigationButton icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Back to List"></NavigationButton>
-    <ActionItem (tap)="forceUpload()" icon="res://ic_cloud_upload_white" ios.position="left" text="Force Upload" android.position="actionBarIfRoom"></ActionItem>
-    <ActionItem (tap)="shuffle()" icon="res://ic_shuffle_white" ios.position="right" text="Shuffle" android.position="actionBarIfRoom"></ActionItem>
+    <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackTap()" text="Back to List"></NavigationButton>
+    <ActionItem (tap)="forceUpload()" icon="res://ic_cloud_upload_white" ios.systemIcon="9" ios.position="left" text="Force Upload" android.position="actionBarIfRoom"></ActionItem>
+    <ActionItem (tap)="shuffle()" icon="res://ic_shuffle_white" ios.systemIcon="2" ios.position="right" text="Shuffle" android.position="actionBarIfRoom"></ActionItem>
 </ActionBar>
 
 
