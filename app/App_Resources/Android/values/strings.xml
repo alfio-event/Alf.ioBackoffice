@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Alf.io</string>
-    <string name="title_activity_kimera">Alf.io</string>
+    <string name="app_name">Alf.io Backoffice</string>
+    <string name="title_activity_kimera">Alf.io Backoffice</string>
 </resources>
