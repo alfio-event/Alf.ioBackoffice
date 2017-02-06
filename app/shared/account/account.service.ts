@@ -119,7 +119,7 @@ export function authorization(username: string, password: string): Headers {
 }
 
 
- function encodeBase64(str: string) {
+ export function encodeBase64(str: string) {
         var padChar = '=';
         var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
         var getByte = function (s, i) {

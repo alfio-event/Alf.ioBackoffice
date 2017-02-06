@@ -7,11 +7,12 @@ import { Page } from "ui/page";
 import { ActionItem } from "ui/action-bar";
 import { Observable } from "data/observable";
 import { RouterExtensions } from "nativescript-angular/router";
-import { AccountService } from "../../../shared/account/account.service";
+import { AccountService, encodeBase64 } from "../../../shared/account/account.service";
 import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service"
 import { Account, EventConfiguration, EventWithImage } from "../../../shared/account/account";
 import * as Toast from 'nativescript-toast';
 import * as Vibrator from "nativescript-vibrate";
+import * as Email from "nativescript-email";
 
 @Component({
     moduleId: module.id,
@@ -110,6 +111,27 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
 
     shuffle(): void {
         this.scans.sort(() => 0.5 - Math.random());
+    }
+
+    sendByEmail(): void {
+        let file = encodeBase64(this.scans.map(s => s.code).join('\n'));
+        Email.compose({
+            subject: `Data for event ${this.event.name}`,
+            body: `Here attached the scanned data from account ${this.account.username}`,
+            to: [],
+            attachments: [
+                {
+                    fileName: `${this.event.key}-attendees.txt`,
+                    path: `base64://${file}`,
+                    mimeType: 'text/plain'
+                }],
+            appPickerTitle: 'Compose with..' // for Android, default: 'Open with..'
+        }).then(
+            function() {
+                console.log("Email composer closed");
+            }, function(err) {
+                console.log("Error: " + err);
+            });
     }
 
 
