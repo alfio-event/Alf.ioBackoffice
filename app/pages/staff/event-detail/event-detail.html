@@ -1,0 +1,18 @@
+<ActionBar title="Scan Badges">
+    <NavigationButton icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Back to List"></NavigationButton>
+</ActionBar>
+
+
+
+    <GridLayout rows="auto, *">
+        <CardView class="cardStyle" margin="10" elevation="1" radius="1" >
+            <event-header row="0" [event]="event" [account]="account"></event-header>
+        </CardView>
+        <StackLayout row="1" orientation="vertical" class="warning-msg">
+            <Label class="icon icon-3x text-muted text-center" text="&#xf1f0;"></Label>
+            <Label text="This functionality is not yet available." class="missing-accounts text-muted text-center"></Label>
+            <Label text="Please use the Android App." class="missing-accounts text-muted text-center"></Label>
+        </StackLayout>
+    </GridLayout>
+
+

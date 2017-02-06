@@ -1,5 +1,5 @@
 <ActionBar title="Scan Attendees">
-    <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackTap()" text="Back to List"></NavigationButton>
+    <NavigationButton icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Back to List"></NavigationButton>
     <ActionItem (tap)="forceUpload()" icon="res://ic_cloud_upload_white" ios.systemIcon="9" ios.position="left" text="Force Upload" android.position="actionBarIfRoom"></ActionItem>
     <ActionItem (tap)="shuffle()" icon="res://ic_shuffle_white" ios.systemIcon="2" ios.position="right" text="Shuffle" android.position="actionBarIfRoom"></ActionItem>
 </ActionBar>
@@ -10,7 +10,7 @@
         <CardView class="cardStyle" margin="10" elevation="1" radius="1" >
             <event-header row="0" [event]="event" [account]="account"></event-header>
         </CardView>
-        <ListView [items]="scans" row="1" [class.visible]="listLoaded">
+        <ListView [items]="scans" row="1" [class.visible]="listLoaded" *ngIf="scans.length > 0">
             <template let-item="item" let-ticket="item.ticket">
                 <GridLayout columns="24, auto">
                     <Image col="0" src="res://ic_person_outline_black" stretch="aspectFit" width="24" height="24"></Image>
@@ -21,6 +21,11 @@
                 </GridLayout>
             </template>
         </ListView>
+        <StackLayout row="1" orientation="vertical" class="warning-msg" *ngIf="scans.length == 0">
+            <Label class="icon icon-3x text-muted text-center" text="&#xf208;"></Label>
+            <Label text="No data collected so far" class="missing-accounts text-muted text-center"></Label>
+            <Label text="Start scanning badges!" class="missing-accounts text-muted text-center"></Label>
+        </StackLayout>
         <ActivityIndicator row="1" [busy]="isLoading" ></ActivityIndicator>
         <Button row="2" (tap)="requestQrScan()" class="submit-button" text="Scan"></Button>
     </GridLayout>

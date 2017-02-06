@@ -1,9 +1,10 @@
 <ActionBar title="Select Event">
     <NavigationButton text="Go Back" icon="res://ic_arrow_back_white" (tap)="onBackTap()"></NavigationButton>
+    <ActionItem (tap)="reloadEvents()" icon="res://ic_refresh_white" ios.systemIcon="9" ios.position="right" text="Refresh Data"></ActionItem>
 </ActionBar>
 
-<GridLayout rows="10, *, auto, 60">
-  <ListView [items]="events" row="1" [class.visible]="listLoaded" *ngIf="account">
+<GridLayout rows="10, *, auto">
+  <ListView [items]="events" row="1" [class.visible]="!isLoading" *ngIf="account" [class.loading-active]="isLoading">
     <template let-item="item" class="event">
       <event-header [event]="item.eventConfiguration" [account]="account" (onTap)="select($event)"></event-header>
     </template>

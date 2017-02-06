@@ -4,3 +4,25 @@
 .eventName {
     font-weight: bold;
 }
+
+@keyframes loadingActivation {
+    from { opacity:1; }
+    to { opacity: 0.1; }
+}
+
+.loading-active {
+    animation-name: loadingActivation;
+    animation-duration: 0.5s;
+    animation-fill-mode: backwards;
+}
+
+@keyframes loadingDeactivation {
+    from { opacity:0.1; }
+    to { opacity: 1; }
+}
+
+.visible {
+    animation-name: loadingDeactivation;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}

@@ -1,5 +1,5 @@
-import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../utils/barcodescanner';
-import { SponsorScan } from '../../shared/scan/sponsor-scan';
+import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../../utils/barcodescanner';
+import { SponsorScan } from '../../../shared/scan/sponsor-scan';
 import { ChangeDetectorRef, Component, ElementRef, Inject, Injectable, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import { View } from "ui/core/view";
@@ -7,26 +7,26 @@ import { Page } from "ui/page";
 import { ActionItem } from "ui/action-bar";
 import { Observable } from "data/observable";
 import { RouterExtensions } from "nativescript-angular/router";
-import { AccountService } from "../../shared/account/account.service";
-import { SponsorScanService } from "../../shared/scan/sponsor-scan.service"
-import { Account, EventConfiguration, EventWithImage } from "../../shared/account/account";
+import { AccountService } from "../../../shared/account/account.service";
+import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service"
+import { Account, EventConfiguration, EventWithImage } from "../../../shared/account/account";
 import * as Toast from 'nativescript-toast';
 import * as Vibrator from "nativescript-vibrate";
 
 @Component({
     moduleId: module.id,
-    selector: "event-detail",
+    selector: "sponsor-event-detail",
     providers: [AccountService, SponsorScanService],
     templateUrl: 'event-detail.html',
     styleUrls: ['event-detail-common.css']
 })
 @Injectable()
-export class EventDetailComponent implements OnInit, OnDestroy {
+export class SponsorEventDetailComponent implements OnInit, OnDestroy {
 
     isLoading: boolean;
     account: Account;
     event: EventConfiguration;
-    scans: Array<SponsorScan>;
+    scans: Array<SponsorScan> = [];
     private lastUpdate: number = 0;
 
     constructor(private route: ActivatedRoute,
