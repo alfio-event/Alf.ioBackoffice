@@ -41,6 +41,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.scans = [];
         this.isLoading = true;
         this.route.params.forEach((params: Params) => {
             console.log("params", params['accountId'], params['eventId'])
@@ -101,6 +102,14 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 Toast.makeText("Camera will be deactivated in 15 sec.").show();
             }
         }, 1000);
+    }
+
+    forceUpload(): void {
+        this.sponsorScanService.forceProcess(this.event.key, this.account);
+    }
+
+    shuffle(): void {
+        this.scans.sort(() => 0.5 - Math.random());
     }
 
 

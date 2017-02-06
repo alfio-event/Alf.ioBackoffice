@@ -72,6 +72,10 @@ export class SponsorScanService  {
         }
     }
 
+    public forceProcess(eventKey: string, account: Account) {
+        this.process(eventKey, account, true);
+    }
+
     private bulkScanUpload(eventKey: string, account: Account, toSend: Array<SponsorScan>) {
         return this.http.post(account.url+'/api/attendees/sponsor-scan/bulk', toSend.map(scan=> new SponsorScanRequest(eventKey, scan.code)), {
             headers: authorization(account.username, account.password)
@@ -95,12 +99,12 @@ export class SponsorScanService  {
         this.sources[eventKey].next(this.sponsorScans[eventKey]);
     }
 
-    private process(eventKey: string, account: Account) {
+    private process(eventKey: string, account: Account, oneShot: boolean = false) {
         let toSend = this.findAllStatusNew(eventKey);
         if(toSend.length > 0) {
             toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, null));
             this.bulkScanUpload(eventKey, account, toSend);
-        } else {
+        } else if(!oneShot) {
             this.doSetTimeoutProcess(eventKey, account);
         }
     }

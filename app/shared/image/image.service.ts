@@ -17,16 +17,12 @@ export class ImageService {
     getImage(baseUrl: string, e: EventConfiguration) :Observable<string> {
         let url = baseUrl + e.imageUrl;
         let filename = fs.path.join(this.folder.path, e.imageUrl.replace(/[^A-Za-z0-9]/g,'_'));
-        console.log("finding image for", url);
         if(fs.File.exists(filename)) {
-            console.log("file exists: ", filename);
             return Observable.of(filename);
         } else {
             return Observable.fromPromise(imageSource.fromUrl(url))
                 .map(img => {
-                    console.log("received image for ", url);
                     img.saveToFile(filename, enums.ImageFormat.png);
-                    console.log("image saved");
                     return filename;
                 });
         }
