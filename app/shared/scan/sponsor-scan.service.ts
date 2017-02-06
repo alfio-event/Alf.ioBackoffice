@@ -35,16 +35,23 @@ export class SponsorScanService  {
 
     private persistSponsorScans(eventKey: string, account: Account) {
         if(this.sponsorScans[eventKey]) {
-            console.log('persist');
             AppSettings.setString('ALFIO_SPONSOR_SCANS_'+account.getKey(), JSON.stringify(this.sponsorScans[eventKey]));
+        }
+    }
+
+    private static fixStatusOnLoad(status: ScanStatus) : ScanStatus {
+        if(status === ScanStatus.ERROR || status === ScanStatus.IN_PROCESS) {
+            return ScanStatus.NEW;
+        } else {
+            return status;
         }
     }
 
     private loadIfExists(eventKey: string, account: Account): Array<SponsorScan> {
         let stringified = AppSettings.getString('ALFIO_SPONSOR_SCANS_'+account.getKey(), null);
         if(stringified != null) {
-            console.log('found ', stringified);
-            return <Array<SponsorScan>> JSON.parse(stringified);
+            let found = <Array<SponsorScan>> JSON.parse(stringified);
+            return found.map(sponsorScan => new SponsorScan(sponsorScan.code, SponsorScanService.fixStatusOnLoad(sponsorScan.status), sponsorScan.ticket));
         } else {
             return undefined;
         }
