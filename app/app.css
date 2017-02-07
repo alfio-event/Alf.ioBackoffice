@@ -21,6 +21,21 @@ TextField {
   color: white;
   margin-top: 20;
 }
+
+.button-group {
+  margin-top: 20;
+  margin-bottom: 20;
+}
+
+.button  {
+  min-height:40;
+}
+
+.button-primary {
+  background-color: #ff9800;
+  color: white;
+} 
+
 .fab-button {
     height: 70;
     margin: 15;

@@ -3,10 +3,14 @@
   font-size: 20;
 }
 
-.person-icon {
+.centered-icon {
     vertical-align: middle;
 }
 
 .submit-button {
     margin-bottom: 16;
+}
+
+.event-header {
+    margin-bottom: 15;
 }

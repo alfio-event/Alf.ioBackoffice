@@ -14,7 +14,7 @@ import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../utils
 @Component({
     selector: "account-selection",
     templateUrl: "pages/account-selection/account-selection.html",
-    styleUrls: ["pages/account-selection/account-selection-common.css"],
+    styleUrls: ["pages/account-selection/account-selection-common.css", "pages/account-selection/account-selection.css"],
 })
 export class AccountSelectionComponent implements OnInit, OnChanges {
     accounts: Array<Account> = [];

@@ -9,14 +9,14 @@
 		<Label text="Please add one" class="missing-accounts text-muted text-center"></Label>
 	</StackLayout>
 	
-	<ListView [items]="accounts" row="1" *ngIf="hasAccounts()" [class.visible]="!isLoading">
+	<ListView [items]="accounts" row="1" *ngIf="hasAccounts()">
 		<template let-item="item">
-			<GridLayout columns="*, 35" [class.edit-active]="isEditRequested(item)">
-				<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding" (longPress)="onLongPress(item)" (tap)="manage(item)">
+			<GridLayout columns="*, 60" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" (swipe)="onLongPress(item)">
+				<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding"  (tap)="manage(item)">
 					<Label [text]="item.username" class="accountName"></Label>
 					<Label [text]="item.url"></Label>
 				</StackLayout>
-				<Label col="1" text="&#xf154;" *ngIf="isEditRequested(item)" (tap)="delete(item)" class="delete-item icon icon-1-5x text-white"></Label>
+				<Label col="1" text="&#xf154;" (tap)="delete(item)" class="delete-item icon icon-1-5x text-white"></Label>
 			</GridLayout>
 		</template>
 	</ListView>

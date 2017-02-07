@@ -1,15 +1,3 @@
-.account-selection {
-  background-color: white;
-}
-Image {
-  margin-top: 5;
-  margin-bottom: 20;
-}
-Button, TextField {
-  margin-left: 16;
-  margin-right: 16;
-  margin-bottom: 10;
-}
 .accountName {
   font-weight: bold;
 }
@@ -22,18 +10,4 @@ Button, TextField {
 }
 .img-bg {
   opacity: 0.4;
-}
-
-@keyframes editActivation {
-    from { background-color: white; }
-    to { background-color: #ff9800; }
-}
-.edit-active {
-    animation-name: editActivation;
-    animation-duration: 1s;
-    animation-fill-mode: forwards;
-    color: white;
-}
-.delete-item {
-  margin-top: 20;
 }
