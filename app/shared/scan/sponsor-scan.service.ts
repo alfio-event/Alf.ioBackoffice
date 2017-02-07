@@ -24,7 +24,7 @@ export class SponsorScanService  {
         }
 
         if(this.sponsorScans[eventKey].some(s => s.code === uuid)) {
-            console.log('already scanned');
+            //already scanned
             return;
         }
 
@@ -35,7 +35,7 @@ export class SponsorScanService  {
 
     private persistSponsorScans(eventKey: string, account: Account) {
         if(this.sponsorScans[eventKey]) {
-            AppSettings.setString('ALFIO_SPONSOR_SCANS_'+account.getKey(), JSON.stringify(this.sponsorScans[eventKey]));
+            AppSettings.setString('ALFIO_SPONSOR_SCANS_'+eventKey+account.getKey(), JSON.stringify(this.sponsorScans[eventKey]));
         }
     }
 
@@ -48,7 +48,7 @@ export class SponsorScanService  {
     }
 
     private loadIfExists(eventKey: string, account: Account): Array<SponsorScan> {
-        let stringified = AppSettings.getString('ALFIO_SPONSOR_SCANS_'+account.getKey(), null);
+        let stringified = AppSettings.getString('ALFIO_SPONSOR_SCANS_'+eventKey+account.getKey(), null);
         if(stringified != null) {
             let found = <Array<SponsorScan>> JSON.parse(stringified);
             return found.map(sponsorScan => new SponsorScan(sponsorScan.code, SponsorScanService.fixStatusOnLoad(sponsorScan.status), sponsorScan.ticket));
