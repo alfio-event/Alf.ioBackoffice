@@ -13,7 +13,7 @@
         </CardView>
         <ListView [items]="scans" row="1" [class.visible]="listLoaded" *ngIf="scans.length > 0">
             <template let-item="item" let-ticket="item.ticket">
-                <GridLayout columns="24, auto">
+                <GridLayout columns="24, *">
                     <Label col="0" class="icon person-icon text-muted text-center" text="&#xf30c;" *ngIf="!ticket"></Label>
                     <Label col="0" class="icon person-icon text-muted text-center" text="&#xf206;" *ngIf="ticket"></Label>
                     <Label col="1" text="Waiting synchronization..." *ngIf="!ticket"></Label>
