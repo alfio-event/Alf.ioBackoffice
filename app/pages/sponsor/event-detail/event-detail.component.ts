@@ -109,8 +109,18 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         this.sponsorScanService.forceProcess(this.event.key, this.account);
     }
 
+    //from http://stackoverflow.com/a/12646864
+    shuffleArray<T>(array: Array<T>): void {
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            let temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
     shuffle(): void {
-        this.scans.sort(() => 0.5 - Math.random());
+        this.shuffleArray(this.scans);
     }
 
     sendByEmail(): void {
