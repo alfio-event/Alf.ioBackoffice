@@ -10,3 +10,8 @@
 .delete-item {
     margin-top: 0 !important;
 }
+
+.delete {
+    color: white;
+    background-color: #ff9800;
+}

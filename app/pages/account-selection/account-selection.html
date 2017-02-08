@@ -1,4 +1,6 @@
 <ActionBar title="Your accounts">
+	<ActionItem (tap)="toggleEditMode()" *ngIf="isIos && hasAccounts() && !editModeEnabled" ios.systemIcon="2" ios.position="left"></ActionItem>
+	<ActionItem (tap)="toggleEditMode()" *ngIf="isIos && hasAccounts() && editModeEnabled" ios.systemIcon="0" ios.position="left"></ActionItem>
 	<ActionItem (tap)="requestQrScan()" icon="res://ic_add_circle_white" ios.systemIcon="4" ios.position="right" text="Add new Configuration" android.position="actionBarIfRoom"></ActionItem>
 </ActionBar>
 
@@ -9,14 +11,17 @@
 		<Label text="Please add one" class="missing-accounts text-muted text-center"></Label>
 	</StackLayout>
 	
-	<ListView [items]="accounts" row="1" *ngIf="hasAccounts()">
+	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts()">
 		<template let-item="item">
-			<GridLayout columns="*, 60" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" (swipe)="onLongPress(item)">
+			<GridLayout columns="*, 35" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" (longPress)="onLongPress(item)">
 				<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding"  (tap)="manage(item)">
 					<Label [text]="item.username" class="accountName"></Label>
 					<Label [text]="item.url"></Label>
 				</StackLayout>
-				<Label col="1" text="&#xf154;" (tap)="delete(item)" class="delete-item icon icon-1-5x text-white"></Label>
+				<StackLayout orientation="horizontal" col="1">
+					<ios-account-icon *ngIf="isIos" [account]="item" [tapEmitter]="tapEmitter" [editEnableObservable]="editEnableObservable"></ios-account-icon>
+					<Label col="1" text="&#xf154;" (tap)="delete(item)" *ngIf="!isIos" class="delete-item icon icon-1-5x text-white"></Label>
+				</StackLayout>
 			</GridLayout>
 		</template>
 	</ListView>

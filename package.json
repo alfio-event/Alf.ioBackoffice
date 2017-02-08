@@ -4,7 +4,7 @@
   "readme": "NativeScript Application",
   "repository": "git://github.com/exteso/Alf.ioBackoffice",
   "nativescript": {
-    "id": "org.nativescript.AlfioBackoffice",
+    "id": "alfio.Backoffice",
     "tns-android": {
       "version": "2.5.0"
     },

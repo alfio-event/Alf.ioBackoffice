@@ -4,6 +4,7 @@ import { ChangeDetectorRef, Component, ElementRef, Inject, Injectable, OnInit, O
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import { View } from "ui/core/view";
 import { Page } from "ui/page";
+import { ListView } from "ui/list-view"
 import { ActionItem } from "ui/action-bar";
 import { Observable } from "data/observable";
 import { RouterExtensions } from "nativescript-angular/router";
@@ -29,6 +30,8 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     event: EventConfiguration;
     scans: Array<SponsorScan> = [];
     private lastUpdate: number = 0;
+    @ViewChild("list") listViewContainer: ElementRef;
+    private listView: ListView;
 
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
@@ -52,8 +55,9 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 this.account = account;
                 this.event = this.account.configurations.filter(c => c.key === eventId)[0];
                 this.sponsorScanService.getForEvent(this.event.key, this.account).subscribe(list => {
-                    console.log("received ", list.length)
-                    this.scans = list
+                    console.log("received ", list.length);
+                    this.scans = list;
+                    this.refreshListView();
                 });
                 let list = this.sponsorScanService.loadInitial(this.event.key);
                 if(list) {
@@ -142,6 +146,24 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             }, function(err) {
                 console.log("Error: " + err);
             });
+    }
+    
+    private refreshListView(): void {
+        let view = this.getListView();
+        if(view) {
+            console.log("refreshing...");
+            view.refresh();
+        }
+    }
+    
+    private getListView(): ListView {
+        if(this.listView) {
+            return this.listView;
+        } else {
+            let container = <ListView>this.listViewContainer.nativeElement;
+            this.listView = container;
+            return this.listView;
+        }
     }
 
 

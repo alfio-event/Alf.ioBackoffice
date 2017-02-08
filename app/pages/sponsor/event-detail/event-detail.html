@@ -8,15 +8,18 @@
 
     <GridLayout rows="auto, *, 120">
         <event-header col="0" [event]="event" [account]="account" class="event-header"></event-header>
-        <ListView [items]="scans" row="1" [class.visible]="listLoaded" *ngIf="scans.length > 0">
+        <ListView [items]="scans" row="1" [class.visible]="listLoaded" *ngIf="scans.length > 0" #list>
             <template let-item="item" let-ticket="item.ticket">
                 <GridLayout columns="24, *">
                     <Label col="0" class="icon person-icon text-muted text-center" text="&#xf30c;" *ngIf="!ticket"></Label>
                     <Label col="0" class="icon person-icon text-muted text-center" text="&#xf206;" *ngIf="ticket"></Label>
-                    <Label col="1" text="Waiting synchronization..." *ngIf="!ticket"></Label>
                     <StackLayout col="1" class="medium-spacing" orientation="vertical" *ngIf="ticket">
-                        <Label [text]="ticket.fullName"></Label>
+                        <Label class="title" [text]="ticket.fullName"></Label>
                         <Label [text]="ticket.email"></Label>
+                    </StackLayout>
+                    <StackLayout col="1" class="medium-spacing" orientation="vertical" *ngIf="!ticket">
+                        <Label class="title" text="Synchronization in progress..." ></Label>
+                        <Label [text]="item.code"></Label>
                     </StackLayout>
                 </GridLayout>
             </template>
