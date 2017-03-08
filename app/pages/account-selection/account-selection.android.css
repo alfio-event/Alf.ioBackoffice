@@ -1,0 +1,25 @@
+@keyframes editActivation {
+    from { background-color: white; }
+    to { background-color: #ff9800; }
+}
+.edit-active {
+    animation-name: editActivation;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    color: white;
+}
+
+@keyframes loadingDeactivation {
+    from { opacity:0.1; }
+    to { opacity: 1; }
+}
+
+.edit-inactive {
+    animation-name: loadingDeactivation;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.delete-item {
+  margin-top: 20;
+}

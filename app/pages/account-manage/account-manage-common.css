@@ -1,0 +1,18 @@
+.event {
+  height: 100;
+}
+.eventName {
+    font-weight: bold;
+}
+
+@keyframes loadingActivation {
+    from { opacity:1; }
+    to { opacity: 0.1; }
+}
+
+.loading-active {
+    animation-name: loadingActivation;
+    animation-duration: 0.5s;
+    animation-fill-mode: backwards;
+}
+

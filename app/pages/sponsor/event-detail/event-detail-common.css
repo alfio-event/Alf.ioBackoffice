@@ -1,0 +1,20 @@
+.warning-msg {
+  vertical-align: middle;
+  font-size: 20;
+}
+
+.centered-icon {
+    vertical-align: middle;
+}
+
+.submit-button {
+    margin-bottom: 16;
+}
+
+.event-header {
+    margin-bottom: 15;
+}
+
+.title {
+    font-weight: bold;
+}

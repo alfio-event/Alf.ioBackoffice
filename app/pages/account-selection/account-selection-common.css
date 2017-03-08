@@ -1,0 +1,13 @@
+.accountName {
+  font-weight: bold;
+}
+.list-item-padding {
+  padding: 8
+}
+.missing-accounts {
+  vertical-align: middle; 
+  font-size: 20;
+}
+.img-bg {
+  opacity: 0.4;
+}

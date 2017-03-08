@@ -1,0 +1,17 @@
+.edit-active {
+    background-color: #ff9800;
+    color: white;
+}
+
+.edit-inactive {
+    background-color: white;
+}
+
+.delete-item {
+    margin-top: 0 !important;
+}
+
+.delete {
+    color: white;
+    background-color: #ff9800;
+}

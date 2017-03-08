@@ -1,0 +1,13 @@
+.accountName {
+  font-weight: bold;
+}
+.icon {
+  text-align: right !important;
+}
+.icon-forward {
+  color: black;
+  margin-left: 5;
+}
+.icon-trash {
+  color: #ff9800;
+}

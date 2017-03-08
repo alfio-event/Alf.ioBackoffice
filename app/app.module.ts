@@ -1,30 +1,29 @@
-import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
-import { NativeScriptModule } from "nativescript-angular/nativescript.module";
-import { AppRoutingModule } from "./app.routing";
+import { EventHeaderComponent } from './pages/event-header/event-header.component';
+import { NgModule } from "@angular/core";
+import { NativeScriptFormsModule } from "nativescript-angular/forms";
+import { NativeScriptHttpModule } from "nativescript-angular/http";
+import { NativeScriptModule } from "nativescript-angular/platform";
+import { NativeScriptRouterModule } from "nativescript-angular/router";
+import { AccountModule } from "./shared/account/account.module"
+import { IosAccountIconComponent } from "./pages/ios-account-icon/ios-account-icon.component";
 import { AppComponent } from "./app.component";
-
-import { ItemService } from "./item/item.service";
-import { ItemsComponent } from "./item/items.component";
-import { ItemDetailComponent } from "./item/item-detail.component";
+import { routes, navigatableComponents } from "./app.routing";
 
 @NgModule({
-    bootstrap: [
-        AppComponent
-    ],
     imports: [
         NativeScriptModule,
-        AppRoutingModule
+        NativeScriptFormsModule,
+        NativeScriptHttpModule,
+        NativeScriptRouterModule,
+        NativeScriptRouterModule.forRoot(routes),
+        AccountModule
     ],
     declarations: [
         AppComponent,
-        ItemsComponent,
-        ItemDetailComponent
+        EventHeaderComponent,
+        IosAccountIconComponent,
+        ...navigatableComponents
     ],
-    providers: [
-        ItemService
-    ],
-    schemas: [
-        NO_ERRORS_SCHEMA
-    ]
+    bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
