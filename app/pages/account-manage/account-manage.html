@@ -1,4 +1,4 @@
-<ActionBar title="Select Event">
+<ActionBar class="action-bar" title="Select Event">
     <NavigationButton text="Accounts" icon="res://ic_arrow_back_white" (tap)="onBackTap()"></NavigationButton>
     <ActionItem (tap)="reloadEvents()" icon="res://ic_refresh_white" ios.systemIcon="13" ios.position="right" text="Refresh Data"></ActionItem>
 </ActionBar>
@@ -10,6 +10,6 @@
     </template>
   </ListView>
 
-  <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="1" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
+  <ActivityIndicator class="activity-indicator" [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="1" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
 
 </GridLayout>

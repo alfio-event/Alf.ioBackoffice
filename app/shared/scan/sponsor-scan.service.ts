@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import { Http, Headers, Response } from "@angular/http";
 import { Observable, Subject } from 'rxjs';
 
-import { SponsorScan, ScanStatus, Ticket } from "./sponsor-scan";
+import { SponsorScan, ScanStatus } from "./sponsor-scan";
+import { Ticket } from "./scan-common";
 import { authorization } from '../account/account.service';
 import { Account } from "../account/account";
 

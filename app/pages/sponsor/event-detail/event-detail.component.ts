@@ -1,4 +1,4 @@
-import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../../utils/barcodescanner';
+import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions, ScanOptions } from '../../../utils/barcodescanner';
 import { SponsorScan } from '../../../shared/scan/sponsor-scan';
 import { ChangeDetectorRef, Component, ElementRef, Inject, Injectable, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, Params } from "@angular/router";
@@ -77,7 +77,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
 
     requestQrScan() {
         this.isLoading = true;
-        let scanOptions = defaultScanOptions;
+        let scanOptions = { ...defaultScanOptions };
         this.lastUpdate = new Date().getTime();
         scanOptions.continuousScanCallback = (res) => {
             this.lastUpdate = new Date().getTime();
@@ -86,7 +86,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             Vibrator.vibration(250);
             Toast.makeText("Scan enqueued!").show();
         }
-        this.barcodeScanner.scan(defaultScanOptions)
+        this.barcodeScanner.scan(scanOptions)
             .then((result) => {
                 clearInterval(interval);
                 this.isLoading = false;

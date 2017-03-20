@@ -1,4 +1,6 @@
 import { EventConfiguration } from '../account/account';
+import { Ticket } from './scan-common';
+
 export class SponsorScan {
     constructor(public code: string,
                 public status: ScanStatus = ScanStatus.NEW,
@@ -10,14 +12,4 @@ export class SponsorScan {
 
 export enum ScanStatus {
     NEW, IN_PROCESS, ERROR, DONE
-}
-
-export class Ticket {
-    constructor(public id: number,
-                public uuid: string,
-                public status: string,
-                public firstName: string,
-                public lastName: string,
-                public fullName: string,
-                public email: string) {}
 }

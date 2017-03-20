@@ -1,15 +1,5 @@
-﻿Page {
-  background-color: white;
-  font-size: 15;
-}
-ActionBar {
-  background-color: #ff9800;
-  color: white;
-}
-TextField {
-  padding: 10;
-  font-size: 13;
-}
+﻿@import 'nativescript-theme-core/css/orange.css';
+
 .small-spacing {
   margin: 5;
 }
@@ -17,7 +7,6 @@ TextField {
   margin: 10;
 }
 .submit-button {
-  background-color: #ff9800;
   color: white;
   margin-top: 20;
 }
@@ -30,11 +19,6 @@ TextField {
 .button  {
   min-height:40;
 }
-
-.button-primary {
-  background-color: #ff9800;
-  color: white;
-} 
 
 .fab-button {
     height: 70;
@@ -66,14 +50,14 @@ TextField {
   font-size: 72;
 }
 
-.text-muted {
-  color: #777;
-}
-
 .text-white {
   color: white;
 }
 
-.text-center {
-  text-align: center;
+.text-success {
+  color: #4CAF50;
+}
+
+.text-danger {
+  color: #F44336;
 }
