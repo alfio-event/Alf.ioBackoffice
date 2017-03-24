@@ -1,4 +1,5 @@
 .result {
-  background-color: #e0e0e0;
+  border-width: 2;
+  border-color: #4CAF50;
   border-radius: 10;
 }

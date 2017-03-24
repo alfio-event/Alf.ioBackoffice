@@ -23,13 +23,14 @@ import * as Vibrator from "nativescript-vibrate";
 @Injectable()
 export class StaffEventDetailComponent implements OnInit, OnDestroy {
 
-    isLoading: boolean;
+    isLoading: boolean = true;
     account: Account;
     event: EventConfiguration;
     code: string;
     status: CheckInStatus;
     message: string;
     ticket: Ticket;
+    private interval: number;
     
     
     constructor(private route: ActivatedRoute,
@@ -59,7 +60,9 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        
+        if(this.interval) {
+            clearInterval(this.interval);
+        }
     }
 
     scan() {
@@ -67,36 +70,34 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         let scanStart = new Date().getTime();
         this.barcodeScanner.scan(defaultScanOptions)
             .then((res) => {
+                //let toast = Toast.makeText("Working...", 20000);
                 this.isLoading = true;
-                clearInterval(interval);
+                clearInterval(this.interval);
                 scanStart = new Date().getTime();
-                //let toast = Toast.makeText("Processing...", 20000);
                 Vibrator.vibration(50);
-                //toast.show();
                 let scanResult = res.text;
                 let start = new Date().getTime();
                 this.scanService.checkIn(this.event.key, this.account, scanResult)
                         .subscribe(res => {
-                            console.log("1st stop, elapsed", new Date().getTime() - start);
                             this.displayResult(scanResult, res);
                             console.log("2nd stop, elapsed", new Date().getTime() - start);
                         }, err => {
                             this.displayResult("", new UnexpectedError(err));
                         }, () => {
-                            //toast.cancel();
                             this.isLoading = false;
                         });
             }, (error) => {
-                this.isLoading = false;
-                this.displayResult("", new UnexpectedError(error));
+                console.log("handling scan error", error);
+                clearInterval(this.interval);
+                this.cancel();
             });
 
         let warningDisplayed = false;
-        let interval = setInterval(() => {
+        this.interval = setInterval(() => {
             let current = new Date().getTime();
             let elapsed = current - scanStart;
             if(elapsed > 45 * 1000) {
-                clearInterval(interval);
+                clearInterval(this.interval);
                 this.barcodeScanner.stop().then(() => Toast.makeText("Timed out").show());
             } else if(elapsed > (30 * 1000) && !warningDisplayed) {
                 warningDisplayed = true;
@@ -153,14 +154,12 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         this.status = res ? res.result.status : CheckInStatus.ERROR;
         this.message = statusDescriptions[this.status];
         this.ticket = res ? res.ticket : null;
-
         if(this.status == CheckInStatus.SUCCESS) {
             //notify success
-            Vibrator.vibration(100);
-        } else {
             Vibrator.vibration(50);
+        } else {
+            Vibrator.vibration(500);
             //notify error
         }
-
     }
 }
