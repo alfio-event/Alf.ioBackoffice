@@ -2,11 +2,11 @@
     <NavigationButton icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Events"></NavigationButton>
 </ActionBar>
 
-<GridLayout rows="auto, 1, *, auto">
+<GridLayout rows="auto, 1, 8*, 2*">
     <event-header row="0" [event]="event" [account]="account" *ngIf="!status"></event-header>
     <StackLayout row="1" class="hr-light" *ngIf="!status"></StackLayout>
     <ScrollView row="2" class="p-20 m-r-16 m-l-16" *ngIf="!isLoading" verticalAlignment="center">
-        <StackLayout orientation="vertical" verticalAlignment="center" *ngIf="!status">
+        <StackLayout orientation="vertical" verticalAlignment="center" *ngIf="!status" (tap)="scan()">
             <Label class="icon icon-4x text-primary text-center" text="&#xf1df;"></Label>
             <Label text="Start scanning!" class="text-center label font-weight-bold h2"></Label>
             <Label textWrap="true" text="Click on the button below to init the check-in process. Scan the QR-Code on the tickets and wait for the result." class="body"></Label>
@@ -23,7 +23,7 @@
         </StackLayout>
     </ScrollView>
     <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="2" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
-    <StackLayout row="3" class="m-t-5 m-b-10 m-l-16 m-r-16" *ngIf="!isLoading">
+    <StackLayout row="3" class="m-l-16 m-r-16" *ngIf="!isLoading">
         <Button class="button btn-outline pull-left" (tap)="cancel()" *ngIf="isStatusMustPay()" text="Cancel"></Button>
         <Button class="button btn-primary" [class.btn-lemon]="isStatusMustPay()" [class.btn-orange]="isStatusSuccess()" [class.pull-right]="isStatusMustPay()" (tap)="scan()" [text]="getPrimaryButtonText()"></Button>
     </StackLayout>

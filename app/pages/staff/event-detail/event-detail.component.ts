@@ -113,7 +113,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
 
     getStatusIcon(): string {
         if(this.isStatusSuccess()) {
-            return String.fromCharCode(0xf1c7);
+            return String.fromCharCode(0xf269);
         } else if (this.status == CheckInStatus.MUST_PAY) {
             return String.fromCharCode(0xf19a);
         } else {
