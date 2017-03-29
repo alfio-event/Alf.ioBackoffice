@@ -71,7 +71,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
             .then((result) => {
                 this.isLoading = true;
                 let scanResult = JSON.parse(result.text);
-                this.accountService.registerNewAccount(scanResult.baseUrl, scanResult.username, scanResult.password)
+                this.accountService.registerNewAccount(scanResult.baseUrl, scanResult.username, scanResult.password, scanResult.sslCert)
                     .subscribe(resp => this.processResponse(resp), () => {
                         alert("Cannot register a new Account. Please check your internet connection and retry.")
                         this.isLoading = false;

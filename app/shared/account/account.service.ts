@@ -17,7 +17,7 @@ export class AccountService {
         this.accounts = this.loadSavedAccounts();
     }
 
-    public registerNewAccount(url: string, username: string, password: string): Observable<AccountResponse> {
+    public registerNewAccount(url: string, username: string, password: string, sslCert: string): Observable<AccountResponse> {
         return this.http.get(url + "/admin/api/user-type", {
                 headers: authorization(username, password)
             })
@@ -30,6 +30,7 @@ export class AccountService {
                 account.password = password;
                 account.accountType = data === "SPONSOR" ? AccountType.SPONSOR : AccountType.STAFF;
                 account.configurations = [];
+                account.sslCert = sslCert;
                 let newAccountKey = account.getKey();
                 let maybeExisting = this.accounts.get(newAccountKey);
                 return new AccountResponse(account, maybeExisting.isPresent());

@@ -73,7 +73,6 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 //let toast = Toast.makeText("Working...", 20000);
                 this.isLoading = true;
                 clearInterval(this.interval);
-                scanStart = new Date().getTime();
                 Vibrator.vibration(50);
                 let scanResult = res.text;
                 let start = new Date().getTime();

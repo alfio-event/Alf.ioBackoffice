@@ -5,8 +5,10 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "noEmitHelpers": true,
-        "noEmitOnError": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "lib": [
+            "es2016"
+        ]
     },
     "exclude": [
         "node_modules",
