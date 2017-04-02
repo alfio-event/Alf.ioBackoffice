@@ -77,7 +77,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
 
     requestQrScan() {
         this.isLoading = true;
-        let scanOptions = { ...defaultScanOptions };
+        let scanOptions = defaultScanOptions();
         this.lastUpdate = new Date().getTime();
         scanOptions.continuousScanCallback = (res) => {
             this.lastUpdate = new Date().getTime();

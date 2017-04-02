@@ -19,6 +19,11 @@ export class Account {
 
 }
 
+export class ScannedAccount {
+    constructor(public url: string, public username: string, public password: string, public sslCert: string) {
+    }
+}
+
 export class EventConfiguration {
     key: string;
     imageUrl: string;

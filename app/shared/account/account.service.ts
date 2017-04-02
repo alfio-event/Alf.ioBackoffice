@@ -7,13 +7,14 @@ import "rxjs/add/operator/switchMap";
 var appSettings = require("application-settings");
 const ACCOUNTS_KEY = "ALFIO_ACCOUNTS";
 
-import { Account, AccountType, EventConfiguration, AccountsArray, AccountResponse, Maybe, Pair, Some, Nothing } from "./account";
+import { Account, AccountType, EventConfiguration, AccountsArray, AccountResponse, Maybe, Pair, Some, Nothing, ScannedAccount } from "./account";
+import { AccountSelectionNotifier } from "./account-selection-notifier";
 
 @Injectable()
 export class AccountService {
     private accounts: AccountsArray;
 
-    constructor(private http: Http) {
+    constructor(private http: Http, private accountSelectionNotifier: AccountSelectionNotifier) {
         this.accounts = this.loadSavedAccounts();
     }
 
@@ -84,7 +85,16 @@ export class AccountService {
         this.persistAccounts();
     }
 
-    
+    public notifyAccountScanIfNeeded(scannedAccount: ScannedAccount): void {
+        if(scannedAccount.sslCert && scannedAccount.sslCert.length > 0) {
+            let account = new Account();
+            account.url = scannedAccount.url;
+            account.username = scannedAccount.username;
+            account.password = scannedAccount.password;
+            account.sslCert = scannedAccount.sslCert;
+            this.accountSelectionNotifier.notifyAccountScanned(account);
+        }
+    }
 
     private loadSavedAccounts() :AccountsArray {
         let savedData = appSettings.getString(ACCOUNTS_KEY, "--");

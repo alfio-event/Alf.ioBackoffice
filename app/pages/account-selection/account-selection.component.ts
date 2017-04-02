@@ -8,11 +8,13 @@ import { ListView } from "ui/list-view";
 import { Observable, Subject} from "rxjs";
 import { RouterExtensions } from "nativescript-angular/router"
 import dialogs = require("ui/dialogs");
-import { Account, EventConfiguration } from "../../shared/account/account";
+import { Account, EventConfiguration, ScannedAccount } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
-import {AccountResponse} from "../../shared/account/account";
+import { AccountResponse, Maybe, Some, Nothing } from "../../shared/account/account";
 import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../utils/barcodescanner';
 import application = require("application");
+import * as Vibrator from "nativescript-vibrate";
+import * as Toast from 'nativescript-toast';
 
 @Component({
     selector: "account-selection",
@@ -67,20 +69,69 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         if(this.editModeEnabled) {
             this.toggleEditMode();
         }
-        this.barcodeScanner.scan(defaultScanOptions)
-            .then((result) => {
+        let scanSubject = new Subject<string>();
+        let qrCodeParts: Array<string>;
+        let splitQrCodeMatcher = /^(\d+):(\d+):(.+$)/;
+        let scanOptions = defaultScanOptions();
+        scanOptions.continuousScanCallback = (result) => {
+            let text = <string>result.text;
+            let matchResult = splitQrCodeMatcher.exec(text);
+            Vibrator.vibration(50);
+            if(matchResult && matchResult.length == 4) {
+                let length = +matchResult[2];
+                if(!qrCodeParts) {
+                    qrCodeParts = new Array<string>(length).fill(undefined);
+                }
+                qrCodeParts[(+matchResult[1]) -1] = matchResult[3];
+                if(qrCodeParts.length == length && qrCodeParts.every(v => v && v.length > 0)) {
+                    let maybeScannedAccount = this.parseScannedAccount(qrCodeParts);
+                    maybeScannedAccount.ifPresent((account: ScannedAccount) => this.accountService.notifyAccountScanIfNeeded(account));
+                    this.barcodeScanner.stop().then(() => setTimeout(() => this.registerNewAccount(maybeScannedAccount), 200));
+                } else {
+                    Toast.makeText("Please scan the next code").show();
+                }
+            } else {
+                this.barcodeScanner.stop().then((() => setTimeout(() => this.registerNewAccount(this.parseScannedAccount([text])), 200)));
+            }
+        }
+        this.barcodeScanner.scan(scanOptions)
+            .then((result) => {}, (error) => {
+                console.log("No scan: " + error);
+                this.isLoading = false;
+            });
+       
+    }
+
+    private registerNewAccount(maybeAccount: Maybe<ScannedAccount>) {
+        if(maybeAccount.isPresent) {
+            let account = maybeAccount.value;
+            try {
                 this.isLoading = true;
-                let scanResult = JSON.parse(result.text);
-                this.accountService.registerNewAccount(scanResult.baseUrl, scanResult.username, scanResult.password, scanResult.sslCert)
+                this.accountService.registerNewAccount(account.url, account.username, account.password, account.sslCert)
                     .subscribe(resp => this.processResponse(resp), () => {
                         alert("Cannot register a new Account. Please check your internet connection and retry.")
                         this.isLoading = false;
                     });
-
-            }, (error) => {
-                console.log("No scan: " + error);
+            } catch(e) {
+                alert("Cannot register a new Account. Please re-scan the QR-Code(s).");
                 this.isLoading = false;
-            });
+            }
+        } else {
+            alert("Cannot register a new Account. Please re-scan the QR-Code(s).");
+            this.isLoading = false;
+        }
+    }
+
+    private parseScannedAccount(qrCodeParts: Array<string>): Maybe<ScannedAccount> {
+        if(qrCodeParts.length >= 1 && qrCodeParts.every(v => v && v.length > 0)) {
+            try {
+                let scanResult = JSON.parse(qrCodeParts.join(""));
+                return new Some<ScannedAccount>(new ScannedAccount(scanResult.baseUrl, scanResult.username, scanResult.password, scanResult.sslCert));
+            } catch(e) {
+                alert("Cannot register a new Account. Please re-scan the QR-Code(s).");
+                return new Nothing<ScannedAccount>();
+            }
+        }
     }
 
     manage(account: Account): void {

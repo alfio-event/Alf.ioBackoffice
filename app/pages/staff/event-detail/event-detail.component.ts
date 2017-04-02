@@ -68,7 +68,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     scan() {
         this.isLoading = true;
         let scanStart = new Date().getTime();
-        this.barcodeScanner.scan(defaultScanOptions)
+        this.barcodeScanner.scan(defaultScanOptions())
             .then((res) => {
                 //let toast = Toast.makeText("Working...", 20000);
                 this.isLoading = true;
