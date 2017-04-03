@@ -49,7 +49,7 @@ export class EventHeaderComponent implements OnInit {
 
     ngOnInit(): void {
         this.isLoading = true;
-        this.imageService.getImage(this.account.url, this.event).subscribe(imgUrl => {
+        this.imageService.getImage(this.account, this.event).subscribe(imgUrl => {
             this.eventImage = imgUrl;
             this.isLoading = false;
         })

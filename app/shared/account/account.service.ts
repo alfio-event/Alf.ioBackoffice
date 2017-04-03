@@ -106,6 +106,7 @@ export class AccountService {
                 account.password = obj.password;
                 account.accountType = <number>obj.accountType;
                 account.configurations = (<Array<any>>obj.configurations);
+                account.sslCert = obj.sslCert;
                 return account;
             }));
         }

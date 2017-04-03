@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, OnChanges, ViewChild, Inject, EventEmitter } from "@angular/core";
+import { Component, ElementRef, OnInit, OnChanges, ViewChild, Inject, EventEmitter, NgZone } from "@angular/core";
 import { Router } from "@angular/router";
 import { Color } from "color";
 import { Page } from "ui/page";
@@ -39,7 +39,8 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         private accountService: AccountService, 
         private page: Page, 
         private routerExtensions: RouterExtensions,
-        @Inject(BARCODE_SCANNER) private barcodeScanner: BarcodeScanner) {
+        @Inject(BARCODE_SCANNER) private barcodeScanner: BarcodeScanner,
+        private ngZone: NgZone) {
             this.isIos = !application.android;
     }
 
@@ -53,7 +54,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
             } else {
                 this.manage(account);
             }
-        })
+        });
     }
 
     ngOnChanges() {
@@ -65,9 +66,10 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     }
 
     requestQrScan() {
-        this.isLoading = true;
         if(this.editModeEnabled) {
             this.toggleEditMode();
+        } else {
+            this.isLoading = true;
         }
         let scanSubject = new Subject<string>();
         let qrCodeParts: Array<string>;
@@ -86,12 +88,12 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                 if(qrCodeParts.length == length && qrCodeParts.every(v => v && v.length > 0)) {
                     let maybeScannedAccount = this.parseScannedAccount(qrCodeParts);
                     maybeScannedAccount.ifPresent((account: ScannedAccount) => this.accountService.notifyAccountScanIfNeeded(account));
-                    this.barcodeScanner.stop().then(() => setTimeout(() => this.registerNewAccount(maybeScannedAccount), 200));
+                    this.barcodeScanner.stop().then(() => this.registerNewAccount(maybeScannedAccount));
                 } else {
                     Toast.makeText("Please scan the next code").show();
                 }
             } else {
-                this.barcodeScanner.stop().then((() => setTimeout(() => this.registerNewAccount(this.parseScannedAccount([text])), 200)));
+                this.barcodeScanner.stop().then((() => this.registerNewAccount(this.parseScannedAccount([text]))));
             }
         }
         this.barcodeScanner.scan(scanOptions)
@@ -108,10 +110,12 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
             try {
                 this.isLoading = true;
                 this.accountService.registerNewAccount(account.url, account.username, account.password, account.sslCert)
-                    .subscribe(resp => this.processResponse(resp), () => {
-                        alert("Cannot register a new Account. Please check your internet connection and retry.")
-                        this.isLoading = false;
-                    });
+                    .subscribe(resp => this.ngZone.run(() => {
+                            this.processResponse(resp)
+                        }), () => {
+                            alert("Cannot register a new Account. Please check your internet connection and retry.")
+                            this.isLoading = false;
+                        });
             } catch(e) {
                 alert("Cannot register a new Account. Please re-scan the QR-Code(s).");
                 this.isLoading = false;

@@ -40,7 +40,7 @@ export class RemoteConnectorService extends Http {
         let promise = Https.request({
             url: url,
             method: 'GET',
-            headers: this.convertHeaders(options.headers)
+            headers: options ? this.convertHeaders(options.headers) : undefined
         });
         return Observable.fromPromise(promise).map(this.responseMapper);
     }
@@ -77,10 +77,12 @@ export class RemoteConnectorService extends Http {
 
     private convertHeaders(headers: Headers): {[key: string] : string} {
         let converted: {[key: string] : string} = {};
-        headers.forEach((val:string[], name:string, _headers: any) => {
-            //console.log(`header ${name}`, val);
-            headers[name] = val[0];
-        });
+        if(headers) {
+            headers.forEach((val:string[], name:string, _headers: any) => {
+                //console.log(`header ${name}`, val);
+                headers[name] = val[0];
+            });
+        }
         return converted;
     }
 

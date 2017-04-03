@@ -1,5 +1,5 @@
 import { SwipeGestureEventData, SwipeDirection } from "ui/gestures";
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild, NgZone } from "@angular/core";
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "nativescript-angular/router"
 import { Color } from "color";
@@ -28,7 +28,8 @@ export class AccountManageComponent implements OnInit {
 
     constructor(private route: ActivatedRoute,
         private routerExtensions: RouterExtensions,
-        private accountService: AccountService) { }
+        private accountService: AccountService,
+        private ngZone: NgZone) { }
 
     ngOnInit(): void {
         this.isLoading = true;
@@ -36,6 +37,7 @@ export class AccountManageComponent implements OnInit {
             let id = params['accountId'];
             console.log("AccountManageComponent accountId:", id);
             this.accountService.findAccountById(id).ifPresent(account => {
+                console.log("account found")
                 this.account = account;
                 this.events = this.account.configurations.map(e => new EventConfigurationSelection(e, true));
                 this.isLoading = false;
@@ -47,12 +49,16 @@ export class AccountManageComponent implements OnInit {
         this.isLoading = true;
         this.accountService.loadEventsForAccount(this.account)
             .subscribe(events => {
-                this.events = events.map(e => new EventConfigurationSelection(e, this.account.containsEvent(e.key)));
-                this.isLoading = false;
+                this.ngZone.run(() => {
+                    this.events = events.map(e => new EventConfigurationSelection(e, this.account.containsEvent(e.key)));
+                    this.isLoading = false;
+                });
             }, error => {
-                console.log("error while loading events", error);
-                this.isLoading = false;
-                Toast.makeText("Error while refreshing events").show();
+                this.ngZone.run(() => {
+                    console.log("error while loading events", error);
+                    this.isLoading = false;
+                    Toast.makeText("Error while refreshing events").show();
+                });
             });
     }
 
