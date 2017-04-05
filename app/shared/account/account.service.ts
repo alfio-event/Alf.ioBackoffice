@@ -85,15 +85,13 @@ export class AccountService {
         this.persistAccounts();
     }
 
-    public notifyAccountScanIfNeeded(scannedAccount: ScannedAccount): void {
-        if(scannedAccount.sslCert && scannedAccount.sslCert.length > 0) {
-            let account = new Account();
-            account.url = scannedAccount.url;
-            account.username = scannedAccount.username;
-            account.password = scannedAccount.password;
-            account.sslCert = scannedAccount.sslCert;
-            this.accountSelectionNotifier.notifyAccountScanned(account);
-        }
+    public notifyAccountScan(scannedAccount: ScannedAccount): void {
+        let account = new Account();
+        account.url = scannedAccount.url;
+        account.username = scannedAccount.username;
+        account.password = scannedAccount.password;
+        account.sslCert = scannedAccount.sslCert;
+        this.accountSelectionNotifier.notifyAccountScanned(account);
     }
 
     private loadSavedAccounts() :AccountsArray {

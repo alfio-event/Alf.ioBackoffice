@@ -87,7 +87,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                 qrCodeParts[(+matchResult[1]) -1] = matchResult[3];
                 if(qrCodeParts.length == length && qrCodeParts.every(v => v && v.length > 0)) {
                     let maybeScannedAccount = this.parseScannedAccount(qrCodeParts);
-                    maybeScannedAccount.ifPresent((account: ScannedAccount) => this.accountService.notifyAccountScanIfNeeded(account));
+                    maybeScannedAccount.ifPresent((account: ScannedAccount) => this.accountService.notifyAccountScan(account));
                     this.barcodeScanner.stop().then(() => this.registerNewAccount(maybeScannedAccount));
                 } else {
                     Toast.makeText("Please scan the next code").show();
@@ -112,10 +112,10 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                 this.accountService.registerNewAccount(account.url, account.username, account.password, account.sslCert)
                     .subscribe(resp => this.ngZone.run(() => {
                             this.processResponse(resp)
-                        }), () => {
+                        }), () => this.ngZone.run(() => {
                             alert("Cannot register a new Account. Please check your internet connection and retry.")
                             this.isLoading = false;
-                        });
+                        }));
             } catch(e) {
                 alert("Cannot register a new Account. Please re-scan the QR-Code(s).");
                 this.isLoading = false;

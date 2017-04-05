@@ -14,7 +14,6 @@ import { HttpsResponse, HttpsSSLPinningOptions } from "nativescript-https";
 export class RemoteConnectorService extends Http {
 
     private responseMapper = (response: HttpsResponse) => {
-        //console.log("response mapper. Response: ", JSON.stringify(response));
         let isSuccessful = response.statusCode == 200;
         let responseOptions = new ResponseOptions({
             body: isSuccessful ? response.content : null,
@@ -46,7 +45,6 @@ export class RemoteConnectorService extends Http {
     }
 
     post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
-        //console.log("calling post...")
         return Observable.fromPromise(Https.request({
             url: url,
             method: 'POST',
@@ -79,7 +77,6 @@ export class RemoteConnectorService extends Http {
         let converted: {[key: string] : string} = {};
         if(headers) {
             headers.forEach((val:string[], name:string, _headers: any) => {
-                //console.log(`header ${name}`, val);
                 headers[name] = val[0];
             });
         }
@@ -92,18 +89,19 @@ export class RemoteConnectorService extends Http {
         if(account.sslCert) {
             let dir = knownFolders.currentApp().getFolder('certs');
             let hostname = new RegExp(/^https?:\/\/(.*?)(:.*)?$/).exec(account.url)[1];
-            let text = `-----BEGIN CERTIFICATE-----\n${account.sslCert}\n-----END CERTIFICATE-----`;
-            let file = File.fromPath(`${dir.path}/${hostname}`);
-        
-            file.writeText(text).then(r => {
-                let pinningOptions = { 
-                    host: hostname, 
-                    certificate: file.path,
-                    allowInvalidCertificates: false,
-                    validatesDomainName: false
-                };
-                Https.enableSSLPinning(pinningOptions);
-            });
+            if(!File.exists(`${dir.path}/${hostname}`)) {
+                let text = `-----BEGIN CERTIFICATE-----\n${account.sslCert}\n-----END CERTIFICATE-----`;
+                let file = File.fromPath(`${dir.path}/${hostname}`);
+                file.writeText(text).then(r => {
+                    let pinningOptions = { 
+                        host: hostname, 
+                        certificate: file.path,
+                        allowInvalidCertificates: false,
+                        validatesDomainName: false
+                    };
+                    Https.enableSSLPinning(pinningOptions);
+                });
+            }
         }
     }
 
