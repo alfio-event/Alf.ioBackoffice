@@ -18,7 +18,7 @@ import * as Vibrator from "nativescript-vibrate";
     selector: "staff-event-detail",
     providers: [AccountService, ScanService],
     templateUrl: 'event-detail.html',
-    styleUrls: ['event-detail-common.css']
+    styleUrls: []
 })
 @Injectable()
 export class StaffEventDetailComponent implements OnInit, OnDestroy {
