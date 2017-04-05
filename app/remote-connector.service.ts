@@ -51,7 +51,7 @@ export class RemoteConnectorService extends Http {
             url: url,
             method: 'POST',
             headers: headers,
-            body: JSON.stringify(body)
+            body: body
         })).map(this.responseMapper);
     }
     
