@@ -29,7 +29,7 @@ export class AccountService {
                 account.url = url;
                 account.username = username;
                 account.password = password;
-                account.accountType = data === "SPONSOR" ? AccountType.SPONSOR : AccountType.STAFF;
+                account.accountType = this.safeParse(data) === "SPONSOR" ? AccountType.SPONSOR : AccountType.STAFF;
                 account.configurations = [];
                 account.sslCert = sslCert;
                 let newAccountKey = account.getKey();
@@ -53,6 +53,14 @@ export class AccountService {
                 console.log(JSON.stringify(error));
                 return Observable.throw(error);
             });
+    }
+
+    private safeParse(data: string): string {
+        try {
+            return JSON.parse(data);
+        } catch(e) {
+            return data;
+        }
     }
 
     public getRegisteredAccounts(): Array<Account> {

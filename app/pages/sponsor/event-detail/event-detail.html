@@ -31,8 +31,8 @@
         </StackLayout>
         <ActivityIndicator row="1" [busy]="isLoading" class="activity-indicator"></ActivityIndicator>
         <StackLayout row="2" orientation="vertical" class="button-group">
-            <Button (tap)="shuffle()" text="Shuffle" class="button" *ngIf="scans.length > 1"></Button>
-            <Button (tap)="requestQrScan()" class="button button-primary" text="Scan"></Button>
+            <Button (tap)="shuffle()" text="Shuffle" class="button btn-outline" *ngIf="scans.length > 1"></Button>
+            <Button (tap)="requestQrScan()" class="button btn-primary" text="Scan"></Button>
         </StackLayout>
         
     </GridLayout>

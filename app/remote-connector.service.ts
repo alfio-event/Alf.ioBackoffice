@@ -45,10 +45,12 @@ export class RemoteConnectorService extends Http {
     }
 
     post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
+        let headers = this.convertHeaders(options.headers);
+        headers['Content-Type'] = 'application/json';
         return Observable.fromPromise(Https.request({
             url: url,
             method: 'POST',
-            headers: this.convertHeaders(options.headers),
+            headers: headers,
             body: JSON.stringify(body)
         })).map(this.responseMapper);
     }

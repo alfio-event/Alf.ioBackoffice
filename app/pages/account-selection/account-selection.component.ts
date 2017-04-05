@@ -93,7 +93,9 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                     Toast.makeText("Please scan the next code").show();
                 }
             } else {
-                this.barcodeScanner.stop().then((() => this.registerNewAccount(this.parseScannedAccount([text]))));
+                let maybeScannedAccount = this.parseScannedAccount([text]);
+                maybeScannedAccount.ifPresent((account: ScannedAccount) => this.accountService.notifyAccountScan(account));
+                this.barcodeScanner.stop().then((() => this.registerNewAccount(maybeScannedAccount)));
             }
         }
         this.barcodeScanner.scan(scanOptions)
