@@ -79,7 +79,7 @@ export class RemoteConnectorService extends Http {
         let converted: {[key: string] : string} = {};
         if(headers) {
             headers.forEach((val:string[], name:string, _headers: any) => {
-                headers[name] = val[0];
+                converted[name] = val[0];
             });
         }
         return converted;
