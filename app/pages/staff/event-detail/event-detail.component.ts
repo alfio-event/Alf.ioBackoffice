@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, Injectable, OnInit, OnDestroy, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, Injectable, OnInit, OnDestroy, ViewChild, ViewContainerRef, NgZone } from '@angular/core';
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import { View } from "ui/core/view";
 import { Page } from "ui/page";
@@ -37,7 +37,8 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 private routerExtensions: RouterExtensions,
                 private accountService: AccountService,
                 @Inject(BARCODE_SCANNER) private barcodeScanner: BarcodeScanner,
-                private scanService: ScanService) {
+                private scanService: ScanService,
+                private ngZone: NgZone) {
     }
 
     onBackTap() {
@@ -82,9 +83,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                             console.log("2nd stop, elapsed", new Date().getTime() - start);
                         }, err => {
                             this.displayResult("", new UnexpectedError(err));
-                        }, () => {
-                            this.isLoading = false;
-                        });
+                        }, () => this.ngZone.run(() => this.isLoading = false));
             }, (error) => {
                 console.log("handling scan error", error);
                 clearInterval(this.interval);
@@ -150,15 +149,17 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     }
 
     private displayResult(code:string, res: TicketAndCheckInResult): void {
-        this.status = res ? res.result.status : CheckInStatus.ERROR;
-        this.message = statusDescriptions[this.status];
-        this.ticket = res ? res.ticket : null;
-        if(this.status == CheckInStatus.SUCCESS) {
-            //notify success
-            Vibrator.vibration(50);
-        } else {
-            Vibrator.vibration(500);
-            //notify error
-        }
+        this.ngZone.run(() => {
+            this.status = res ? res.result.status : CheckInStatus.ERROR;
+            this.message = statusDescriptions[this.status];
+            this.ticket = res ? res.ticket : null;
+            if(this.status == CheckInStatus.SUCCESS) {
+                //notify success
+                Vibrator.vibration(50);
+            } else {
+                Vibrator.vibration(500);
+                //notify error
+            }
+        });
     }
 }
