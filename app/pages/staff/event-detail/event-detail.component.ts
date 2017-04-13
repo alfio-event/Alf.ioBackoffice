@@ -12,6 +12,7 @@ import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../../ut
 import { TicketAndCheckInResult, CheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket } from '../../../shared/scan/scan-common'
 import * as Toast from 'nativescript-toast';
 import * as Vibrator from "nativescript-vibrate";
+import { CurrencyPipe } from "@angular/common";
 
 @Component({
     moduleId: module.id,
@@ -29,6 +30,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     code: string;
     status: CheckInStatus;
     message: string;
+    detail: string;
     ticket: Ticket;
     private interval: number;
     
@@ -38,7 +40,8 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 private accountService: AccountService,
                 @Inject(BARCODE_SCANNER) private barcodeScanner: BarcodeScanner,
                 private scanService: ScanService,
-                private ngZone: NgZone) {
+                private ngZone: NgZone,
+                private currencyPipe: CurrencyPipe) {
     }
 
     onBackTap() {
@@ -152,6 +155,9 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         this.ngZone.run(() => {
             this.status = res ? res.result.status : CheckInStatus.ERROR;
             this.message = statusDescriptions[this.status];
+            if(this.status == CheckInStatus.MUST_PAY) {
+                this.message += " " + this.currencyPipe.transform(res.result.dueAmount, res.result.currency);
+            }
             this.ticket = res ? res.ticket : null;
             if(this.status == CheckInStatus.SUCCESS) {
                 //notify success
