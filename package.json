@@ -20,7 +20,7 @@
     "@angular/platform-browser-dynamic": "4.0.0",
     "@angular/router": "4.0.0",
     "nativescript-angular": "1.5.0",
-    "nativescript-barcodescanner": "^2.4.1",
+    "nativescript-barcodescanner": "^2.5.0",
     "nativescript-email": "^1.4.0",
     "nativescript-https": "git://github.com/cbellone/nativescript-https.git#alfio",
     "nativescript-theme-core": "~1.0.2",
