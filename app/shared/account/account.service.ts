@@ -88,7 +88,10 @@ export class AccountService {
 
     public updateEventsForAccount(key:string, events: Array<EventConfiguration>) {
         console.log("updating account configurations, events size:", events.length);
-        this.accounts.get(key).ifPresent(v => v.configurations = events);
+        this.accounts.get(key).ifPresent(v => {
+            v.lastUpdate = new Date();
+            v.configurations = events;
+        });
         console.log("done. Persisting...");
         this.persistAccounts();
     }

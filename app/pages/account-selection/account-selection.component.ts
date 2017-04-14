@@ -15,6 +15,7 @@ import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../utils
 import application = require("application");
 import * as Vibrator from "nativescript-vibrate";
 import * as Toast from 'nativescript-toast';
+import { isUndefined } from "utils/types";
 
 @Component({
     selector: "account-selection",
@@ -68,8 +69,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     requestQrScan() {
         if(this.editModeEnabled) {
             this.toggleEditMode();
-        } else {
-            this.isLoading = true;
         }
         let scanSubject = new Subject<string>();
         let qrCodeParts: Array<string>;
@@ -87,15 +86,26 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                 qrCodeParts[(+matchResult[1]) -1] = matchResult[3];
                 if(qrCodeParts.length == length && qrCodeParts.every(v => v && v.length > 0)) {
                     let maybeScannedAccount = this.parseScannedAccount(qrCodeParts);
-                    maybeScannedAccount.ifPresent((account: ScannedAccount) => this.accountService.notifyAccountScan(account));
-                    this.barcodeScanner.stop().then(() => this.registerNewAccount(maybeScannedAccount));
+                    if(maybeScannedAccount.isPresent()) {
+                        let account = maybeScannedAccount.value;
+                        this.accountService.notifyAccountScan(account);
+                        this.barcodeScanner.stop().then(() => this.registerNewAccount(account));
+                    } else {
+                        qrCodeParts = new Array<string>(length).fill(undefined);
+                        Toast.makeText("Corrupted QR-Code sequence. Please retry.").show();
+                    }
                 } else {
                     Toast.makeText("Please scan the next code").show();
                 }
             } else {
                 let maybeScannedAccount = this.parseScannedAccount([text]);
-                maybeScannedAccount.ifPresent((account: ScannedAccount) => this.accountService.notifyAccountScan(account));
-                this.barcodeScanner.stop().then((() => this.registerNewAccount(maybeScannedAccount)));
+                if(maybeScannedAccount.isPresent()) {
+                    let account = maybeScannedAccount.value;
+                    this.accountService.notifyAccountScan(account);
+                    this.barcodeScanner.stop().then((() => this.registerNewAccount(account)));
+                } else {
+                    Toast.makeText("Invalid QR-Code. Please retry.").show();
+                }
             }
         }
         this.barcodeScanner.scan(scanOptions)
@@ -106,24 +116,19 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
        
     }
 
-    private registerNewAccount(maybeAccount: Maybe<ScannedAccount>) {
-        if(maybeAccount.isPresent) {
-            let account = maybeAccount.value;
-            try {
-                this.isLoading = true;
-                this.accountService.registerNewAccount(account.url, account.username, account.password, account.sslCert)
-                    .subscribe(resp => this.ngZone.run(() => {
-                            this.processResponse(resp)
-                        }), () => this.ngZone.run(() => {
-                            alert("Cannot register a new Account. Please check your internet connection and retry.")
-                            this.isLoading = false;
-                        }));
-            } catch(e) {
-                alert("Cannot register a new Account. Please re-scan the QR-Code(s).");
-                this.isLoading = false;
-            }
-        } else {
-            alert("Cannot register a new Account. Please re-scan the QR-Code(s).");
+    private registerNewAccount(account: ScannedAccount) {
+        try {
+            this.isLoading = true;
+            this.accountService.registerNewAccount(account.url, account.username, account.password, account.sslCert)
+                .subscribe(resp => this.ngZone.run(() => {
+                        this.processResponse(resp)
+                    }), (err) => this.ngZone.run(() => {
+                        console.log(err);
+                        Toast.makeText("Cannot register a new Account. Please check your internet connection and retry.").show();
+                        this.isLoading = false;
+                    }));
+        } catch(e) {
+            Toast.makeText("Cannot register a new Account. Please re-scan the QR-Code(s).").show();
             this.isLoading = false;
         }
     }
@@ -132,9 +137,11 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         if(qrCodeParts.length >= 1 && qrCodeParts.every(v => v && v.length > 0)) {
             try {
                 let scanResult = JSON.parse(qrCodeParts.join(""));
+                if([scanResult.baseUrl, scanResult.username, scanResult.password].some(isUndefined)) {
+                    return new Nothing<ScannedAccount>();
+                }
                 return new Some<ScannedAccount>(new ScannedAccount(scanResult.baseUrl, scanResult.username, scanResult.password, scanResult.sslCert));
             } catch(e) {
-                alert("Cannot register a new Account. Please re-scan the QR-Code(s).");
                 return new Nothing<ScannedAccount>();
             }
         }

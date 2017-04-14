@@ -6,6 +6,7 @@ export class Account {
     password: string;
     accountType: AccountType;
     configurations: Array<EventConfiguration>;
+    lastUpdate: Date;
     sslCert: string;
 
 

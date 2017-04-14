@@ -14,6 +14,7 @@ import { Account, EventConfiguration, EventConfigurationSelection, AccountType }
 import { AccountService } from "../../shared/account/account.service";
 import { ImageService } from "../../shared/image/image.service";
 import * as Toast from 'nativescript-toast';
+import { isDefined, isUndefined } from "utils/types";
 
 @Component({
     selector: "account-manage",
@@ -23,7 +24,7 @@ import * as Toast from 'nativescript-toast';
 })
 export class AccountManageComponent implements OnInit {
     account: Account;
-    events: Array<EventConfigurationSelection>;
+    events: Array<EventConfiguration>;
     isLoading: boolean;
 
     constructor(private route: ActivatedRoute,
@@ -36,31 +37,43 @@ export class AccountManageComponent implements OnInit {
         this.route.params.forEach((params: Params) => {
             let id = params['accountId'];
             console.log("AccountManageComponent accountId:", id);
-            this.accountService.findAccountById(id).ifPresent(account => {
-                console.log("account found")
-                this.account = account;
-                this.events = this.account.configurations.map(e => new EventConfigurationSelection(e, true));
-                this.isLoading = false;
+            this.accountService.findAccountById(id).ifPresent((account: Account) => {
+                let now = new Date();
+                if(isUndefined(account.lastUpdate) || now.getTime() - account.lastUpdate.getTime() > 3600) {
+                    this.internalReloadEvents(account, () => this.account = account);
+                } else {
+                    this.events = this.account.configurations;
+                    this.isLoading = false;
+                }
             });
         });
     }
 
     reloadEvents(): void {
+        this.internalReloadEvents(this.account);
+    }
+
+    private internalReloadEvents(account: Account, onComplete?: () => void): void {
         this.isLoading = true;
-        this.accountService.loadEventsForAccount(this.account)
+        this.accountService.loadEventsForAccount(account)
             .subscribe(events => {
-                this.accountService.updateEventsForAccount(this.account.getKey(), events);
+                this.accountService.updateEventsForAccount(account.getKey(), events);
                 this.ngZone.run(() => {
-                    this.events = events.map(e => new EventConfigurationSelection(e, this.account.containsEvent(e.key)));
+                    this.events = events;
                     this.isLoading = false;
                 });
             }, error => {
                 this.ngZone.run(() => {
                     console.log("error while loading events", error);
+                    this.events = account.configurations;
                     this.isLoading = false;
                     Toast.makeText("Error while refreshing events").show();
                 });
-            });
+            }, this.ngZone.run(() => {
+                if(isDefined(onComplete)) {
+                    onComplete();
+                }
+            }));
     }
 
     hasEvents(): boolean {

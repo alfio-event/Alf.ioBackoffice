@@ -6,7 +6,7 @@
 <GridLayout rows="10, *, auto">
   <ListView [items]="events" row="1" *ngIf="account && !isLoading">
     <ng-template let-item="item" class="event">
-      <event-header [event]="item.eventConfiguration" [account]="account" (onTap)="select($event)"></event-header>
+      <event-header [event]="item" [account]="account" (onTap)="select($event)"></event-header>
     </ng-template>
   </ListView>
 
