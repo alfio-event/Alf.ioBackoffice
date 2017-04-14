@@ -24,7 +24,7 @@
     </ScrollView>
     <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="2" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
     <StackLayout row="3" class="m-l-16 m-r-16" *ngIf="!isLoading" orientation="vertical">
-        <Button class="button btn-outline" (tap)="cancel()" *ngIf="isStatusMustPay()" text="Cancel"></Button>
-        <Button class="button" [class.btn-primary]="isStatusSuccess()" [class.btn-orange]="isStatusSuccess()" [class.pull-right]="isStatusMustPay()" (tap)="scan()" [text]="getPrimaryButtonText()"></Button>
+        <Button class="button" (tap)="cancel()" *ngIf="isStatusMustPay()" text="Cancel"></Button>
+        <Button class="button btn-primary" [class.btn-orange]="isStatusSuccess() || isStatusMustPay()" (tap)="onPrimaryButtonTap()" [text]="getPrimaryButtonText()"></Button>
     </StackLayout>
 </GridLayout>

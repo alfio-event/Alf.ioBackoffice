@@ -69,6 +69,14 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         }
     }
 
+    onPrimaryButtonTap(): void {
+        if(this.isStatusMustPay()) {
+            this.confirmPayment(this.code);
+        } else {
+            this.scan();
+        }
+    }
+
     scan() {
         this.isLoading = true;
         let scanStart = new Date().getTime();
@@ -79,6 +87,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 clearInterval(this.interval);
                 Vibrator.vibration(50);
                 let scanResult = res.text;
+                this.code = scanResult;
                 let start = new Date().getTime();
                 this.scanService.checkIn(this.event.key, this.account, scanResult)
                         .subscribe(res => {
@@ -108,8 +117,11 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     }
 
     confirmPayment(code: string): void {
+        this.isLoading = true;
         this.scanService.confirmPayment(this.event.key, this.account, code)
-                    .subscribe(res => this.displayResult(code, res));
+                    .subscribe(res => this.displayResult(code, res), err => {
+                            this.displayResult("", new UnexpectedError(err));
+                        }, () => this.ngZone.run(() => this.isLoading = false));
     }
 
     getStatusIcon(): string {
@@ -156,7 +168,8 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             this.status = res ? res.result.status : CheckInStatus.ERROR;
             this.message = statusDescriptions[this.status];
             if(this.status == CheckInStatus.MUST_PAY) {
-                this.message += " " + this.currencyPipe.transform(res.result.dueAmount, res.result.currency);
+                let formattedAmount = res.result.currency + res.result.dueAmount;
+                this.message += " " + formattedAmount;
             }
             this.ticket = res ? res.ticket : null;
             if(this.status == CheckInStatus.SUCCESS) {
