@@ -159,11 +159,12 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     private getListView(): ListView {
         if(this.listView) {
             return this.listView;
-        } else {
+        } else if(this.listViewContainer) {
             let container = <ListView>this.listViewContainer.nativeElement;
             this.listView = container;
             return this.listView;
         }
+        return null;
     }
 
 

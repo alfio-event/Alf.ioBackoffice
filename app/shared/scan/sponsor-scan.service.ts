@@ -90,7 +90,7 @@ export class SponsorScanService  {
             toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.ERROR, null));
             this.persistSponsorScans(eventKey, account);
             this.emitFor(eventKey);
-            console.log('error while bulk scanning:', error);
+            console.log('error while bulk scanning:', JSON.stringify(error));
             this.process(eventKey, account);
         });
         
