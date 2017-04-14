@@ -9,7 +9,7 @@
     <GridLayout rows="auto, *, 120">
         <event-header col="0" [event]="event" [account]="account" class="event-header"></event-header>
         <ListView [items]="scans" row="1" [class.visible]="listLoaded" *ngIf="scans.length > 0" #list>
-            <template let-item="item" let-ticket="item.ticket">
+            <ng-template let-item="item" let-ticket="item.ticket">
                 <GridLayout columns="24, *">
                     <Label col="0" class="icon person-icon text-muted text-center" text="&#xf30c;" *ngIf="!ticket"></Label>
                     <Label col="0" class="icon person-icon text-muted text-center" text="&#xf206;" *ngIf="ticket"></Label>
@@ -22,7 +22,7 @@
                         <Label [text]="item.code"></Label>
                     </StackLayout>
                 </GridLayout>
-            </template>
+            </ng-template>
         </ListView>
         <StackLayout row="1" orientation="vertical" class="warning-msg" *ngIf="scans.length == 0">
             <Label class="icon icon-3x text-muted text-center" text="&#xf208;"></Label>

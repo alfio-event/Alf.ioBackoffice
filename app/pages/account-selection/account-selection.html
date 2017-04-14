@@ -12,7 +12,7 @@
 	</StackLayout>
 	
 	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts()">
-		<template let-item="item">
+		<ng-template let-item="item">
 			<GridLayout columns="*, 35" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" (longPress)="onLongPress(item)">
 				<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding"  (tap)="manage(item)">
 					<Label [text]="item.username" class="accountName"></Label>
@@ -23,7 +23,7 @@
 					<Label col="1" text="&#xf154;" (tap)="delete(item)" *ngIf="!isIos" class="delete-item icon icon-1-5x text-white"></Label>
 				</StackLayout>
 			</GridLayout>
-		</template>
+		</ng-template>
 	</ListView>
 	<ActivityIndicator row="1" [busy]="isLoading"  class="activity-indicator"></ActivityIndicator>
 </GridLayout>

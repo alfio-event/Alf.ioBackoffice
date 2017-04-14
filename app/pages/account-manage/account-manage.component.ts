@@ -49,6 +49,7 @@ export class AccountManageComponent implements OnInit {
         this.isLoading = true;
         this.accountService.loadEventsForAccount(this.account)
             .subscribe(events => {
+                this.accountService.updateEventsForAccount(this.account.getKey(), events);
                 this.ngZone.run(() => {
                     this.events = events.map(e => new EventConfigurationSelection(e, this.account.containsEvent(e.key)));
                     this.isLoading = false;

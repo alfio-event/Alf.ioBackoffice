@@ -4,10 +4,10 @@
 </ActionBar>
 
 <GridLayout rows="10, *, auto">
-  <ListView [items]="events" row="1" [class.visible]="!isLoading" *ngIf="account" [class.loading-active]="isLoading">
-    <template let-item="item" class="event">
+  <ListView [items]="events" row="1" *ngIf="account && !isLoading">
+    <ng-template let-item="item" class="event">
       <event-header [event]="item.eventConfiguration" [account]="account" (onTap)="select($event)"></event-header>
-    </template>
+    </ng-template>
   </ListView>
 
   <ActivityIndicator class="activity-indicator" [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="1" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>

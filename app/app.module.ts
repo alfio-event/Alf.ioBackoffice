@@ -2,7 +2,8 @@ import { EventHeaderComponent } from './pages/event-header/event-header.componen
 import { NgModule, Injector } from "@angular/core";
 import { NativeScriptFormsModule } from "nativescript-angular/forms";
 import { NativeScriptHttpModule } from "nativescript-angular/http";
-import { NativeScriptModule } from "nativescript-angular/platform";
+import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+import { NativeScriptAnimationsModule } from "nativescript-angular/animations";
 import { NativeScriptRouterModule } from "nativescript-angular/router";
 import { AccountModule } from "./shared/account/account.module"
 import { IosAccountIconComponent } from "./pages/ios-account-icon/ios-account-icon.component";
@@ -13,6 +14,7 @@ import { BaseRequestOptions, Http } from "@angular/http";
 import { AccountService } from "./shared/account/account.service";
 import { ActivatedRoute } from "@angular/router";
 import { AlfioHttpsModule } from "./alfio-https.module";
+import { CurrencyPipe } from "@angular/common";
 
 @NgModule({
     imports: [
@@ -21,6 +23,7 @@ import { AlfioHttpsModule } from "./alfio-https.module";
         AlfioHttpsModule,
         NativeScriptRouterModule,
         NativeScriptRouterModule.forRoot(routes),
+        NativeScriptAnimationsModule,
         AccountModule
     ],
     declarations: [
@@ -29,6 +32,7 @@ import { AlfioHttpsModule } from "./alfio-https.module";
         IosAccountIconComponent,
         ...navigatableComponents
     ],
+    providers: [ CurrencyPipe ],
     bootstrap: [AppComponent]
 })
 export class AppModule {}
