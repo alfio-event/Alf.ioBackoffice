@@ -1,5 +1,5 @@
 import { Injectable, OnInit, Injector } from "@angular/core";
-import { ActivatedRoute, Params } from "@angular/router";
+import { Router, ActivatedRoute, Params, Event, RoutesRecognized } from "@angular/router";
 import { AccountService } from "./account.service";
 import { Account } from "./account";
 import { Subject, Observable } from "rxjs";
@@ -14,24 +14,32 @@ export class AccountSelectionNotifier implements OnInit {
     accountSelectedObservable: Observable<Account>;
     accountScannedObservable: Observable<Account>;
 
-    constructor(private route: ActivatedRoute, 
+    constructor(private router: Router,
+                private route: ActivatedRoute, 
                 private injector: Injector) {
         this.accountSelectedSubject = new Subject<Account>();
         this.accountSelectedObservable = this.accountSelectedSubject.asObservable();
         this.accountScannedSubject = new Subject<Account>();
         this.accountScannedObservable = this.accountScannedSubject.asObservable();
+        let extractRegex = new RegExp("^\/manage-account\/(.+)$")
+        this.router.events
+            .filter((event: Event) => event instanceof RoutesRecognized)
+            .filter((event: RoutesRecognized) => extractRegex.test(event.urlAfterRedirects))
+            .subscribe((event: RoutesRecognized) => {
+                
+                let result = extractRegex.exec(event.urlAfterRedirects)[1];
+                if(result && decodeURIComponent(result) != this.currentAccountId) {
+                    let id = decodeURIComponent(result);
+                    this.getAccountService().findAccountById(id).ifPresent((account: Account) => {
+                        this.accountSelectedSubject.next(account);
+                        this.currentAccountId = id;
+                    });
+                } 
+            });
     }
 
     ngOnInit(): void {
-        this.route.params.forEach((params: Params) => {
-            let id = params['accountId'];
-            if(id != this.currentAccountId) {
-                this.getAccountService().findAccountById(id).ifPresent((account: Account) => {
-                    this.accountSelectedSubject.next(account);
-                    this.currentAccountId = id;
-                });
-            }
-        })
+        
     }
 
     notifyAccountScanned(account: Account): void {

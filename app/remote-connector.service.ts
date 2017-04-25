@@ -103,6 +103,15 @@ export class RemoteConnectorService extends Http {
                     };
                     Https.enableSSLPinning(pinningOptions);
                 });
+            } else {
+                let file = File.fromPath(`${dir.path}/${hostname}`);
+                let pinningOptions = { 
+                        host: hostname, 
+                        certificate: file.path,
+                        allowInvalidCertificates: false,
+                        validatesDomainName: false
+                    };
+                Https.enableSSLPinning(pinningOptions);
             }
         }
     }

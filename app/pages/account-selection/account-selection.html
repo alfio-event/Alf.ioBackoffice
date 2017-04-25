@@ -1,6 +1,5 @@
 <ActionBar class="action-bar" title="Your accounts">
-	<ActionItem (tap)="toggleEditMode()" *ngIf="isIos && hasAccounts() && !editModeEnabled" ios.systemIcon="2" ios.position="left"></ActionItem>
-	<ActionItem (tap)="toggleEditMode()" *ngIf="isIos && hasAccounts() && editModeEnabled" ios.systemIcon="0" ios.position="left"></ActionItem>
+	<ActionItem (tap)="toggleEditMode()" ios.systemIcon="2" ios.position="left"></ActionItem>
 	<ActionItem (tap)="requestQrScan()" icon="res://ic_add_circle_white" ios.systemIcon="4" ios.position="right" text="Add new Configuration" android.position="actionBarIfRoom"></ActionItem>
 </ActionBar>
 

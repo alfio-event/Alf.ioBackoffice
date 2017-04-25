@@ -31,7 +31,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     private editEnableSubject = new Subject<boolean>();
     editEnableObservable: Observable<boolean> = this.editEnableSubject.asObservable();
     private tapObservable: Observable<Account> = this.tapEmitter.asObservable();
-    private editedAccount?: Account = null;
+    private editedAccount: Account = null;
     @ViewChild("list") listViewContainer: ElementRef;
     private listView: ListView;
     
@@ -203,6 +203,14 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
             console.log("done. current list size: " + this.accounts.length);
         }
         this.isLoading = false;
+    }
+    
+    isIosEditButtonVisible() {
+        return this.isIos && this.hasAccounts() && !this.editModeEnabled;
+    }
+    
+    isIosDoneButtonVisible() {
+        return this.isIos && this.hasAccounts() && this.editModeEnabled;
     }
 
 }
