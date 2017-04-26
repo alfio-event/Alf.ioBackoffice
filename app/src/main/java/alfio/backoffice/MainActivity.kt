@@ -99,7 +99,7 @@ class MainActivity : BaseActivity() {
     }
 
     fun scanQRCodeClicked(): Unit {
-        requestPermissionForAction(listOf(android.Manifest.permission.CAMERA), scanQRCode(R.string.message_scan_your_qrcode))
+        requestPermissionForAction(listOf(android.Manifest.permission.CAMERA), scanQRCode(R.string.message_scan_your_qrcode, true))
     }
 
     fun manualInsertClicked() : Unit {

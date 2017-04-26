@@ -43,10 +43,11 @@ abstract class BaseActivity: AppCompatActivity() {
     private val pendingActions: MutableMap<Int, Pair<Boolean, () -> Unit>> = hashMapOf()
     private var requestId: Int = 0
 
-    fun BaseActivity.scanQRCode(resId: Int) : () -> Unit = {
+    fun BaseActivity.scanQRCode(resId: Int, continuous: Boolean = false) : () -> Unit = {
         val integrator: IntentIntegrator = IntentIntegrator(this)
         integrator.captureActivity = CustomCaptureActivity::class.java
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
+        integrator.addExtra("CONTINUOUS", continuous)
         integrator.setOrientationLocked(false)
         integrator.setBeepEnabled(true)
         integrator.setPrompt(getString(resId))
