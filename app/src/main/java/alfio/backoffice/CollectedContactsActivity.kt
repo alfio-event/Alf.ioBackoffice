@@ -12,7 +12,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.app_bar.*
 import kotlinx.android.synthetic.main.content_collected_contacts.*
-import java.text.SimpleDateFormat
+import java.text.DateFormat.getDateTimeInstance
 import java.util.*
 
 class CollectedContactsActivity : BaseActivity() {
@@ -25,8 +25,8 @@ class CollectedContactsActivity : BaseActivity() {
         val config = intent.extras.get("config") as AlfioConfiguration
         attendees.adapter = AttendeesViewAdapter(loadScanDescriptors(config))
         attendees.layoutManager = LinearLayoutManager(this)
-        shuffle.setOnClickListener({w -> attendees.adapter = AttendeesViewAdapter(loadScanDescriptors(config, true))})
-        sendEmail.setOnClickListener({w ->
+        shuffle.setOnClickListener({_ -> attendees.adapter = AttendeesViewAdapter(loadScanDescriptors(config, true))})
+        sendEmail.setOnClickListener({_ ->
             val intent = Intent(Intent.ACTION_SEND)
             val export = loadScanDescriptors(config)
                     .map { it.code }
@@ -37,13 +37,15 @@ class CollectedContactsActivity : BaseActivity() {
             startActivity(Intent.createChooser(intent, "Scan export for ${config.eventName}"))
         })
         val updateDate = SponsorScanManager.latestUpdate
-        val date = if(updateDate != null) SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(updateDate) else "-"
+        val date = if(updateDate != null) getDateTimeInstance().format(updateDate) else "-"
         lastUpdate.text = getString(R.string.collected_item_last_update).format(date)
     }
 
     fun loadScanDescriptors(configuration: AlfioConfiguration, shuffle: Boolean = false) : List<SponsorScanDescriptor> {
         val result = SponsorScanManager.retrieveAllSponsorScan()
-                .filter { it.configuration!! == configuration }
+                .filter {
+                    it.configuration!!.key == configuration.key
+                }
         if(shuffle) {
             Collections.shuffle(result)
         }

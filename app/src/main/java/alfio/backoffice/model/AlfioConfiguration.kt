@@ -54,4 +54,5 @@ class AlfioConfiguration(url: String, username: String, password: String, sslCer
         get() = event.key!!
     val imageUrl : String?
         get() = event.imageUrl
+    val key = "$username@$eventName@$url"
 }

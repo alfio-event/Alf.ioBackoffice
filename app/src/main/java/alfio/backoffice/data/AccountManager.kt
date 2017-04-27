@@ -24,29 +24,24 @@ import java.util.concurrent.ConcurrentHashMap
 object AccountManager {
 
     private val blacklist: MutableSet<AlfioConfiguration> = hashSetOf()
-    val configurations: MutableMap<String, AlfioConfiguration>
+    val configurations: MutableMap<String, AlfioConfiguration> = SharedPreferencesHolder.sharedPreferences.loadSavedValue(KEY_ALFIO_CONFIGURATIONS, SerializedConfigurations(), {if(it != null) ConcurrentHashMap(it) else ConcurrentHashMap() })
     val accounts: MutableList<AlfioConfiguration>
         get() = ArrayList(configurations.entries.sortedBy { it.key }.map { it.value })
-
-    init {
-        this.configurations = SharedPreferencesHolder.sharedPreferences.loadSavedValue(KEY_ALFIO_CONFIGURATIONS, SerializedConfigurations(), {if(it != null) ConcurrentHashMap(it) else ConcurrentHashMap() })
-    }
 
     fun persistAlfioConfigurations() {
         SharedPreferencesHolder.sharedPreferences.persist(configurations, KEY_ALFIO_CONFIGURATIONS)
     }
 
     fun saveAlfioConfiguration(alfioConfiguration: AlfioConfiguration) : Int {
-        val key = buildKey(alfioConfiguration)
+        val key = alfioConfiguration.key
         configurations.put(key, alfioConfiguration)
         persistAlfioConfigurations()
         return configurations.keys.sorted().indexOf(key)
     }
 
-    private fun buildKey(alfioConfiguration: AlfioConfiguration) = "${alfioConfiguration.username}@${alfioConfiguration.eventName}@${alfioConfiguration.url}"
 
     fun removeAlfioConfiguration(alfioConfiguration: AlfioConfiguration) {
-        configurations.remove(buildKey(alfioConfiguration))
+        configurations.remove(alfioConfiguration.key)
         blacklist.remove(alfioConfiguration)
         persistAlfioConfigurations()
     }
