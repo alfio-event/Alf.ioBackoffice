@@ -1,4 +1,6 @@
 {
+  "name": "Alf.io Backoffice",
+  "version": "2.0",
   "description": "Alf.io Backoffice is the application used by event organizers to validate attendees tickets and also for letting sponsors collect contacts.",
   "license": "GPL-3.0",
   "readme": "Alf.io",
@@ -7,11 +9,14 @@
     "id": "com.exteso.alfio.backoffice",
     "tns-android": {
       "version": "2.5.0"
+    },
+    "tns-ios": {
+      "version": "2.5.0"
     }
   },
   "dependencies": {
-    "@angular/common": "4.0.0",
     "@angular/animations": "4.0.0",
+    "@angular/common": "4.0.0",
     "@angular/compiler": "4.0.0",
     "@angular/core": "4.0.0",
     "@angular/forms": "4.0.0",
