@@ -11,7 +11,7 @@
             <Label text="Start scanning!" class="text-center label font-weight-bold h2"></Label>
             <Label textWrap="true" text="Click on the button below to init the check-in process. Scan the QR-Code on the tickets and wait for the result." class="body"></Label>
         </StackLayout>
-        <StackLayout orientation="vertical" *ngIf="status" verticalAlignment="center" [class.result]="isStatusSuccess()" class="p-l-16 p-r-16">
+        <StackLayout orientation="vertical" *ngIf="status" verticalAlignment="center" class="p-l-16 p-r-16">
             <Label class="icon icon-4x text-center m-t-16" [class.text-success]="isStatusSuccess()" [class.m-t-10]="isStatusSuccess()" [class.text-danger]="!isStatusSuccess()" [text]="getStatusIcon()"></Label>
             <Label [text]="message" class="h2 text-danger text-center" *ngIf="!isStatusSuccess()" textWrap="true"></Label>
             <StackLayout *ngIf="isStatusSuccess()" orientation="vertical">
