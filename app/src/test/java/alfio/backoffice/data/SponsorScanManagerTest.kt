@@ -14,7 +14,7 @@ class SponsorScanManagerTest {
         val tcr = TicketAndCheckInResult()
         tcr.result = CheckInResult()
         tcr.result!!.status = CheckInStatus.SUCCESS
-        val configuration = AlfioConfiguration("url", "username", "password", null, UserType.SPONSOR, Event())
+        val configuration = AlfioConfiguration("url", "username", "password", null, UserType.SPONSOR, event())
         val src = mutableSetOf(sponsorScanDescriptor(code, configuration, ScanStatus.IN_PROCESS))
         val result = SponsorScanManager.replaceSponsorsScan(configuration, listOf(code to tcr), src)
         assertTrue(result)
@@ -27,7 +27,7 @@ class SponsorScanManagerTest {
         val tcr = TicketAndCheckInResult()
         tcr.result = CheckInResult()
         tcr.result!!.status = CheckInStatus.SUCCESS
-        val configuration = AlfioConfiguration("url", "username", "password", null, UserType.SPONSOR, Event())
+        val configuration = AlfioConfiguration("url", "username", "password", null, UserType.SPONSOR, event())
         val src = mutableSetOf(sponsorScanDescriptor(code, configuration, ScanStatus.IN_PROCESS), sponsorScanDescriptor("${code}1", configuration, ScanStatus.IN_PROCESS))
         val result = SponsorScanManager.replaceSponsorsScan(configuration, listOf(code to tcr), src)
         assertTrue(result)
@@ -42,7 +42,7 @@ class SponsorScanManagerTest {
         val tcr = TicketAndCheckInResult()
         tcr.result = CheckInResult()
         tcr.result!!.status = CheckInStatus.SUCCESS
-        val configuration = AlfioConfiguration("url", "username", "password", null, UserType.SPONSOR, Event())
+        val configuration = AlfioConfiguration("url", "username", "password", null, UserType.SPONSOR, event())
         val src = mutableSetOf(sponsorScanDescriptor("${code}0", configuration, ScanStatus.IN_PROCESS), sponsorScanDescriptor("${code}1", configuration, ScanStatus.IN_PROCESS))
         val result = SponsorScanManager.replaceSponsorsScan(configuration, listOf(code to tcr), src)
         assertFalse(result)
@@ -56,12 +56,19 @@ class SponsorScanManagerTest {
         val tcr = TicketAndCheckInResult()
         tcr.result = CheckInResult()
         tcr.result!!.status = CheckInStatus.SUCCESS
-        val configuration = AlfioConfiguration("url", "username", "password", null, UserType.SPONSOR, Event())
+        val configuration = AlfioConfiguration("url", "username", "password", null, UserType.SPONSOR, event())
         val src = mutableSetOf(sponsorScanDescriptor("${code}0", configuration, ScanStatus.IN_PROCESS), sponsorScanDescriptor("${code}1", configuration, ScanStatus.IN_PROCESS))
         val result = SponsorScanManager.replaceSponsorsScan(configuration, listOf("${code}0" to tcr, "${code}1" to tcr), src)
         assertTrue(result)
         assertTrue(src.all { it.status == ScanStatus.DONE })
 
+    }
+
+    private fun event(): Event {
+        val event = Event()
+        event.key = "event-key"
+        event.url = "url"
+        return event
     }
 
     private fun sponsorScanDescriptor(code: String, configuration: AlfioConfiguration, status: ScanStatus, counter: Int = 0, updateTs: Date = Date()): SponsorScanDescriptor {
