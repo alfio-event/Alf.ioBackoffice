@@ -66,10 +66,23 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         return this.accounts.length > 0;
     }
 
-    requestQrScan() {
+    requestQrScan(): void {
         if(this.editModeEnabled) {
             this.toggleEditMode();
         }
+
+        //bypass scanner for demo/test purpose
+        if(false) {
+            let maybeScannedAccount = this.parseScannedAccount(['{"baseUrl" : "", "username":"", "password":""}']);
+            if(maybeScannedAccount.isPresent()) {
+                let account = maybeScannedAccount.value;
+                this.accountService.notifyAccountScan(account);
+                this.registerNewAccount(account);
+            }
+            return;
+        }
+        //------
+
         let scanSubject = new Subject<string>();
         let qrCodeParts: Array<string>;
         let splitQrCodeMatcher = /^(\d+):(\d+):(.+$)/;
