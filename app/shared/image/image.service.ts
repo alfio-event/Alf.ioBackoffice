@@ -80,15 +80,15 @@ AWKAGDNADBBjBogxA8QAMRaL/Q++O4+HDUgkkwAAAABJRU5ErkJggg==`;
         let url = account.url + e.imageUrl;
         let filename = fs.path.join(this.folder.path, e.imageUrl.replace(/[^A-Za-z0-9]/g,'_'));
         if(fs.File.exists(filename)) {
-            return Observable.of(filename);
+            return Observable.create(filename);
         } else if(account.sslCert) {
             let img = imageSource.fromBase64(this.piImage);
-            img.saveToFile(filename, enums.ImageFormat.png);
-            return Observable.of(filename);
+            img.saveToFile(filename, "png");
+            return Observable.create(filename);
         } else {
              return Observable.fromPromise(imageSource.fromUrl(url))
                 .map(img => {
-                    img.saveToFile(filename, enums.ImageFormat.png);
+                    img.saveToFile(filename, "png");
                     return filename;
                 });
         }

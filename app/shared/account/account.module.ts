@@ -1,13 +1,13 @@
 import { NgModule } from "@angular/core";
 import { AccountService } from "./account.service"
-import { BARCODE_SCANNER, barcodescanner } from '../../utils/barcodescanner';
 import { AccountSelectionNotifier } from "./account-selection-notifier";
+import { BarcodeScanner } from "nativescript-barcodescanner";
 
 @NgModule({
     providers: [
         AccountService, 
-        { provide: BARCODE_SCANNER, useValue: barcodescanner},
-        AccountSelectionNotifier
+        AccountSelectionNotifier, 
+        BarcodeScanner
     ]
 })
 export class AccountModule {}

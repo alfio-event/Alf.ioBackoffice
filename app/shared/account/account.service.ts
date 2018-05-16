@@ -1,14 +1,15 @@
 import { Injectable, OnInit } from "@angular/core";
 import { Http, Headers, Response } from "@angular/http";
-import { Observable, ReplaySubject } from "rxjs/Rx";
 import "rxjs/add/operator/do";
 import "rxjs/add/operator/map";
 import "rxjs/add/operator/switchMap";
+import "rxjs/add/operator/catch";
 var appSettings = require("application-settings");
 const ACCOUNTS_KEY = "ALFIO_ACCOUNTS";
 
 import { Account, AccountType, EventConfiguration, AccountsArray, AccountResponse, Maybe, Pair, Some, Nothing, ScannedAccount } from "./account";
 import { AccountSelectionNotifier } from "./account-selection-notifier";
+import { Observable } from "rxjs/Observable";
 
 @Injectable()
 export class AccountService {

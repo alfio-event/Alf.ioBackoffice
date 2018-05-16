@@ -2,7 +2,9 @@ import { Injectable, OnInit, Injector } from "@angular/core";
 import { Router, ActivatedRoute, Params, Event, RoutesRecognized } from "@angular/router";
 import { AccountService } from "./account.service";
 import { Account } from "./account";
-import { Subject, Observable } from "rxjs";
+import { Subject } from "rxjs/Subject";
+import { Observable } from "rxjs/Observable";
+import 'rxjs/add/operator/filter';
 
 @Injectable()
 export class AccountSelectionNotifier implements OnInit {

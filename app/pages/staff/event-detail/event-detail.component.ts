@@ -3,16 +3,16 @@ import { Router, ActivatedRoute, Params } from "@angular/router";
 import { View } from "ui/core/view";
 import { Page } from "ui/page";
 import { ActionItem } from "ui/action-bar";
-import { Observable } from "rxjs";
 import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../../shared/account/account.service";
 import { ScanService } from "../../../shared/scan/scan.service"
 import { Account, EventConfiguration, EventWithImage, Pair } from "../../../shared/account/account";
-import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../../utils/barcodescanner';
+import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { TicketAndCheckInResult, CheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket } from '../../../shared/scan/scan-common'
 import * as Toast from 'nativescript-toast';
-import * as Vibrator from "nativescript-vibrate";
+import { Vibrate } from 'nativescript-vibrate';
 import { CurrencyPipe } from "@angular/common";
+import { BarcodeScanner } from 'nativescript-barcodescanner';
 
 @Component({
     moduleId: module.id,
@@ -33,12 +33,13 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     detail: string;
     ticket: Ticket;
     private interval: number;
+    private vibrator = new Vibrate();
     
     
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
                 private accountService: AccountService,
-                @Inject(BARCODE_SCANNER) private barcodeScanner: BarcodeScanner,
+                private barcodeScanner: BarcodeScanner,
                 private scanService: ScanService,
                 private ngZone: NgZone,
                 private currencyPipe: CurrencyPipe) {
@@ -85,7 +86,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 //let toast = Toast.makeText("Working...", 20000);
                 this.isLoading = true;
                 clearInterval(this.interval);
-                Vibrator.vibration(50);
+                this.vibrator.vibrate(50);
                 let scanResult = res.text;
                 this.code = scanResult;
                 let start = new Date().getTime();
@@ -174,9 +175,9 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             this.ticket = res ? res.ticket : null;
             if(this.status == CheckInStatus.SUCCESS) {
                 //notify success
-                Vibrator.vibration(50);
+                this.vibrator.vibrate([50, 50, 50]);
             } else {
-                Vibrator.vibration(500);
+                this.vibrator.vibrate(500);
                 //notify error
             }
         });

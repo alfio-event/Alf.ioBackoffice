@@ -69,7 +69,7 @@ export class AccountManageComponent implements OnInit {
                     this.isLoading = false;
                     Toast.makeText("Error while refreshing events").show();
                 });
-            }, this.ngZone.run(() => {
+            }, () => this.ngZone.run(() => {
                 if(isDefined(onComplete)) {
                     onComplete();
                 }

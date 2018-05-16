@@ -15,6 +15,7 @@ import { AccountService } from "./shared/account/account.service";
 import { ActivatedRoute } from "@angular/router";
 import { AlfioHttpsModule } from "./alfio-https.module";
 import { CurrencyPipe } from "@angular/common";
+import { BarcodeScanner } from 'nativescript-barcodescanner';
 
 @NgModule({
     imports: [
@@ -32,7 +33,7 @@ import { CurrencyPipe } from "@angular/common";
         IosAccountIconComponent,
         ...navigatableComponents
     ],
-    providers: [ CurrencyPipe ],
+    providers: [ CurrencyPipe, BarcodeScanner ],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

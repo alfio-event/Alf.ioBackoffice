@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { Http, Headers, Response } from "@angular/http";
-import { Observable } from 'rxjs';
 import { authorization } from '../account/account.service';
 import { Ticket, TicketAndCheckInResult } from './scan-common';
 import { Account } from "../account/account";
+import { Observable } from "rxjs/Observable";
 
 @Injectable()
 export class ScanService {

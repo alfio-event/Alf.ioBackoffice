@@ -1,4 +1,4 @@
-import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions, ScanOptions } from '../../../utils/barcodescanner';
+import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { SponsorScan } from '../../../shared/scan/sponsor-scan';
 import { ChangeDetectorRef, Component, ElementRef, Inject, Injectable, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, Params } from "@angular/router";
@@ -12,8 +12,9 @@ import { AccountService, encodeBase64 } from "../../../shared/account/account.se
 import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service"
 import { Account, EventConfiguration, EventWithImage } from "../../../shared/account/account";
 import * as Toast from 'nativescript-toast';
-import * as Vibrator from "nativescript-vibrate";
+import { Vibrate } from 'nativescript-vibrate';
 import * as Email from "nativescript-email";
+import { BarcodeScanner } from 'nativescript-barcodescanner';
 
 @Component({
     moduleId: module.id,
@@ -32,11 +33,12 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     private lastUpdate: number = 0;
     @ViewChild("list") listViewContainer: ElementRef;
     private listView: ListView;
+    private vibrator = new Vibrate();
 
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
                 private accountService: AccountService,
-                @Inject(BARCODE_SCANNER) private barcodeScanner: BarcodeScanner,
+                private barcodeScanner: BarcodeScanner,
                 private sponsorScanService: SponsorScanService) {
     }
 
@@ -83,7 +85,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             this.lastUpdate = new Date().getTime();
             console.log("scanned", res.text);
             this.sponsorScanService.scan(this.event.key, this.account, res.text);
-            Vibrator.vibration(250);
+            this.vibrator.vibrate(250);
             Toast.makeText("Scan enqueued!").show();
         }
         this.barcodeScanner.scan(scanOptions)

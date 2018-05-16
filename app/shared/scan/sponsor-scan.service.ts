@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { Http, Headers, Response } from "@angular/http";
-import { Observable, Subject } from 'rxjs';
 
 import { SponsorScan, ScanStatus } from "./sponsor-scan";
 import { Ticket } from "./scan-common";
@@ -8,6 +7,8 @@ import { authorization } from '../account/account.service';
 import { Account } from "../account/account";
 
 import * as AppSettings from 'application-settings';
+import { Subject } from "rxjs/Subject";
+import { Observable } from "rxjs/Observable";
 
 @Injectable()
 export class SponsorScanService  {

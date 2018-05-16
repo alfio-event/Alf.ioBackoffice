@@ -7,43 +7,41 @@
   "repository": "https://github.com/exteso/Alf.ioBackoffice",
   "nativescript": {
     "id": "com.exteso.alfio.backoffice",
-    "tns-android": {
-      "version": "2.5.0"
-    },
     "tns-ios": {
-      "version": "2.5.0"
+      "version": "4.0.1"
+    },
+    "tns-android": {
+      "version": "4.0.1"
     }
   },
   "dependencies": {
-    "@angular/animations": "4.0.0",
-    "@angular/common": "4.0.0",
-    "@angular/compiler": "4.0.0",
-    "@angular/core": "4.0.0",
-    "@angular/forms": "4.0.0",
-    "@angular/http": "4.0.0",
-    "@angular/platform-browser": "4.0.0",
-    "@angular/platform-browser-dynamic": "4.0.0",
-    "@angular/router": "4.0.0",
-    "nativescript-angular": "1.5.0",
-    "nativescript-barcodescanner": "^2.5.0",
-    "nativescript-email": "^1.4.0",
+    "@angular/animations": "~5.2.0",
+    "@angular/common": "~5.2.0",
+    "@angular/compiler": "~5.2.0",
+    "@angular/core": "~5.2.0",
+    "@angular/forms": "~5.2.0",
+    "@angular/http": "~5.2.0",
+    "@angular/platform-browser": "~5.2.0",
+    "@angular/platform-browser-dynamic": "~5.2.0",
+    "@angular/router": "~5.2.0",
+    "nativescript-angular": "~5.3.0",
+    "nativescript-barcodescanner": "^2.7.6",
+    "nativescript-email": "^1.5.2",
     "nativescript-https": "git://github.com/cbellone/nativescript-https.git#alfio",
-    "nativescript-theme-core": "~1.0.2",
-    "nativescript-toast": "^1.4.5",
-    "nativescript-vibrate": "^1.1.2",
+    "nativescript-theme-core": "~1.0.4",
+    "nativescript-toast": "^1.4.6",
+    "nativescript-vibrate": "^2.1.0",
     "reflect-metadata": "~0.1.8",
-    "rxjs": "~5.2.0",
-    "tns-core-modules": "^2.5.2",
+    "rxjs": "~5.5.2",
+    "tns-core-modules": "~4.0.0",
     "zone.js": "~0.8.2"
   },
   "devDependencies": {
-    "babel-traverse": "6.23.1",
-    "babel-types": "6.23.0",
-    "babylon": "6.16.1",
+    "babel-traverse": "6.26.0",
+    "babel-types": "6.26.0",
+    "babylon": "6.18.0",
     "lazy": "1.0.11",
-    "nativescript-dev-android-snapshot": "^0.*.*",
-    "nativescript-dev-typescript": "~0.3.5",
-    "tns-platform-declarations": "^2.5.2",
-    "typescript": "~2.1.0"
+    "nativescript-dev-typescript": "~0.7.0",
+    "typescript": "~2.7.2"
   }
 }

@@ -5,17 +5,19 @@ import { Page } from "ui/page";
 import { TextField } from "ui/text-field";
 import { View } from "ui/core/view";
 import { ListView } from "ui/list-view";
-import { Observable, Subject} from "rxjs";
 import { RouterExtensions } from "nativescript-angular/router"
 import dialogs = require("ui/dialogs");
 import { Account, EventConfiguration, ScannedAccount } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import { AccountResponse, Maybe, Some, Nothing } from "../../shared/account/account";
-import { BARCODE_SCANNER, BarcodeScanner, defaultScanOptions } from '../../utils/barcodescanner';
+import { defaultScanOptions } from '../../utils/barcodescanner';
 import application = require("application");
-import * as Vibrator from "nativescript-vibrate";
+import { Vibrate } from 'nativescript-vibrate';
 import * as Toast from 'nativescript-toast';
 import { isUndefined } from "utils/types";
+import { Subject } from "rxjs/Subject";
+import { Observable } from "rxjs/Observable";
+import { BarcodeScanner } from "nativescript-barcodescanner";
 
 @Component({
     selector: "account-selection",
@@ -34,13 +36,14 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     private editedAccount: Account = null;
     @ViewChild("list") listViewContainer: ElementRef;
     private listView: ListView;
+    private vibrator = new Vibrate();
     
 
     constructor(private router: Router, 
         private accountService: AccountService, 
         private page: Page, 
         private routerExtensions: RouterExtensions,
-        @Inject(BARCODE_SCANNER) private barcodeScanner: BarcodeScanner,
+        private barcodeScanner: BarcodeScanner,
         private ngZone: NgZone) {
             this.isIos = !application.android;
     }
@@ -72,15 +75,15 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         }
 
         //bypass scanner for demo/test purpose
-        if(false) {
-            let maybeScannedAccount = this.parseScannedAccount(['{"baseUrl" : "", "username":"", "password":""}']);
-            if(maybeScannedAccount.isPresent()) {
-                let account = maybeScannedAccount.value;
-                this.accountService.notifyAccountScan(account);
-                this.registerNewAccount(account);
-            }
-            return;
-        }
+        // if(false) {
+        //     let maybeScannedAccount = this.parseScannedAccount(['{"baseUrl" : "", "username":"", "password":""}']);
+        //     if(maybeScannedAccount.isPresent()) {
+        //         let account = maybeScannedAccount.value;
+        //         this.accountService.notifyAccountScan(account);
+        //         this.registerNewAccount(account);
+        //     }
+        //     return;
+        // }
         //------
 
         let scanSubject = new Subject<string>();
@@ -90,7 +93,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         scanOptions.continuousScanCallback = (result) => {
             let text = <string>result.text;
             let matchResult = splitQrCodeMatcher.exec(text);
-            Vibrator.vibration(50);
+            this.vibrator.vibrate(50);
             if(matchResult && matchResult.length == 4) {
                 let length = +matchResult[2];
                 if(!qrCodeParts) {
