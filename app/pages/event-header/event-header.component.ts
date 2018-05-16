@@ -27,8 +27,8 @@ import { Account, EventConfiguration, EventWithImage } from "../../shared/accoun
                     <Image col="0" [src]="eventImage" stretch="aspectFit" width="70" height="70"></Image>
                     <StackLayout col="1" class="medium-spacing" orientation="vertical" (tap)="select()">
                         <Label [text]="event.name" class="eventName"></Label>
-                        <Label text="{{ event.begin | date:'medium' }} - {{ event.end | date:'medium' }}" *ngIf="!event.oneDay"></Label>
-                        <Label text="{{ event.begin | date:'mediumDate' }} {{ event.begin | date:'shortTime' }} - {{ event.end | date:'shortTime' }}" *ngIf="event.oneDay"></Label>
+                        <Label text="{{ event.begin | date:'short' }} - {{ event.end | date:'short' }}" *ngIf="!event.oneDay"></Label>
+                        <Label text="{{ event.begin | date:'shortDate' }} {{ event.begin | date:'shortTime' }} - {{ event.end | date:'shortTime' }}" *ngIf="event.oneDay"></Label>
                         <Label [text]="event.location"></Label>
                     </StackLayout>
                 </GridLayout>`,

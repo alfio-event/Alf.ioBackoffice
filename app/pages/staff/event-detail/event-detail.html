@@ -2,14 +2,14 @@
     <NavigationButton icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Events"></NavigationButton>
 </ActionBar>
 
-<GridLayout rows="auto, 1, 8*, 2*">
-    <event-header row="0" [event]="event" [account]="account" *ngIf="!status"></event-header>
+<GridLayout rows="auto, 1, 8*, 2*, auto">
+    <event-header row="0" [event]="event" [account]="account" [statistics]="statistics" *ngIf="!status"></event-header>
     <StackLayout row="1" class="hr-light" *ngIf="!status"></StackLayout>
     <ScrollView row="2" class="p-20 m-r-16 m-l-16" *ngIf="!isLoading" verticalAlignment="center">
         <StackLayout orientation="vertical" verticalAlignment="center" *ngIf="!status" (tap)="scan()">
             <Label class="icon icon-4x text-primary text-center" text="&#xf1df;"></Label>
             <Label text="Start scanning!" class="text-center label font-weight-bold h2"></Label>
-            <Label textWrap="true" text="Click on the button below to init the check-in process. Scan the QR-Code on the tickets and wait for the result." class="body"></Label>
+            <Label textWrap="true" text="Tap the button below to init the check-in process. Scan the QR-Code on the tickets and wait for the result." class="body"></Label>
         </StackLayout>
         <StackLayout orientation="vertical" *ngIf="status" verticalAlignment="center" class="p-l-16 p-r-16">
             <Label class="icon icon-4x text-center m-t-16" [class.text-success]="isStatusSuccess()" [class.m-t-10]="isStatusSuccess()" [class.text-danger]="!isStatusSuccess()" [text]="getStatusIcon()"></Label>
@@ -26,5 +26,11 @@
     <StackLayout row="3" class="m-l-16 m-r-16" *ngIf="!isLoading" orientation="vertical">
         <Button class="button" (tap)="cancel()" *ngIf="isStatusMustPay()" text="Cancel"></Button>
         <Button class="button btn-primary" [class.btn-orange]="isStatusSuccess() || isStatusMustPay()" (tap)="onPrimaryButtonTap()" [text]="getPrimaryButtonText()"></Button>
+    </StackLayout>
+    <StackLayout row="4" class="m-l-16 m-r-16" horizontalAlignment="center" orientation="horizontal">
+        <Label class="h2 icon text-success text-center" text="&#xf1c7;" *ngIf="statistics"></Label>
+        <Label class="m-l-16 h2 text-success" [text]="statistics.checkedIn"></Label>
+        <Label class="h2" text="/" *ngIf="statistics"></Label>
+        <Label class="h2" [text]="statistics.totalAttendees"></Label>
     </StackLayout>
 </GridLayout>

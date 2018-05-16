@@ -3,12 +3,12 @@ import { Http, Headers, Response } from "@angular/http";
 
 import { SponsorScan, ScanStatus } from "./sponsor-scan";
 import { Ticket } from "./scan-common";
-import { authorization } from '../account/account.service';
 import { Account } from "../account/account";
 
 import * as AppSettings from 'application-settings';
 import { Subject } from "rxjs/Subject";
 import { Observable } from "rxjs/Observable";
+import { authorization } from "~/utils/network-util";
 
 @Injectable()
 export class SponsorScanService  {

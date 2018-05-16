@@ -8,13 +8,14 @@ import { ListView } from "ui/list-view"
 import { ActionItem } from "ui/action-bar";
 import { Observable } from "data/observable";
 import { RouterExtensions } from "nativescript-angular/router";
-import { AccountService, encodeBase64 } from "../../../shared/account/account.service";
+import { AccountService } from "../../../shared/account/account.service";
 import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service"
 import { Account, EventConfiguration, EventWithImage } from "../../../shared/account/account";
 import * as Toast from 'nativescript-toast';
 import { Vibrate } from 'nativescript-vibrate';
 import * as Email from "nativescript-email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
+import { encodeBase64 } from '~/utils/network-util';
 
 @Component({
     moduleId: module.id,

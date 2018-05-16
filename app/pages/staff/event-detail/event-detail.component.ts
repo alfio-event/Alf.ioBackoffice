@@ -13,6 +13,9 @@ import * as Toast from 'nativescript-toast';
 import { Vibrate } from 'nativescript-vibrate';
 import { CurrencyPipe } from "@angular/common";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
+import { StatisticsService, CheckInStatistics } from '~/shared/statistics/statistics.service';
+import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     moduleId: module.id,
@@ -32,8 +35,10 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     message: string;
     detail: string;
     ticket: Ticket;
+    statistics: CheckInStatistics;
     private interval: number;
     private vibrator = new Vibrate();
+    private statisticsSubscription: Subscription;
     
     
     constructor(private route: ActivatedRoute,
@@ -42,7 +47,8 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 private barcodeScanner: BarcodeScanner,
                 private scanService: ScanService,
                 private ngZone: NgZone,
-                private currencyPipe: CurrencyPipe) {
+                private currencyPipe: CurrencyPipe,
+                private statisticsService: StatisticsService) {
     }
 
     onBackTap() {
@@ -59,14 +65,20 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 this.account = account;
                 this.event = this.account.configurations.filter(c => c.key === eventId)[0];
                 this.isLoading = false;
+                this.statisticsSubscription = this.statisticsService.retrieveForEvent(this.account, this.event.key)
+                    .subscribe(stats => this.ngZone.run(() => this.statistics = stats));
             });
         });
+        
         
     }
 
     ngOnDestroy() {
         if(this.interval) {
             clearInterval(this.interval);
+        }
+        if(this.statisticsSubscription) {
+            this.statisticsSubscription.unsubscribe();
         }
     }
 

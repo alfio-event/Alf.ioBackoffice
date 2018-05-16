@@ -36,3 +36,4 @@ platforms/
 tmp/
 typings/
 .vscode/
+.DS_Store

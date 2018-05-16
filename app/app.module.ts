@@ -16,6 +16,7 @@ import { ActivatedRoute } from "@angular/router";
 import { AlfioHttpsModule } from "./alfio-https.module";
 import { CurrencyPipe } from "@angular/common";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
+import { StatisticsModule } from '~/shared/statistics/statistics.module';
 
 @NgModule({
     imports: [
@@ -25,7 +26,8 @@ import { BarcodeScanner } from 'nativescript-barcodescanner';
         NativeScriptRouterModule,
         NativeScriptRouterModule.forRoot(routes),
         NativeScriptAnimationsModule,
-        AccountModule
+        AccountModule,
+        StatisticsModule
     ],
     declarations: [
         AppComponent,
