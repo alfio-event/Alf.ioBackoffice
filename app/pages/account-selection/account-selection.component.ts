@@ -144,6 +144,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                         this.isLoading = false;
                     }));
         } catch(e) {
+            console.log("error", e);
             Toast.makeText("Cannot register a new Account. Please re-scan the QR-Code(s).").show();
             this.isLoading = false;
         }

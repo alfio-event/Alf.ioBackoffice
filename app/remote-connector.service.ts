@@ -1,6 +1,7 @@
 import { RequestOptionsArgs, Response, ResponseOptions, ResponseType, Http, BaseRequestOptions, Headers } from "@angular/http";
 import { Observable } from "rxjs/Observable";
 import 'rxjs/add/observable/merge';
+import 'rxjs/add/observable/fromPromise';
 import { Injectable, OnInit, Injector } from "@angular/core";
 import * as Https from 'nativescript-https'
 import { HttpResponseEncoding, HttpResponse } from "http";

@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/fromPromise';
+import 'rxjs/add/observable/of';
 import { EventConfiguration, ImageContainer, Account } from "../../shared/account/account";
 import imageSource = require("image-source");
 import fs = require("file-system");
@@ -80,11 +82,11 @@ AWKAGDNADBBjBogxA8QAMRaL/Q++O4+HDUgkkwAAAABJRU5ErkJggg==`;
         let url = account.url + e.imageUrl;
         let filename = fs.path.join(this.folder.path, e.imageUrl.replace(/[^A-Za-z0-9]/g,'_'));
         if(fs.File.exists(filename)) {
-            return Observable.create(filename);
+            return Observable.of(filename);
         } else if(account.sslCert) {
             let img = imageSource.fromBase64(this.piImage);
             img.saveToFile(filename, "png");
-            return Observable.create(filename);
+            return Observable.of(filename);
         } else {
              return Observable.fromPromise(imageSource.fromUrl(url))
                 .map(img => {
