@@ -1,21 +1,14 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, Injectable, OnInit, OnDestroy, ViewChild, ViewContainerRef, NgZone } from '@angular/core';
-import { Router, ActivatedRoute, Params } from "@angular/router";
-import { View } from "ui/core/view";
-import { Page } from "ui/page";
-import { ActionItem } from "ui/action-bar";
+import { Component, Injectable, OnInit, OnDestroy, NgZone } from '@angular/core';
+import { ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../../shared/account/account.service";
 import { ScanService } from "../../../shared/scan/scan.service"
-import { Account, EventConfiguration, EventWithImage, Pair } from "../../../shared/account/account";
+import { Account, EventConfiguration } from "../../../shared/account/account";
 import { defaultScanOptions } from '../../../utils/barcodescanner';
-import { TicketAndCheckInResult, CheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket } from '../../../shared/scan/scan-common'
+import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket } from '../../../shared/scan/scan-common'
 import * as Toast from 'nativescript-toast';
 import { Vibrate } from 'nativescript-vibrate';
-import { CurrencyPipe } from "@angular/common";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
-import { StatisticsService, CheckInStatistics } from '~/shared/statistics/statistics.service';
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     moduleId: module.id,
@@ -35,10 +28,9 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     message: string;
     detail: string;
     ticket: Ticket;
-    statistics: CheckInStatistics;
     private interval: number;
     private vibrator = new Vibrate();
-    private statisticsSubscription: Subscription;
+    actionBarTitle: string;
     
     
     constructor(private route: ActivatedRoute,
@@ -46,9 +38,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 private accountService: AccountService,
                 private barcodeScanner: BarcodeScanner,
                 private scanService: ScanService,
-                private ngZone: NgZone,
-                private currencyPipe: CurrencyPipe,
-                private statisticsService: StatisticsService) {
+                private ngZone: NgZone) {
     }
 
     onBackTap() {
@@ -64,21 +54,15 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             this.accountService.findAccountById(id).ifPresent(account => {
                 this.account = account;
                 this.event = this.account.configurations.filter(c => c.key === eventId)[0];
+                this.actionBarTitle = this.event.name;
                 this.isLoading = false;
-                this.statisticsSubscription = this.statisticsService.retrieveForEvent(this.account, this.event.key)
-                    .subscribe(stats => this.ngZone.run(() => this.statistics = stats));
             });
         });
-        
-        
     }
 
     ngOnDestroy() {
         if(this.interval) {
             clearInterval(this.interval);
-        }
-        if(this.statisticsSubscription) {
-            this.statisticsSubscription.unsubscribe();
         }
     }
 
@@ -104,10 +88,10 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 let start = new Date().getTime();
                 this.scanService.checkIn(this.event.key, this.account, scanResult)
                         .subscribe(res => {
-                            this.displayResult(scanResult, res);
+                            this.displayResult(res);
                             console.log("2nd stop, elapsed", new Date().getTime() - start);
                         }, err => {
-                            this.displayResult("", new UnexpectedError(err));
+                            this.displayResult(new UnexpectedError(err));
                         }, () => this.ngZone.run(() => this.isLoading = false));
             }, (error) => {
                 console.log("handling scan error", error);
@@ -132,8 +116,8 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     confirmPayment(code: string): void {
         this.isLoading = true;
         this.scanService.confirmPayment(this.event.key, this.account, code)
-                    .subscribe(res => this.displayResult(code, res), err => {
-                            this.displayResult("", new UnexpectedError(err));
+                    .subscribe(res => this.displayResult(res), err => {
+                            this.displayResult(new UnexpectedError(err));
                         }, () => this.ngZone.run(() => this.isLoading = false));
     }
 
@@ -176,7 +160,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         }
     }
 
-    private displayResult(code:string, res: TicketAndCheckInResult): void {
+    private displayResult(res: TicketAndCheckInResult): void {
         this.ngZone.run(() => {
             this.status = res ? res.result.status : CheckInStatus.ERROR;
             this.message = statusDescriptions[this.status];

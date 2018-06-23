@@ -1,10 +1,10 @@
-<ActionBar class="action-bar" title="Scan Badges">
+<ActionBar class="action-bar" [title]="actionBarTitle">
     <NavigationButton icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Events"></NavigationButton>
 </ActionBar>
 
-<GridLayout rows="auto, 1, 8*, 2*, auto">
-    <event-header row="0" [event]="event" [account]="account" [statistics]="statistics" *ngIf="!status"></event-header>
-    <StackLayout row="1" class="hr-light" *ngIf="!status"></StackLayout>
+<GridLayout rows="auto, 1, 8*, 3*">
+    <checkin-stats row="0" [account]="account" [event]="event"></checkin-stats>
+    <StackLayout row="1" class="hr-light"></StackLayout>
     <ScrollView row="2" class="p-20 m-r-16 m-l-16" *ngIf="!isLoading" verticalAlignment="center">
         <StackLayout orientation="vertical" verticalAlignment="center" *ngIf="!status" (tap)="scan()">
             <Label class="icon icon-4x text-primary text-center" text="&#xf1df;"></Label>
@@ -24,13 +24,7 @@
     </ScrollView>
     <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="2" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
     <StackLayout row="3" class="m-l-16 m-r-16" *ngIf="!isLoading" orientation="vertical">
-        <Button class="button" (tap)="cancel()" *ngIf="isStatusMustPay()" text="Cancel"></Button>
-        <Button class="button btn-primary" [class.btn-orange]="isStatusSuccess() || isStatusMustPay()" (tap)="onPrimaryButtonTap()" [text]="getPrimaryButtonText()"></Button>
-    </StackLayout>
-    <StackLayout row="4" class="m-l-16 m-r-16" horizontalAlignment="center" orientation="horizontal">
-        <Label class="h2 icon text-success text-center" text="&#xf1c7;" *ngIf="statistics"></Label>
-        <Label class="m-l-16 h2 text-success" [text]="statistics.checkedIn"></Label>
-        <Label class="h2" text="/" *ngIf="statistics"></Label>
-        <Label class="h2" [text]="statistics.totalAttendees"></Label>
+        <Button class="button btn-lg btn-rounded-lg" (tap)="cancel()" *ngIf="isStatusMustPay()" text="Cancel"></Button>
+        <Button class="button btn-lg btn-rounded-lg" [class.btn-primary]="!status" [class.btn-danger]="status && !isStatusSuccess()" [class.btn-success]="status && (isStatusSuccess() || isStatusMustPay())" (tap)="onPrimaryButtonTap()" [text]="getPrimaryButtonText()"></Button>
     </StackLayout>
 </GridLayout>

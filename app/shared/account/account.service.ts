@@ -1,16 +1,13 @@
 import { Injectable, OnInit } from "@angular/core";
 import { Http, Headers, Response } from "@angular/http";
-import "rxjs/add/operator/do";
-import "rxjs/add/operator/map";
-import "rxjs/add/operator/switchMap";
-import "rxjs/add/operator/catch";
 var appSettings = require("application-settings");
 const ACCOUNTS_KEY = "ALFIO_ACCOUNTS";
 
 import { Account, AccountType, EventConfiguration, AccountsArray, AccountResponse, Maybe, Pair, Some, Nothing, ScannedAccount } from "./account";
 import { AccountSelectionNotifier } from "./account-selection-notifier";
-import { Observable } from "rxjs/Observable";
 import { authorization } from "~/utils/network-util";
+import { map, switchMap, catchError } from 'rxjs/operators';
+import { Observable } from "rxjs";
 
 @Injectable()
 export class AccountService {
@@ -23,38 +20,42 @@ export class AccountService {
     public registerNewAccount(url: string, username: string, password: string, sslCert: string): Observable<AccountResponse> {
         return this.http.get(url + "/admin/api/user-type", {
                 headers: authorization(username, password)
-            })
-            .map(response => response.text())
-            .map(data => {
-                console.log("got user type", data);
-                let account = new Account();
-                account.url = url;
-                account.username = username;
-                account.password = password;
-                account.accountType = this.safeParse(data) === "SPONSOR" ? AccountType.SPONSOR : AccountType.STAFF;
-                account.configurations = [];
-                account.sslCert = sslCert;
-                let newAccountKey = account.getKey();
-                let maybeExisting = this.accounts.get(newAccountKey);
-                return new AccountResponse(account, maybeExisting.isPresent());
-            }).switchMap(data => {
-                return this.loadEventsForAccount(data.getAccount())
-                    .map(configurations => {
-                        let account = data.getAccount();
-                        account.configurations = configurations;
-                        return new AccountResponse(account, data.isExisting());
-                    });
-            }).map(accountResponse => {
-                let account = accountResponse.getAccount();
-                this.accounts.set(account.getKey(), account);
-                this.persistAccounts();
-                console.log("accounts persisted.");
-                return accountResponse;
-            }).catch(error => {
-                console.log("got error! ");
-                console.log(JSON.stringify(error));
-                return Observable.throw(error);
-            });
+            }).pipe(
+                map(response => response.text()),
+                map(data => {
+                    console.log("got user type", data);
+                    let account = new Account();
+                    account.url = url;
+                    account.username = username;
+                    account.password = password;
+                    account.accountType = this.safeParse(data) === "SPONSOR" ? AccountType.SPONSOR : AccountType.STAFF;
+                    account.configurations = [];
+                    account.sslCert = sslCert;
+                    let newAccountKey = account.getKey();
+                    let maybeExisting = this.accounts.get(newAccountKey);
+                    return new AccountResponse(account, maybeExisting.isPresent());
+                }),
+                switchMap(data => {
+                    return this.loadEventsForAccount(data.getAccount())
+                        .pipe(map(configurations => {
+                            let account = data.getAccount();
+                            account.configurations = configurations;
+                            return new AccountResponse(account, data.isExisting());
+                        }));
+                }),
+                map(accountResponse => {
+                    let account = accountResponse.getAccount();
+                    this.accounts.set(account.getKey(), account);
+                    this.persistAccounts();
+                    console.log("accounts persisted.");
+                    return accountResponse;
+                }),
+                catchError(error => {
+                    console.log("got error! ");
+                    console.log(JSON.stringify(error));
+                    return Observable.throw(error);
+                })
+            );
     }
 
     private safeParse(data: string): string {
@@ -85,7 +86,7 @@ export class AccountService {
     public loadEventsForAccount(account: Account): Observable<Array<EventConfiguration>> {
         return this.http.get(account.url + "/admin/api/events", {
             headers: authorization(account.username, account.password)
-        }).map(data => data.json());
+        }).pipe(map(data => data.json()));
     }
 
     public updateEventsForAccount(key:string, events: Array<EventConfiguration>) {

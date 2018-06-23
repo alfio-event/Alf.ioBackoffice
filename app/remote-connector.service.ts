@@ -1,16 +1,12 @@
-import { RequestOptionsArgs, Response, ResponseOptions, ResponseType, Http, BaseRequestOptions, Headers } from "@angular/http";
-import { Observable } from "rxjs/Observable";
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/observable/fromPromise';
-import { Injectable, OnInit, Injector } from "@angular/core";
+import { RequestOptionsArgs, Response, ResponseOptions, ResponseType, Http, Headers } from "@angular/http";
+import { Injectable } from "@angular/core";
 import * as Https from 'nativescript-https'
-import { HttpResponseEncoding, HttpResponse } from "http";
-import { ActivatedRoute, Params } from "@angular/router";
-import { AccountService } from "./shared/account/account.service";
 import { Account } from "./shared/account/account";
 import { knownFolders, File } from 'file-system'
 import { AccountSelectionNotifier } from "./shared/account/account-selection-notifier";
-import { HttpsResponse, HttpsSSLPinningOptions } from "nativescript-https";
+import { HttpsResponse } from "nativescript-https";
+import { merge, from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class RemoteConnectorService extends Http {
@@ -29,11 +25,11 @@ export class RemoteConnectorService extends Http {
     constructor(private accountSelectionNotifier: AccountSelectionNotifier) {
         super(null, null);
         console.log("registering RemoteConnectorService");
-        Observable.merge(this.accountSelectionNotifier.accountSelectedObservable, this.accountSelectionNotifier.accountScannedObservable)
+        merge(this.accountSelectionNotifier.accountSelectedObservable, this.accountSelectionNotifier.accountScannedObservable)
             .subscribe(account => this.onAccountSelected(account));
     }
 
-    request(url: string, options?: RequestOptionsArgs): Observable<Response> {
+    request(): Observable<Response> {
         return Observable.throw("not implemented");
     }
     
@@ -43,37 +39,37 @@ export class RemoteConnectorService extends Http {
             method: 'GET',
             headers: options ? this.convertHeaders(options.headers) : undefined
         });
-        return Observable.fromPromise(promise).map(this.responseMapper);
+        return from(promise).pipe(map(this.responseMapper));
     }
 
     post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
         let headers = this.convertHeaders(options.headers);
         headers['Content-Type'] = 'application/json';
-        return Observable.fromPromise(Https.request({
+        return from(Https.request({
             url: url,
             method: 'POST',
             headers: headers,
             body: body
-        })).map(this.responseMapper);
+        })).pipe(map(this.responseMapper));
     }
     
-    put(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
+    put(): Observable<Response> {
         return Observable.throw("not implemented");
     }
 
-    delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
+    delete(): Observable<Response> {
         return Observable.throw("not implemented");
     }
     
-    patch(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
+    patch(): Observable<Response> {
         return Observable.throw("not implemented");
     }
     
-    head(url: string, options?: RequestOptionsArgs): Observable<Response> {
+    head(): Observable<Response> {
         return Observable.throw("not implemented");
     }
     
-    options(url: string, options?: RequestOptionsArgs): Observable<Response> {
+    options(): Observable<Response> {
         return Observable.throw("not implemented");
     }
 
@@ -96,9 +92,9 @@ export class RemoteConnectorService extends Http {
             if(!File.exists(`${dir.path}/${hostname}`)) {
                 let text = `-----BEGIN CERTIFICATE-----\n${account.sslCert}\n-----END CERTIFICATE-----`;
                 let file = File.fromPath(`${dir.path}/${hostname}`);
-                file.writeText(text).then(r => {
-                    let pinningOptions = { 
-                        host: hostname, 
+                file.writeText(text).then(() => {
+                    let pinningOptions = {
+                        host: hostname,
                         certificate: file.path,
                         allowInvalidCertificates: false,
                         validatesDomainName: false

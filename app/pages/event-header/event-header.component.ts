@@ -1,23 +1,12 @@
 import {
-    ChangeDetectorRef,
     Component,
-    ElementRef,
     EventEmitter,
     Injectable,
     Input,
     OnInit,
-    Output,
-    ViewChild
-} from '@angular/core';
-import { Router, ActivatedRoute, Params } from "@angular/router";
-import { View } from "ui/core/view";
-import { Page } from "ui/page";
-import { ActionItem } from "ui/action-bar";
-import { Observable } from "data/observable";
-import { RouterExtensions } from "nativescript-angular/router";
-import { AccountService } from "../../shared/account/account.service";
+    Output} from '@angular/core';
 import { ImageService } from "../../shared/image/image.service";
-import { Account, EventConfiguration, EventWithImage } from "../../shared/account/account";
+import { Account, EventConfiguration } from "../../shared/account/account";
 
 @Component({
     moduleId: module.id,

@@ -7,41 +7,44 @@
   "repository": "https://github.com/alfio-event/Alf.ioBackoffice",
   "nativescript": {
     "id": "com.exteso.alfio.backoffice",
-    "tns-android": {
-      "version": "4.0.1"
-    },
     "tns-ios": {
-      "version": "4.0.1"
+      "version": "4.1.1"
+    },
+    "tns-android": {
+      "version": "4.1.3"
     }
   },
   "dependencies": {
-    "@angular/animations": "~5.2.0",
-    "@angular/common": "~5.2.0",
-    "@angular/compiler": "~5.2.0",
-    "@angular/core": "~5.2.0",
-    "@angular/forms": "~5.2.0",
-    "@angular/http": "~5.2.0",
-    "@angular/platform-browser": "~5.2.0",
-    "@angular/platform-browser-dynamic": "~5.2.0",
-    "@angular/router": "~5.2.0",
-    "nativescript-angular": "~5.3.0",
-    "nativescript-barcodescanner": "^2.7.6",
+    "@angular/animations": "~6.0.6",
+    "@angular/common": "~6.0.6",
+    "@angular/compiler": "~6.0.6",
+    "@angular/core": "~6.0.6",
+    "@angular/forms": "~6.0.6",
+    "@angular/http": "~6.0.6",
+    "@angular/platform-browser": "~6.0.6",
+    "@angular/platform-browser-dynamic": "~6.0.6",
+    "@angular/router": "~6.0.6",
+    "nativescript-angular": "next",
+    "nativescript-barcodescanner": "^2.7.7",
     "nativescript-email": "^1.5.2",
     "nativescript-https": "git://github.com/cbellone/nativescript-https.git#alfio",
     "nativescript-theme-core": "~1.0.4",
     "nativescript-toast": "^1.4.6",
     "nativescript-vibrate": "^2.1.0",
     "reflect-metadata": "~0.1.8",
-    "rxjs": "~5.5.2",
-    "tns-core-modules": "~4.0.0",
-    "zone.js": "~0.8.2"
+    "rxjs": "~6.0.0 || >=6.1.0",
+    "rxjs-compat": "~6.0.0 || >=6.1.0",
+    "tns-core-modules": "^4.1.0",
+    "zone.js": "~0.8.26"
   },
   "devDependencies": {
+    "@angular/compiler-cli": "~6.1.0-beta.1",
     "babel-traverse": "6.26.0",
     "babel-types": "6.26.0",
     "babylon": "6.18.0",
     "lazy": "1.0.11",
-    "nativescript-dev-typescript": "~0.7.0",
-    "typescript": "~2.7.2"
+    "nativescript-dev-typescript": "next",
+    "typescript": "~2.7.2",
+    "@angular-devkit/build-angular": "~0.7.0-rc.0"
   }
 }

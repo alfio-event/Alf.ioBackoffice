@@ -1,16 +1,12 @@
 import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { SponsorScan } from '../../../shared/scan/sponsor-scan';
-import { ChangeDetectorRef, Component, ElementRef, Inject, Injectable, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute, Params } from "@angular/router";
-import { View } from "ui/core/view";
-import { Page } from "ui/page";
+import { Component, ElementRef, Injectable, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { ActivatedRoute, Params } from "@angular/router";
 import { ListView } from "ui/list-view"
-import { ActionItem } from "ui/action-bar";
-import { Observable } from "data/observable";
 import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../../shared/account/account.service";
 import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service"
-import { Account, EventConfiguration, EventWithImage } from "../../../shared/account/account";
+import { Account, EventConfiguration } from "../../../shared/account/account";
 import * as Toast from 'nativescript-toast';
 import { Vibrate } from 'nativescript-vibrate';
 import * as Email from "nativescript-email";
@@ -90,10 +86,10 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             Toast.makeText("Scan enqueued!").show();
         }
         this.barcodeScanner.scan(scanOptions)
-            .then((result) => {
-                clearInterval(interval);
-                this.isLoading = false;
-            }, (error) => {
+            .then(() => {
+                    clearInterval(interval);
+                    this.isLoading = false;
+                }, (error) => {
                 console.log("No scan: " + error);
                 this.isLoading = false;
             });

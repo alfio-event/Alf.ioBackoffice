@@ -1,4 +1,3 @@
-import { EventConfiguration } from '../account/account';
 import { Ticket } from './scan-common';
 
 export class SponsorScan {

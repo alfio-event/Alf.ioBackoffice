@@ -1,4 +1,3 @@
-import {ImageSource} from "image-source";
 
 export class Account {
     url: string;

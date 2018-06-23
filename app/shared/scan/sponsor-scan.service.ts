@@ -4,11 +4,10 @@ import { Http, Headers, Response } from "@angular/http";
 import { SponsorScan, ScanStatus } from "./sponsor-scan";
 import { Ticket } from "./scan-common";
 import { Account } from "../account/account";
-
+import { map } from 'rxjs/operators';
 import * as AppSettings from 'application-settings';
-import { Subject } from "rxjs/Subject";
-import { Observable } from "rxjs/Observable";
 import { authorization } from "~/utils/network-util";
+import { Subject, Observable } from "rxjs";
 
 @Injectable()
 export class SponsorScanService  {
@@ -81,7 +80,7 @@ export class SponsorScanService  {
     private bulkScanUpload(eventKey: string, account: Account, toSend: Array<SponsorScan>) {
         return this.http.post(account.url+'/api/attendees/sponsor-scan/bulk', toSend.map(scan=> new SponsorScanRequest(eventKey, scan.code)), {
             headers: authorization(account.username, account.password)
-        }).map(data => data.json()).subscribe(payload => {
+        }).pipe(map(data => data.json())).subscribe(payload => {
             let a = <Array<any>> payload;
             a.forEach(scan => this.changeStatusFor(eventKey, (<Ticket> scan.ticket).uuid, ScanStatus.DONE, <Ticket> scan.ticket));
             this.persistSponsorScans(eventKey, account);

@@ -1,13 +1,9 @@
-import { Component, ElementRef, OnInit, OnChanges, ViewChild, Inject, EventEmitter, NgZone } from "@angular/core";
+import { Component, ElementRef, OnInit, OnChanges, ViewChild, NgZone } from "@angular/core";
 import { Router } from "@angular/router";
-import { Color } from "color";
 import { Page } from "ui/page";
-import { TextField } from "ui/text-field";
-import { View } from "ui/core/view";
 import { ListView } from "ui/list-view";
 import { RouterExtensions } from "nativescript-angular/router"
-import dialogs = require("ui/dialogs");
-import { Account, EventConfiguration, ScannedAccount } from "../../shared/account/account";
+import { Account, ScannedAccount } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import { AccountResponse, Maybe, Some, Nothing } from "../../shared/account/account";
 import { defaultScanOptions } from '../../utils/barcodescanner';
@@ -15,9 +11,8 @@ import application = require("application");
 import { Vibrate } from 'nativescript-vibrate';
 import * as Toast from 'nativescript-toast';
 import { isUndefined } from "utils/types";
-import { Subject } from "rxjs/Subject";
-import { Observable } from "rxjs/Observable";
 import { BarcodeScanner } from "nativescript-barcodescanner";
+import { Subject, Observable } from "rxjs";
 
 @Component({
     selector: "account-selection",
@@ -39,9 +34,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     private vibrator = new Vibrate();
     
 
-    constructor(private router: Router, 
-        private accountService: AccountService, 
-        private page: Page, 
+    constructor(private accountService: AccountService, 
         private routerExtensions: RouterExtensions,
         private barcodeScanner: BarcodeScanner,
         private ngZone: NgZone) {
@@ -74,19 +67,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
             this.toggleEditMode();
         }
 
-        //bypass scanner for demo/test purpose
-        // if(false) {
-        //     let maybeScannedAccount = this.parseScannedAccount(['{"baseUrl" : "", "username":"", "password":""}']);
-        //     if(maybeScannedAccount.isPresent()) {
-        //         let account = maybeScannedAccount.value;
-        //         this.accountService.notifyAccountScan(account);
-        //         this.registerNewAccount(account);
-        //     }
-        //     return;
-        // }
-        //------
-
-        let scanSubject = new Subject<string>();
         let qrCodeParts: Array<string>;
         let splitQrCodeMatcher = /^(\d+):(\d+):(.+$)/;
         let scanOptions = defaultScanOptions();
@@ -125,7 +105,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
             }
         }
         this.barcodeScanner.scan(scanOptions)
-            .then((result) => {}, (error) => {
+            .then(() => { }, (error) => {
                 console.log("No scan: " + error);
                 this.isLoading = false;
             });

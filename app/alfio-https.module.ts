@@ -1,5 +1,3 @@
-
-
 import { NgModule } from "@angular/core";
 import { AccountModule } from "./shared/account/account.module";
 import { Http } from "@angular/http";

@@ -1,10 +1,9 @@
 import { Injectable, OnInit, Injector } from "@angular/core";
-import { Router, ActivatedRoute, Params, Event, RoutesRecognized } from "@angular/router";
+import { Router, ActivatedRoute, Event, RoutesRecognized } from "@angular/router";
 import { AccountService } from "./account.service";
 import { Account } from "./account";
-import { Subject } from "rxjs/Subject";
-import { Observable } from "rxjs/Observable";
-import 'rxjs/add/operator/filter';
+import { Subject, Observable } from "rxjs";
+import { filter } from 'rxjs/operators';
 
 @Injectable()
 export class AccountSelectionNotifier implements OnInit {
@@ -25,9 +24,10 @@ export class AccountSelectionNotifier implements OnInit {
         this.accountScannedObservable = this.accountScannedSubject.asObservable();
         let extractRegex = new RegExp("^\/manage-account\/(.+)$")
         this.router.events
-            .filter((event: Event) => event instanceof RoutesRecognized)
-            .filter((event: RoutesRecognized) => extractRegex.test(event.urlAfterRedirects))
-            .subscribe((event: RoutesRecognized) => {
+            .pipe(
+                filter((event: Event) => event instanceof RoutesRecognized),
+                filter((event: RoutesRecognized) => extractRegex.test(event.urlAfterRedirects))
+            ).subscribe((event: RoutesRecognized) => {
                 
                 let result = extractRegex.exec(event.urlAfterRedirects)[1];
                 if(result && decodeURIComponent(result) != this.currentAccountId) {

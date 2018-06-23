@@ -1,24 +1,11 @@
 import {
-    ChangeDetectorRef,
     Component,
-    ElementRef,
-    EventEmitter,
     Injectable,
     Input,
-    OnInit,
-    Output,
-    ViewChild
-} from '@angular/core';
-import { Router, ActivatedRoute, Params } from "@angular/router";
-import { View } from "ui/core/view";
-import { Page } from "ui/page";
-import { ActionItem } from "ui/action-bar";
-import { RouterExtensions } from "nativescript-angular/router";
-import { AccountService } from "../../shared/account/account.service";
+    OnInit} from '@angular/core';
 import { ImageService } from "../../shared/image/image.service";
-import { Account, EventConfiguration, EventWithImage } from "../../shared/account/account";
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { Account } from "../../shared/account/account";
+import { Observable, Subject } from 'rxjs';
 
 @Component({
     moduleId: module.id,
@@ -36,7 +23,7 @@ export class IosAccountIconComponent implements OnInit{
     @Input() tapEmitter:Subject<Account>;
     editEnabled: boolean;
 
-    constructor(private imageService: ImageService) {
+    constructor() {
     }
     
     ngOnInit():void {

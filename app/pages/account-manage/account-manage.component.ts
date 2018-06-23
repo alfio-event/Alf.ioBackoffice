@@ -1,18 +1,11 @@
-import { SwipeGestureEventData, SwipeDirection } from "ui/gestures";
-import { Component, ElementRef, OnInit, ViewChild, NgZone } from "@angular/core";
-import { Router, ActivatedRoute, Params } from "@angular/router";
+import { Component, OnInit, NgZone } from "@angular/core";
+import { ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "nativescript-angular/router"
-import { Color } from "color";
-import { Page } from "ui/page";
-import { TextField } from "ui/text-field";
-import { View } from "ui/core/view";
-import { Observable } from 'rxjs/Observable';
 import "rxjs/add/operator/map";
 import "rxjs/add/operator/switchMap";
 
-import { Account, EventConfiguration, EventConfigurationSelection, AccountType } from "../../shared/account/account";
+import { Account, EventConfiguration, AccountType } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
-import { ImageService } from "../../shared/image/image.service";
 import * as Toast from 'nativescript-toast';
 import { isDefined, isUndefined } from "utils/types";
 

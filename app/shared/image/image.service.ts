@@ -1,13 +1,12 @@
 import { Injectable } from "@angular/core";
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/fromPromise';
-import 'rxjs/add/observable/of';
 import { EventConfiguration, ImageContainer, Account } from "../../shared/account/account";
 import imageSource = require("image-source");
 import fs = require("file-system");
 import enums = require("ui/enums");
 import { Folder } from "file-system";
 import { Http } from "@angular/http";
+import { Observable, of, from } from "rxjs";
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class ImageService {
@@ -82,17 +81,17 @@ AWKAGDNADBBjBogxA8QAMRaL/Q++O4+HDUgkkwAAAABJRU5ErkJggg==`;
         let url = account.url + e.imageUrl;
         let filename = fs.path.join(this.folder.path, e.imageUrl.replace(/[^A-Za-z0-9]/g,'_'));
         if(fs.File.exists(filename)) {
-            return Observable.of(filename);
+            return of(filename);
         } else if(account.sslCert) {
             let img = imageSource.fromBase64(this.piImage);
             img.saveToFile(filename, "png");
-            return Observable.of(filename);
+            return of(filename);
         } else {
-             return Observable.fromPromise(imageSource.fromUrl(url))
-                .map(img => {
+             return from(imageSource.fromUrl(url))
+                .pipe(map(img => {
                     img.saveToFile(filename, "png");
                     return filename;
-                });
+                }));
         }
     } 
 

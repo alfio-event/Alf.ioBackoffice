@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
-import { Http, Headers, Response } from "@angular/http";
-import { authorization } from '../account/account.service';
-import { Ticket, TicketAndCheckInResult } from './scan-common';
+import { Http } from "@angular/http";
+import { TicketAndCheckInResult } from './scan-common';
 import { Account } from "../account/account";
-import { Observable } from "rxjs/Observable";
+import { authorization } from "~/utils/network-util";
+import { Observable } from "rxjs";
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class ScanService {
@@ -24,9 +25,9 @@ export class ScanService {
         let start = new Date().getTime();
         return this.http.post(url, {"code": scan}, {
             headers: authorization(account.username, account.password)
-        }).map(r => {
+        }).pipe(map(r => {
             console.log("1st stop, elapsed", new Date().getTime() - start);
             return r.json();
-        });
+        }));
     }
 }
