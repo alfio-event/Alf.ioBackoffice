@@ -12,13 +12,12 @@
             <Label textWrap="true" text="Tap the button below to init the check-in process. Scan the QR-Code on the tickets and wait for the result." class="body"></Label>
         </StackLayout>
         <StackLayout orientation="vertical" *ngIf="status" verticalAlignment="center" class="p-l-16 p-r-16">
-            <Label class="icon icon-4x text-center m-t-16" [class.text-success]="isStatusSuccess()" [class.m-t-10]="isStatusSuccess()" [class.text-danger]="!isStatusSuccess()" [text]="getStatusIcon()"></Label>
+            <Label class="icon icon-4x text-center" [class.text-success]="isStatusSuccess()" [class.m-t-10]="isStatusSuccess()" [class.text-danger]="!isStatusSuccess()" [text]="getStatusIcon()"></Label>
             <Label [text]="message" class="h2 text-danger text-center" *ngIf="!isStatusSuccess()" textWrap="true"></Label>
             <StackLayout *ngIf="isStatusSuccess()" orientation="vertical">
-                <Label [text]="ticket.firstName" class="h2"></Label>
-                <Label [text]="ticket.lastName" class="h2"></Label>
-                <Label [text]="ticket.email" class="h4"></Label>
-                <Label [text]="ticket.uuid" class="h6"></Label>
+                <Label [text]="ticket.fullName" class="h2 text-center"></Label>
+                <Label [text]="ticket.categoryName" class="h2 text-center"></Label>
+                <Label text="{{ticket.email}} ({{ticket.uuid}})" class="h6 text-center"></Label>
             </StackLayout>
         </StackLayout>
     </ScrollView>

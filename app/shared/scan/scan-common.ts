@@ -5,7 +5,8 @@ export class Ticket {
                 public firstName: string,
                 public lastName: string,
                 public fullName: string,
-                public email: string) {}
+                public email: string,
+                public categoryName: string) {}
 }
 
 export class TicketAndCheckInResult {
