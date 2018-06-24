@@ -15,7 +15,7 @@ import { BarcodeScanner } from 'nativescript-barcodescanner';
     selector: "staff-event-detail",
     providers: [AccountService, ScanService],
     templateUrl: 'event-detail.html',
-    styleUrls: []
+    styleUrls: ['./event-detail.css']
 })
 @Injectable()
 export class StaffEventDetailComponent implements OnInit, OnDestroy {
@@ -152,7 +152,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         if(!this.status) {
             return "Scan Attendees";
         } else if(this.isStatusSuccess()) {
-            return "Next";
+            return "Scan Next";
         } else if (this.status == CheckInStatus.MUST_PAY) {
             return "Confirm Payment";
         } else {

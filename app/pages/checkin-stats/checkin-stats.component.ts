@@ -11,7 +11,7 @@ import { Subscription } from "rxjs";
                     <GridLayout columns="70, auto" *ngIf="stats">
                         <Label col="0" class="icon icon-3x text-success text-center" text="&#xf39e;"></Label>
                         <StackLayout col="1" class="small-spacing" orientation="vertical">
-                            <Label text="Check-in Statistics, updated: {{stats.lastUpdate | date:'mediumTime'}}" class="strong"></Label>
+                            <Label text="Statistics @ {{stats.lastUpdate | date:'mediumTime'}}" class="strong"></Label>
                             <StackLayout orientation="horizontal" class="text-center">
                                 <Label [text]="stats.checkedIn" class="text-success strong h1 mr-1"></Label>
                                 <Label text="/" class="h1 mr-1"></Label>
