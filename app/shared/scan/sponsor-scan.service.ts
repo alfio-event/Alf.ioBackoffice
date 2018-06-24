@@ -5,18 +5,18 @@ import { SponsorScan, ScanStatus } from "./sponsor-scan";
 import { Ticket } from "./scan-common";
 import { Account } from "../account/account";
 import { map } from 'rxjs/operators';
-import * as AppSettings from 'application-settings';
 import { authorization } from "~/utils/network-util";
 import { Subject, Observable } from "rxjs";
+import { StorageService } from "~/shared/storage/storage.service";
 
 @Injectable()
 export class SponsorScanService  {
-
+    
     private sponsorScans: {[eventKey: string] : Array<SponsorScan>} = {};
     private sources: {[eventKey: string] : Subject<Array<SponsorScan>>} = {};
     private timeoutIds: {[eventKey: string] : number} = {};
     
-    constructor(private http: Http) {
+    constructor(private http: Http, private storage: StorageService) {
     }
 
     public scan(eventKey: string, account: Account, uuid: string) : void {
@@ -36,7 +36,7 @@ export class SponsorScanService  {
 
     private persistSponsorScans(eventKey: string, account: Account) {
         if(this.sponsorScans[eventKey]) {
-            AppSettings.setString('ALFIO_SPONSOR_SCANS_'+eventKey+account.getKey(), JSON.stringify(this.sponsorScans[eventKey]));
+            this.storage.saveValue('ALFIO_SPONSOR_SCANS_'+eventKey+account.getKey(), JSON.stringify(this.sponsorScans[eventKey]));
         }
     }
 
@@ -49,7 +49,7 @@ export class SponsorScanService  {
     }
 
     private loadIfExists(eventKey: string, account: Account): Array<SponsorScan> {
-        let stringified = AppSettings.getString('ALFIO_SPONSOR_SCANS_'+eventKey+account.getKey(), null);
+        let stringified = this.storage.getOrDefault('ALFIO_SPONSOR_SCANS_'+eventKey+account.getKey());
         if(stringified != null) {
             let found = <Array<SponsorScan>> JSON.parse(stringified);
             return found.map(sponsorScan => new SponsorScan(sponsorScan.code, SponsorScanService.fixStatusOnLoad(sponsorScan.status), sponsorScan.ticket));

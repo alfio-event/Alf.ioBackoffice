@@ -13,6 +13,7 @@ import { CurrencyPipe } from "@angular/common";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { StatisticsModule } from '~/shared/statistics/statistics.module';
 import { CheckInStatsComponent } from '~/pages/checkin-stats/checkin-stats.component';
+import { StorageModule } from '~/shared/storage/storage.module';
 
 @NgModule({
     imports: [
@@ -23,7 +24,8 @@ import { CheckInStatsComponent } from '~/pages/checkin-stats/checkin-stats.compo
         NativeScriptRouterModule.forRoot(routes),
         NativeScriptAnimationsModule,
         AccountModule,
-        StatisticsModule
+        StatisticsModule,
+        StorageModule
     ],
     declarations: [
         AppComponent,

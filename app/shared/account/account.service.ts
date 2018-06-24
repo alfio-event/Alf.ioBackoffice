@@ -1,19 +1,21 @@
-import { Injectable, OnInit } from "@angular/core";
-import { Http, Headers, Response } from "@angular/http";
-var appSettings = require("application-settings");
+import { Injectable } from "@angular/core";
+import { Http } from "@angular/http";
 const ACCOUNTS_KEY = "ALFIO_ACCOUNTS";
 
-import { Account, AccountType, EventConfiguration, AccountsArray, AccountResponse, Maybe, Pair, Some, Nothing, ScannedAccount } from "./account";
+import { Account, AccountType, EventConfiguration, AccountsArray, AccountResponse, Maybe, ScannedAccount } from "./account";
 import { AccountSelectionNotifier } from "./account-selection-notifier";
 import { authorization } from "~/utils/network-util";
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { Observable } from "rxjs";
+import { StorageService } from "~/shared/storage/storage.service";
 
 @Injectable()
 export class AccountService {
     private accounts: AccountsArray;
 
-    constructor(private http: Http, private accountSelectionNotifier: AccountSelectionNotifier) {
+    constructor(private http: Http, 
+                private accountSelectionNotifier: AccountSelectionNotifier,
+                private storage: StorageService) {
         this.accounts = this.loadSavedAccounts();
     }
 
@@ -109,7 +111,7 @@ export class AccountService {
     }
 
     private loadSavedAccounts() :AccountsArray {
-        let savedData = appSettings.getString(ACCOUNTS_KEY, "--");
+        let savedData = this.storage.getOrDefault(ACCOUNTS_KEY, "--");
         if (savedData !== "--") {
             return new AccountsArray(JSON.parse(savedData).map(obj => {
                 let account = new Account();
@@ -130,7 +132,7 @@ export class AccountService {
         let elements = this.accounts.getAllAccounts();
         let serializedElements = JSON.stringify(elements);
         console.log("serializing...");
-        appSettings.setString(ACCOUNTS_KEY, serializedElements);
+        this.storage.saveValue(ACCOUNTS_KEY, serializedElements);
         console.log("done.");
     }
 }
