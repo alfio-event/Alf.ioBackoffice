@@ -1,6 +1,6 @@
 import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { SponsorScan } from '../../../shared/scan/sponsor-scan';
-import { Component, ElementRef, Injectable, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, Injectable, OnInit, OnDestroy, ViewChild, NgZone } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
 import { ListView } from "ui/list-view"
 import { RouterExtensions } from "nativescript-angular/router";
@@ -12,6 +12,7 @@ import { Vibrate } from 'nativescript-vibrate';
 import * as Email from "nativescript-email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { encodeBase64 } from '~/utils/network-util';
+import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-util';
 
 @Component({
     moduleId: module.id,
@@ -36,7 +37,8 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 private routerExtensions: RouterExtensions,
                 private accountService: AccountService,
                 private barcodeScanner: BarcodeScanner,
-                private sponsorScanService: SponsorScanService) {
+                private sponsorScanService: SponsorScanService,
+                private ngZone: NgZone) {
     }
 
     onBackTap() {
@@ -46,7 +48,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.scans = [];
         this.isLoading = true;
-        this.route.params.forEach((params: Params) => {
+        this.route.params.subscribe((params: Params) => {
             console.log("params", params['accountId'], params['eventId'])
             let id = params['accountId'];
             let eventId = params['eventId'];
@@ -55,8 +57,10 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 this.event = this.account.configurations.filter(c => c.key === eventId)[0];
                 this.sponsorScanService.getForEvent(this.event.key, this.account).subscribe(list => {
                     console.log("received ", list.length);
-                    this.scans = list;
-                    this.refreshListView();
+                    this.ngZone.run(() => {
+                        this.scans = list;
+                        this.refreshListView();
+                    });
                 });
                 let list = this.sponsorScanService.loadInitial(this.event.key);
                 if(list) {
@@ -65,13 +69,14 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 this.isLoading = false;
             });
         });
-        
+        forcePortraitOrientation();
     }
 
     ngOnDestroy() {
         if(this.event && this.event.key) {
             this.sponsorScanService.destroyForEvent(this.event.key);
         }
+        enableRotation();
     }
 
     requestQrScan() {
@@ -85,14 +90,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             this.vibrator.vibrate(250);
             Toast.makeText("Scan enqueued!").show();
         }
-        this.barcodeScanner.scan(scanOptions)
-            .then(() => {
-                    clearInterval(interval);
-                    this.isLoading = false;
-                }, (error) => {
-                console.log("No scan: " + error);
-                this.isLoading = false;
-            });
+
         let warningDisplayed = false;
         let interval = setInterval(() => {
             let current = new Date().getTime();
@@ -100,12 +98,29 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             if(elapsed > 45 * 1000) {
                 clearInterval(interval);
                 this.barcodeScanner.stop()
-                    .then(() => Toast.makeText("Timed out").show());
+                    .then(() => {
+                        Toast.makeText("Timed out").show();
+                        this.toggleLoading(false);
+                    });
             } else if(elapsed > (30 * 1000) && !warningDisplayed) {
                 warningDisplayed = true;
                 Toast.makeText("Camera will be deactivated in 15 sec.").show();
             }
         }, 1000);
+        
+        this.barcodeScanner.scan(scanOptions)
+            .then(() => {
+                    console.log("barcode scanner exited");
+                    clearInterval(interval);
+                    this.toggleLoading(false);
+                }, (error) => {
+                    console.log("No scan: " + error);
+                    this.toggleLoading(false);
+                });
+    }
+
+    private toggleLoading(state: boolean): void {
+        this.ngZone.run(() => this.isLoading = state);
     }
 
     forceUpload(): void {

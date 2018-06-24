@@ -10,14 +10,15 @@
 		<Label text="Please add one" class="missing-accounts text-muted text-center"></Label>
 	</StackLayout>
 	
-	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts()">
+	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts()" class="list-group">
 		<ng-template let-item="item">
-			<GridLayout columns="*, 35" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" (longPress)="onLongPress(item)">
-				<StackLayout col="0" orientation="vertical" class="medium-spacing list-item-padding"  (tap)="manage(item)">
+			<GridLayout columns="36, *, 35" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" (longPress)="onLongPress(item)" class="list-group-item">
+				<Label col="0" class="icon icon-2x person-icon text-muted text-center" text="&#xf110;"></Label>
+				<StackLayout col="1" orientation="vertical" class="medium-spacing list-item-padding"  (tap)="manage(item)">
 					<Label [text]="item.username" class="accountName"></Label>
 					<Label [text]="item.url"></Label>
 				</StackLayout>
-				<StackLayout orientation="horizontal" col="1">
+				<StackLayout orientation="horizontal" col="2">
 					<ios-account-icon *ngIf="isIos" [account]="item" [tapEmitter]="tapEmitter" [editEnableObservable]="editEnableObservable"></ios-account-icon>
 					<Label col="1" text="&#xf154;" (tap)="delete(item)" *ngIf="!isIos" class="delete-item icon icon-1-5x text-white"></Label>
 				</StackLayout>

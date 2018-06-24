@@ -1,18 +1,19 @@
 <ActionBar class="action-bar" title="Scan Attendees">
     <NavigationButton icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Events"></NavigationButton>
+    <ActionItem (tap)="shuffle()" icon="res://ic_shuffle_white" ios.systemIcon="10" *ngIf="scans.length > 1" ios.position="right" text="Shuffle" android.position="actionBarIfRoom"></ActionItem>
     <ActionItem (tap)="forceUpload()" icon="res://ic_cloud_upload_white" ios.systemIcon="9" *ngIf="scans.length > 0" ios.position="right" text="Force Upload" android.position="actionBarIfRoom"></ActionItem>
     <ActionItem (tap)="sendByEmail()" icon="res://ic_mail_outline_white" ios.systemIcon="7" *ngIf="scans.length > 0" ios.position="right" text="Send By Email" android.position="actionBarIfRoom"></ActionItem>
 </ActionBar>
 
 
 
-    <GridLayout rows="auto, *, 120">
+    <GridLayout rows="auto, *, 90">
         <event-header col="0" [event]="event" [account]="account" class="event-header"></event-header>
-        <ListView [items]="scans" row="1" [class.visible]="listLoaded" *ngIf="scans.length > 0" #list>
+        <ListView [items]="scans" row="1" [class.visible]="listLoaded" *ngIf="scans.length > 0" #list class="list-group">
             <ng-template let-item="item" let-ticket="item.ticket">
-                <GridLayout columns="24, *">
-                    <Label col="0" class="icon person-icon text-muted text-center" text="&#xf30c;" *ngIf="!ticket"></Label>
-                    <Label col="0" class="icon person-icon text-muted text-center" text="&#xf206;" *ngIf="ticket"></Label>
+                <GridLayout columns="36, *" class="list-group-item">
+                    <Label col="0" class="icon icon-2x person-icon text-muted text-center" text="&#xf30c;" *ngIf="!ticket"></Label>
+                    <Label col="0" class="icon icon-2x person-icon text-muted text-center" text="&#xf206;" *ngIf="ticket"></Label>
                     <StackLayout col="1" class="medium-spacing" orientation="vertical" *ngIf="ticket">
                         <Label class="title" [text]="ticket.fullName"></Label>
                         <Label [text]="ticket.email"></Label>
@@ -30,9 +31,8 @@
             <Label text="Start scanning badges!" class="missing-accounts text-muted text-center"></Label>
         </StackLayout>
         <ActivityIndicator row="1" [busy]="isLoading" class="activity-indicator"></ActivityIndicator>
-        <StackLayout row="2" orientation="vertical" class="button-group">
-            <Button (tap)="shuffle()" text="Shuffle" class="button btn-outline" *ngIf="scans.length > 1"></Button>
-            <Button (tap)="requestQrScan()" class="button btn-primary" text="Scan"></Button>
+        <StackLayout row="2" orientation="vertical" class="button-group m-l-16 m-r-16">
+            <Button (tap)="requestQrScan()" class="button btn-primary btn-lg btn-rounded-lg" text="Scan"></Button>
         </StackLayout>
         
     </GridLayout>

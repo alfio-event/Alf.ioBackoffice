@@ -18,3 +18,7 @@
 .title {
     font-weight: bold;
 }
+
+.btn-link {
+    border-color: white;
+}

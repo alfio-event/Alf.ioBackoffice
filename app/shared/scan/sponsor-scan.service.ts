@@ -77,15 +77,22 @@ export class SponsorScanService  {
         this.process(eventKey, account, true);
     }
 
-    private bulkScanUpload(eventKey: string, account: Account, toSend: Array<SponsorScan>) {
-        return this.http.post(account.url+'/api/attendees/sponsor-scan/bulk', toSend.map(scan=> new SponsorScanRequest(eventKey, scan.code)), {
+    private bulkScanUpload(eventKey: string, account: Account, toSend: Array<SponsorScan>): void {
+        if(toSend == null || toSend.length == 0) {
+            return;
+        }
+        this.http.post(account.url+'/api/attendees/sponsor-scan/bulk', toSend.map(scan=> new SponsorScanRequest(eventKey, scan.code)), {
             headers: authorization(account.username, account.password)
-        }).pipe(map(data => data.json())).subscribe(payload => {
+        }).pipe(
+            map(data => data.json())
+        ).subscribe(payload => {
             let a = <Array<any>> payload;
-            a.forEach(scan => this.changeStatusFor(eventKey, (<Ticket> scan.ticket).uuid, ScanStatus.DONE, <Ticket> scan.ticket));
-            this.persistSponsorScans(eventKey, account);
-            this.emitFor(eventKey);
-            this.process(eventKey, account);
+            if(a != null) {
+                a.forEach(scan => this.changeStatusFor(eventKey, (<Ticket> scan.ticket).uuid, ScanStatus.DONE, <Ticket> scan.ticket));
+                this.persistSponsorScans(eventKey, account);
+                this.emitFor(eventKey);
+                this.process(eventKey, account);
+            }
         }, error => {
             toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.ERROR, null));
             this.persistSponsorScans(eventKey, account);
@@ -127,11 +134,10 @@ export class SponsorScanService  {
     }
 
     public getForEvent(eventKey: string, account: Account) : Observable<Array<SponsorScan>> {
+
         if(this.sources[eventKey]) {
             return this.sources[eventKey];
         }
-
-        
 
         let subj = new Subject<Array<SponsorScan>>();
         this.sources[eventKey] = subj;
