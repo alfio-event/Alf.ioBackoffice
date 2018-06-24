@@ -9,6 +9,7 @@ import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedEr
 import * as Toast from 'nativescript-toast';
 import { Vibrate } from 'nativescript-vibrate';
 import { BarcodeScanner } from 'nativescript-barcodescanner';
+import { keepAwake, allowSleepAgain } from 'nativescript-insomnia';
 
 @Component({
     moduleId: module.id,
@@ -58,12 +59,14 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 this.isLoading = false;
             });
         });
+        keepAwake().then(v => console.log("keeping the screen awake..."));
     }
 
     ngOnDestroy() {
         if(this.interval) {
             clearInterval(this.interval);
         }
+        allowSleepAgain().then(v => console.log("allowed to sleep"));
     }
 
     onPrimaryButtonTap(): void {

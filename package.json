@@ -28,6 +28,7 @@
     "nativescript-barcodescanner": "^2.7.7",
     "nativescript-email": "^1.5.2",
     "nativescript-https": "git://github.com/cbellone/nativescript-https.git#alfio",
+    "nativescript-insomnia": "^1.2.1",
     "nativescript-secure-storage": "^2.3.0",
     "nativescript-theme-core": "~1.0.4",
     "nativescript-toast": "^1.4.6",
