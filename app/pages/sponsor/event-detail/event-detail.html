@@ -9,7 +9,7 @@
 
     <GridLayout rows="auto, *, 90">
         <event-header col="0" [event]="event" [account]="account" class="event-header"></event-header>
-        <ListView [items]="scans" row="1" [class.visible]="listLoaded" *ngIf="scans.length > 0" #list class="list-group">
+        <ListView [items]="scans" row="1" [class.visible]="listLoaded" *ngIf="scans.length > 0 && !scanView" #list class="list-group">
             <ng-template let-item="item" let-ticket="item.ticket">
                 <GridLayout columns="36, *" class="list-group-item">
                     <Label col="0" class="icon icon-2x person-icon text-muted text-center" text="&#xf30c;" *ngIf="!ticket"></Label>
@@ -25,7 +25,15 @@
                 </GridLayout>
             </ng-template>
         </ListView>
-        <StackLayout row="1" orientation="vertical" class="warning-msg" *ngIf="scans.length == 0">
+        <MLKitBarcodeScanner row="1" *ngIf="scanView"
+            width="300"
+            height="300"
+            formats="QR_CODE"
+            android:processEveryNthFrame="5"
+            ios:processEveryNthFrame="10"
+            (scanResult)="onBarcodeScanResult($event)">
+        </MLKitBarcodeScanner>
+        <StackLayout row="1" orientation="vertical" class="warning-msg" *ngIf="scans.length == 0 && !scanView">
             <Label class="icon icon-3x text-muted text-center" text="&#xf208;"></Label>
             <Label text="No data collected so far" class="missing-accounts text-muted text-center"></Label>
             <Label text="Start scanning badges!" class="missing-accounts text-muted text-center"></Label>

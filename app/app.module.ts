@@ -14,6 +14,8 @@ import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { StatisticsModule } from '~/shared/statistics/statistics.module';
 import { CheckInStatsComponent } from '~/pages/checkin-stats/checkin-stats.component';
 import { StorageModule } from '~/shared/storage/storage.module';
+import { registerElement } from "nativescript-angular/element-registry";
+registerElement("MLKitBarcodeScanner", () => require("nativescript-plugin-firebase/mlkit/barcodescanning").MLKitBarcodeScanner);
 
 @NgModule({
     imports: [

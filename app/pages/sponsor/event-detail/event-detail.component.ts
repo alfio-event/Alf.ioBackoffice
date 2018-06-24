@@ -13,6 +13,7 @@ import * as Email from "nativescript-email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { encodeBase64 } from '~/utils/network-util';
 import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-util';
+import { BarcodeFormat, MLKitScanBarcodesOnDeviceResult } from "nativescript-plugin-firebase/mlkit/barcodescanning";
 
 @Component({
     moduleId: module.id,
@@ -32,6 +33,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     @ViewChild("list") listViewContainer: ElementRef;
     private listView: ListView;
     private vibrator = new Vibrate();
+    private scanView = false;
 
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
@@ -41,11 +43,11 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 private ngZone: NgZone) {
     }
 
-    onBackTap() {
+    onBackTap(): void {
         this.routerExtensions.back();
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.scans = [];
         this.isLoading = true;
         this.route.params.subscribe((params: Params) => {
@@ -72,6 +74,10 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         forcePortraitOrientation();
     }
 
+    onBarcodeScanResult(event: any): void {
+        Toast.makeText("Scansione!!!", event.barcodes);
+    }
+
     ngOnDestroy() {
         if(this.event && this.event.key) {
             this.sponsorScanService.destroyForEvent(this.event.key);
@@ -80,43 +86,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     }
 
     requestQrScan() {
-        this.isLoading = true;
-        let scanOptions = defaultScanOptions();
-        this.lastUpdate = new Date().getTime();
-        scanOptions.continuousScanCallback = (res) => {
-            this.lastUpdate = new Date().getTime();
-            console.log("scanned", res.text);
-            this.sponsorScanService.scan(this.event.key, this.account, res.text);
-            this.vibrator.vibrate(250);
-            Toast.makeText("Scan enqueued!").show();
-        }
-
-        let warningDisplayed = false;
-        let interval = setInterval(() => {
-            let current = new Date().getTime();
-            let elapsed = current - this.lastUpdate;
-            if(elapsed > 45 * 1000) {
-                clearInterval(interval);
-                this.barcodeScanner.stop()
-                    .then(() => {
-                        Toast.makeText("Timed out").show();
-                        this.toggleLoading(false);
-                    });
-            } else if(elapsed > (30 * 1000) && !warningDisplayed) {
-                warningDisplayed = true;
-                Toast.makeText("Camera will be deactivated in 15 sec.").show();
-            }
-        }, 1000);
-        
-        this.barcodeScanner.scan(scanOptions)
-            .then(() => {
-                    console.log("barcode scanner exited");
-                    clearInterval(interval);
-                    this.toggleLoading(false);
-                }, (error) => {
-                    console.log("No scan: " + error);
-                    this.toggleLoading(false);
-                });
+        this.scanView = !this.scanView;        
     }
 
     private toggleLoading(state: boolean): void {

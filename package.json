@@ -6,7 +6,7 @@
   "readme": "Alf.io",
   "repository": "https://github.com/alfio-event/Alf.ioBackoffice",
   "nativescript": {
-    "id": "com.exteso.alfio.backoffice",
+    "id": "alfio.backoffice",
     "tns-ios": {
       "version": "4.1.1"
     },
@@ -30,6 +30,7 @@
     "nativescript-https": "git://github.com/cbellone/nativescript-https.git#alfio",
     "nativescript-insomnia": "^1.2.1",
     "nativescript-orientation": "^2.2.0",
+    "nativescript-plugin-firebase": "^6.3.0",
     "nativescript-secure-storage": "^2.3.0",
     "nativescript-theme-core": "~1.0.4",
     "nativescript-toast": "^1.4.6",
