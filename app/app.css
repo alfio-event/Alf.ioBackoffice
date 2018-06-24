@@ -88,3 +88,7 @@
   height: 120px;
   font-size: 24;
 }
+
+.text-muted {
+  color: gray;
+}

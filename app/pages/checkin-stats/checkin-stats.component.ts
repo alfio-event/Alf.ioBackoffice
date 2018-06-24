@@ -14,8 +14,8 @@ import { Subscription } from "rxjs";
                             <Label text="Statistics @ {{stats.lastUpdate | date:'mediumTime'}}" class="strong"></Label>
                             <StackLayout orientation="horizontal" class="text-center">
                                 <Label [text]="stats.checkedIn" class="text-success strong h1 mr-1"></Label>
-                                <Label text="/" class="h1 mr-1"></Label>
-                                <Label [text]="stats.totalAttendees" class="h1"></Label>
+                                <Label text="/" class="h1 strong mr-1 text-muted"></Label>
+                                <Label [text]="stats.totalAttendees" class="h1 strong text-muted"></Label>
                             </StackLayout>
                         </StackLayout>
                     </GridLayout>
