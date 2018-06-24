@@ -1,7 +1,10 @@
-var orientationModule = require("nativescript-screen-orientation");
+var orientationModule = require("nativescript-orientation");
 
 export function forcePortraitOrientation() {
-    orientationModule.setCurrentOrientation("portrait", function () {
-        console.log("portrait orientation set");
-    });
+    orientationModule.setOrientation("portrait");  
+    orientationModule.disableRotation();
+}
+
+export function enableRotation() {
+    orientationModule.enableRotation();
 }

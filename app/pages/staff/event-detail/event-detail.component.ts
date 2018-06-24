@@ -10,6 +10,7 @@ import * as Toast from 'nativescript-toast';
 import { Vibrate } from 'nativescript-vibrate';
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { keepAwake, allowSleepAgain } from 'nativescript-insomnia';
+import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-util';
 
 @Component({
     moduleId: module.id,
@@ -60,6 +61,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             });
         });
         keepAwake().then(v => console.log("keeping the screen awake..."));
+        forcePortraitOrientation();
     }
 
     ngOnDestroy() {
@@ -67,6 +69,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             clearInterval(this.interval);
         }
         allowSleepAgain().then(v => console.log("allowed to sleep"));
+        enableRotation();
     }
 
     onPrimaryButtonTap(): void {
