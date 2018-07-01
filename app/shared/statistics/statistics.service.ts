@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import { Http, Headers, Response } from "@angular/http";
+import { Http } from "@angular/http";
 import { Account } from "../account/account";
 import { authorization } from "~/utils/network-util";
-import { timer, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 
 @Injectable()
@@ -11,9 +11,8 @@ export class StatisticsService {
     constructor(private http: Http) {}
 
     public retrieveForEvent(account: Account, eventName: string) : Observable<CheckInStatistics> {
-        return timer(200,5000)
+        return this.http.get(`${account.url}/admin/api/check-in/event/${eventName}/statistics`, { headers: authorization(account.username, account.password)})
             .pipe(
-                switchMap(() => this.http.get(`${account.url}/admin/api/check-in/event/${eventName}/statistics`, { headers: authorization(account.username, account.password)})),
                 map(resp => resp.json())
             );
     }

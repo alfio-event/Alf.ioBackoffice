@@ -69,6 +69,12 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         let text = <string>result.text;
         let matchResult = splitQrCodeMatcher.exec(text);
         this.vibrator.vibrate(50);
+        let successFn = (account: ScannedAccount) => {
+            this.ngZone.run(() => {
+                this.registerNewAccount(account);
+                this.scannerVisible = false;
+            });
+        };
         if(matchResult && matchResult.length == 4) {
             let length = +matchResult[2];
             if(!this.qrCodeParts) {
@@ -80,7 +86,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                 if(maybeScannedAccount.isPresent()) {
                     let account = maybeScannedAccount.value;
                     this.accountService.notifyAccountScan(account);
-                    this.barcodeScanner.stop().then(() => this.registerNewAccount(account));
+                    this.barcodeScanner.stop().then(() => successFn(account));
                 } else {
                     this.qrCodeParts = new Array<string>(length).fill(undefined);
                     Toast.makeText("Corrupted QR-Code sequence. Please retry.").show();
@@ -93,11 +99,15 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
             if(maybeScannedAccount.isPresent()) {
                 let account = maybeScannedAccount.value;
                 this.accountService.notifyAccountScan(account);
-                this.barcodeScanner.stop().then((() => this.registerNewAccount(account)));
+                this.barcodeScanner.stop().then((() => successFn(account)));
             } else {
                 Toast.makeText("Invalid QR-Code. Please retry.").show();
             }
         }
+    }
+
+    cancelScan(): void {
+        this.barcodeScanner.stop().then(() => this.ngZone.run(() => this.scannerVisible = false));        
     }
 
     requestQrScan(): void {
@@ -172,7 +182,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     }
 
     delete(account: Account): void {
-        if(this.isEditRequested(account)) {
+        if(this.editModeEnabled || this.isEditRequested(account)) {
             let newAccounts = this.accountService.deleteAccount(account);
             this.accounts = newAccounts;
         }

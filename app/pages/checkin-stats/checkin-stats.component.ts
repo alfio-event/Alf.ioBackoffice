@@ -1,7 +1,8 @@
 import { StatisticsService, CheckInStatistics } from "~/shared/statistics/statistics.service";
 import { Component, Injectable, OnInit, OnDestroy, Input, NgZone } from "@angular/core";
 import { Account, EventConfiguration } from "~/shared/account/account";
-import { Subscription } from "rxjs";
+import { Subscription, timer } from "rxjs";
+import { switchMap } from "rxjs/operators";
 
 @Component({
     moduleId: module.id,
@@ -38,12 +39,14 @@ export class CheckInStatsComponent implements OnInit, OnDestroy {
                 private ngZone: NgZone) {}
 
     ngOnInit(): void {
-        this.subscription = this.statisticsService.retrieveForEvent(this.account, this.event.key)
-            .subscribe(stats => this.ngZone.run(() => this.stats = stats));
+        this.subscription = timer(200, 5000).pipe(
+            switchMap(() => this.statisticsService.retrieveForEvent(this.account, this.event.key))
+        ).subscribe(stats => this.ngZone.run(() => this.stats = stats));
     }
     
     ngOnDestroy(): void {
         if(this.subscription) {
+            console.log("calling unsubscribe...");
             this.subscription.unsubscribe();
         }
     }
