@@ -11,7 +11,7 @@ import application = require("application");
 import { Vibrate } from 'nativescript-vibrate';
 import * as Toast from 'nativescript-toast';
 import { isUndefined } from "utils/types";
-import { BarcodeScanner } from "nativescript-barcodescanner";
+import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
 import { Subject, Observable } from "rxjs";
 
 @Component({
@@ -23,6 +23,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     accounts: Array<Account> = [];
     isLoading: boolean;
     isIos: boolean;
+    scannerVisible: boolean = false;
     editModeEnabled: boolean = false;
     tapEmitter = new Subject<Account>();
     private editEnableSubject = new Subject<boolean>();
@@ -32,6 +33,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     @ViewChild("list") listViewContainer: ElementRef;
     private listView: ListView;
     private vibrator = new Vibrate();
+    private qrCodeParts: Array<string>;
     
 
     constructor(private accountService: AccountService, 
@@ -62,54 +64,62 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         return this.accounts.length > 0;
     }
 
+    onScanResult(result: ScanResult) {
+        let splitQrCodeMatcher = /^(\d+):(\d+):(.+$)/;
+        let text = <string>result.text;
+        let matchResult = splitQrCodeMatcher.exec(text);
+        this.vibrator.vibrate(50);
+        if(matchResult && matchResult.length == 4) {
+            let length = +matchResult[2];
+            if(!this.qrCodeParts) {
+                this.qrCodeParts = new Array<string>(length).fill(undefined);
+            }
+            this.qrCodeParts[(+matchResult[1]) -1] = matchResult[3];
+            if(this.qrCodeParts.length == length && this.qrCodeParts.every(v => v && v.length > 0)) {
+                let maybeScannedAccount = this.parseScannedAccount(this.qrCodeParts);
+                if(maybeScannedAccount.isPresent()) {
+                    let account = maybeScannedAccount.value;
+                    this.accountService.notifyAccountScan(account);
+                    this.barcodeScanner.stop().then(() => this.registerNewAccount(account));
+                } else {
+                    this.qrCodeParts = new Array<string>(length).fill(undefined);
+                    Toast.makeText("Corrupted QR-Code sequence. Please retry.").show();
+                }
+            } else {
+                Toast.makeText("Please scan the next code").show();
+            }
+        } else {
+            let maybeScannedAccount = this.parseScannedAccount([text]);
+            if(maybeScannedAccount.isPresent()) {
+                let account = maybeScannedAccount.value;
+                this.accountService.notifyAccountScan(account);
+                this.barcodeScanner.stop().then((() => this.registerNewAccount(account)));
+            } else {
+                Toast.makeText("Invalid QR-Code. Please retry.").show();
+            }
+        }
+    }
+
     requestQrScan(): void {
         if(this.editModeEnabled) {
             this.toggleEditMode();
         }
 
-        let qrCodeParts: Array<string>;
-        let splitQrCodeMatcher = /^(\d+):(\d+):(.+$)/;
-        let scanOptions = defaultScanOptions();
-        scanOptions.continuousScanCallback = (result) => {
-            let text = <string>result.text;
-            let matchResult = splitQrCodeMatcher.exec(text);
-            this.vibrator.vibrate(50);
-            if(matchResult && matchResult.length == 4) {
-                let length = +matchResult[2];
-                if(!qrCodeParts) {
-                    qrCodeParts = new Array<string>(length).fill(undefined);
-                }
-                qrCodeParts[(+matchResult[1]) -1] = matchResult[3];
-                if(qrCodeParts.length == length && qrCodeParts.every(v => v && v.length > 0)) {
-                    let maybeScannedAccount = this.parseScannedAccount(qrCodeParts);
-                    if(maybeScannedAccount.isPresent()) {
-                        let account = maybeScannedAccount.value;
-                        this.accountService.notifyAccountScan(account);
-                        this.barcodeScanner.stop().then(() => this.registerNewAccount(account));
-                    } else {
-                        qrCodeParts = new Array<string>(length).fill(undefined);
-                        Toast.makeText("Corrupted QR-Code sequence. Please retry.").show();
-                    }
-                } else {
-                    Toast.makeText("Please scan the next code").show();
-                }
-            } else {
-                let maybeScannedAccount = this.parseScannedAccount([text]);
-                if(maybeScannedAccount.isPresent()) {
-                    let account = maybeScannedAccount.value;
-                    this.accountService.notifyAccountScan(account);
-                    this.barcodeScanner.stop().then((() => this.registerNewAccount(account)));
-                } else {
-                    Toast.makeText("Invalid QR-Code. Please retry.").show();
-                }
-            }
+        if(this.isIos) {
+            this.scannerVisible = true;
+        } else {
+            let scanOptions = defaultScanOptions();
+            scanOptions.continuousScanCallback = (res) => this.onScanResult(res);
+            scanOptions.closeCallback = () => {
+                console.log("Scanner closed");
+                this.ngZone.run(() => this.isLoading = false);
+            };
+            this.barcodeScanner.scan(scanOptions)
+                .then(() => { }, (error) => {
+                    console.log("No scan: " + error);
+                    this.isLoading = false;
+                });
         }
-        this.barcodeScanner.scan(scanOptions)
-            .then(() => { }, (error) => {
-                console.log("No scan: " + error);
-                this.isLoading = false;
-            });
-       
     }
 
     private registerNewAccount(account: ScannedAccount) {
@@ -162,8 +172,10 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     }
 
     delete(account: Account): void {
-        let newAccounts = this.accountService.deleteAccount(account);
-        this.accounts = newAccounts;
+        if(this.isEditRequested(account)) {
+            let newAccounts = this.accountService.deleteAccount(account);
+            this.accounts = newAccounts;
+        }
     }
     
     toggleEditMode():void {

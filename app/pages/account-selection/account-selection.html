@@ -4,26 +4,35 @@
 </ActionBar>
 
 <GridLayout rows="auto, *">
-	<StackLayout row="1" *ngIf="!hasAccounts() && !isLoading" orientation="vertical" class="missing-accounts" (tap)="requestQrScan()">
+	<StackLayout row="1" *ngIf="!hasAccounts() && !isLoading && !scannerVisible" orientation="vertical" class="missing-accounts" (tap)="requestQrScan()">
 		<Label class="icon icon-3x text-muted text-center" text="&#xf1f0;"></Label>
 		<Label text="No accounts configured yet." class="missing-accounts text-muted text-center"></Label>
 		<Label text="Please add one" class="missing-accounts text-muted text-center"></Label>
 	</StackLayout>
 	
-	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts()" class="list-group">
+	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts() && !scannerVisible" class="list-group">
 		<ng-template let-item="item">
-			<GridLayout columns="36, *, 35" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" (longPress)="onLongPress(item)" class="list-group-item">
-				<Label col="0" class="icon icon-2x person-icon text-muted text-center" text="&#xf110;"></Label>
-				<StackLayout col="1" orientation="vertical" class="medium-spacing list-item-padding"  (tap)="manage(item)">
+			<GridLayout columns="36, *, 50" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" class="list-group-item">
+				<Label col="0" class="icon icon-2x person-icon text-center" text="&#xf207;" [class.text-muted]="!isEditRequested(item)"></Label>
+				<StackLayout col="1" orientation="vertical" class="list-item-padding" (tap)="manage(item)" (longPress)="onLongPress(item)">
 					<Label [text]="item.username" class="accountName"></Label>
 					<Label [text]="item.url"></Label>
 				</StackLayout>
-				<StackLayout orientation="horizontal" col="2">
+				<StackLayout class="list-item-padding" orientation="horizontal" col="2" (tap)="delete(item)">
 					<ios-account-icon *ngIf="isIos" [account]="item" [tapEmitter]="tapEmitter" [editEnableObservable]="editEnableObservable"></ios-account-icon>
-					<Label col="1" text="&#xf154;" (tap)="delete(item)" *ngIf="!isIos" class="delete-item icon icon-1-5x text-white"></Label>
+					<Label text="&#xf154;" *ngIf="!isIos && isEditRequested(item)" class="icon icon-1-5x person-icon text-center"></Label>
 				</StackLayout>
 			</GridLayout>
 		</ng-template>
 	</ListView>
+	<BarcodeScanner
+		*ngIf="scannerVisible"
+        height="300"
+        formats="QR_CODE"
+        beepOnScan="true"
+        reportDuplicates="false"
+        preferFrontCamera="false"
+        (scanResult)="onScanResult($event)">
+	</BarcodeScanner>
 	<ActivityIndicator row="1" [busy]="isLoading"  class="activity-indicator"></ActivityIndicator>
 </GridLayout>

@@ -89,7 +89,10 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             this.sponsorScanService.scan(this.event.key, this.account, res.text);
             this.vibrator.vibrate(250);
             Toast.makeText("Scan enqueued!").show();
-        }
+        };
+        scanOptions.closeCallback = () => {
+            this.ngZone.run(() => this.isLoading = false);
+        };
 
         let warningDisplayed = false;
         let interval = setInterval(() => {
