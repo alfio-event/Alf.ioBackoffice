@@ -5,7 +5,7 @@
 <GridLayout rows="auto, 1, 8*, 3*">
     <checkin-stats row="0" [account]="account" [event]="event"></checkin-stats>
     <StackLayout row="1" class="hr-light"></StackLayout>
-    <ScrollView row="2" class="p-20 m-r-16 m-l-16" *ngIf="!isLoading" verticalAlignment="center">
+    <ScrollView row="2" class="p-20 m-r-16 m-l-16" *ngIf="!isLoading && !scannerVisible" verticalAlignment="center">
         <StackLayout orientation="vertical" verticalAlignment="center" *ngIf="!status" (tap)="scan()">
             <Label class="icon icon-4x text-primary text-center" text="&#xf1df;"></Label>
             <Label text="Start scanning!" class="text-center label font-weight-bold h2"></Label>
@@ -17,13 +17,26 @@
             <StackLayout *ngIf="isStatusSuccess()" orientation="vertical">
                 <Label [text]="ticket.fullName" class="h2 text-center"></Label>
                 <Label [text]="ticket.categoryName" class="h2 text-center"></Label>
-                <Label text="{{ticket.email}} ({{ticket.uuid}})" class="h6 text-center"></Label>
+                <Label text="{{ticket.email}}" class="h6 text-center"></Label>
+                <Label text="{{ticket.uuid}}" class="h6 text-center"></Label>
             </StackLayout>
         </StackLayout>
     </ScrollView>
+    <StackLayout row="2" orientation="vertical" *ngIf="scannerVisible">
+		<BarcodeScanner
+			class="qr-code-reader"
+			height="250"
+			formats="QR_CODE"
+			beepOnScan="false"
+			reportDuplicates="false"
+			preferFrontCamera="false"
+			(scanResult)="scanResult($event)">
+		</BarcodeScanner>
+        <Label textWrap="true" text="Place the QR-Code in the rectangle to init the check-in process" class="body text-center"></Label>
+	</StackLayout>
     <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="2" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
     <StackLayout row="3" class="m-l-16 m-r-16" *ngIf="!isLoading" orientation="vertical">
-        <Button class="button btn-lg btn-rounded-lg" (tap)="cancel()" *ngIf="isStatusMustPay()" text="Cancel"></Button>
-        <Button class="button btn-lg btn-rounded-lg" [class.btn-primary]="!status" [class.btn-danger]="status && !isStatusSuccess()" [class.btn-success]="status && (isStatusSuccess() || isStatusMustPay())" (tap)="onPrimaryButtonTap()" [text]="getPrimaryButtonText()"></Button>
+        <Button class="button btn-lg btn-rounded-lg" (tap)="cancel()" *ngIf="isStatusMustPay() || scannerVisible" text="Cancel"></Button>
+        <Button class="button btn-lg btn-rounded-lg" *ngIf="!scannerVisible" [class.btn-primary]="!status" [class.btn-danger]="status && !isStatusSuccess()" [class.btn-success]="status && (isStatusSuccess() || isStatusMustPay())" (tap)="onPrimaryButtonTap()" [text]="getPrimaryButtonText()"></Button>
     </StackLayout>
 </GridLayout>

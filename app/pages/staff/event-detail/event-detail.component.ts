@@ -8,9 +8,10 @@ import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket } from '../../../shared/scan/scan-common'
 import * as Toast from 'nativescript-toast';
 import { Vibrate } from 'nativescript-vibrate';
-import { BarcodeScanner } from 'nativescript-barcodescanner';
+import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
 const { keepAwake, allowSleepAgain } = require("nativescript-insomnia");
 import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-util';
+import application = require("application");
 
 @Component({
     moduleId: module.id,
@@ -30,6 +31,8 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     message: string;
     detail: string;
     ticket: Ticket;
+    scannerVisible: boolean = false;
+    isIos: boolean;
     private interval: number;
     private vibrator = new Vibrate();
     actionBarTitle: string;
@@ -41,14 +44,14 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 private barcodeScanner: BarcodeScanner,
                 private scanService: ScanService,
                 private ngZone: NgZone) {
+                    this.isIos = !application.android;
     }
 
-    onBackTap() {
+    onBackTap(): void {
         this.routerExtensions.back();
     }
 
-    ngOnInit() {
-        this.isLoading = true;
+    ngOnInit(): void {
         this.route.params.forEach((params: Params) => {
             console.log("params", params['accountId'], params['eventId'])
             let id = params['accountId'];
@@ -64,7 +67,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         forcePortraitOrientation();
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if(this.interval) {
             clearInterval(this.interval);
         }
@@ -80,30 +83,38 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         }
     }
 
-    scan() {
-        this.isLoading = true;
+    scanResult(res: ScanResult) {
+        this.ngZone.run(() => {
+            this.scannerVisible = false;
+            this.isLoading = true;
+            clearInterval(this.interval);
+            this.vibrator.vibrate(50);
+            let scanResult = res.text;
+            this.code = scanResult;
+            let start = new Date().getTime();
+            this.scanService.checkIn(this.event.key, this.account, scanResult)
+                    .subscribe(res => {
+                        this.displayResult(res);
+                        console.log("Check-in result received after", new Date().getTime() - start);
+                    }, err => {
+                        this.displayResult(new UnexpectedError(err));
+                    }, () => this.ngZone.run(() => this.isLoading = false));
+        });
+    }
+
+    scan(): void {
         let scanStart = new Date().getTime();
-        this.barcodeScanner.scan(defaultScanOptions())
-            .then((res) => {
-                //let toast = Toast.makeText("Working...", 20000);
-                this.isLoading = true;
-                clearInterval(this.interval);
-                this.vibrator.vibrate(50);
-                let scanResult = res.text;
-                this.code = scanResult;
-                let start = new Date().getTime();
-                this.scanService.checkIn(this.event.key, this.account, scanResult)
-                        .subscribe(res => {
-                            this.displayResult(res);
-                            console.log("2nd stop, elapsed", new Date().getTime() - start);
-                        }, err => {
-                            this.displayResult(new UnexpectedError(err));
-                        }, () => this.ngZone.run(() => this.isLoading = false));
-            }, (error) => {
-                console.log("handling scan error", error);
-                clearInterval(this.interval);
-                this.cancel();
-            });
+        if(this.isIos) {
+            this.scannerVisible = true;
+        } else {
+            this.barcodeScanner.scan(defaultScanOptions())
+                .then((res) => this.scanResult(res), (error) => {
+                    console.log("handling scan error", error);
+                    clearInterval(this.interval);
+                    this.cancel();
+                });
+            this.isLoading = true;
+        }
 
         let warningDisplayed = false;
         this.interval = setInterval(() => {
@@ -111,7 +122,10 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             let elapsed = current - scanStart;
             if(elapsed > 45 * 1000) {
                 clearInterval(this.interval);
-                this.barcodeScanner.stop().then(() => Toast.makeText("Timed out").show());
+                this.barcodeScanner.stop().then(() => {
+                    Toast.makeText("Timed out").show();
+                    this.ngZone.run(() => this.scannerVisible = false); 
+                });
             } else if(elapsed > (30 * 1000) && !warningDisplayed) {
                 warningDisplayed = true;
                 Toast.makeText("Camera will be deactivated in 15 sec.").show();
@@ -181,7 +195,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             } else {
                 this.vibrator.vibrate(500);
                 //notify error
-            }
+            }            
         });
     }
 }
