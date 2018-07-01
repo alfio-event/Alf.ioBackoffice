@@ -1,6 +1,6 @@
 {
   "name": "alf.io-backoffice",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Alf.io Backoffice is the application used by event organizers to validate attendees tickets and also for letting sponsors collect contacts.",
   "license": "GPL-3.0",
   "readme": "Alf.io",
