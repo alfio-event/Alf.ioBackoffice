@@ -6,7 +6,7 @@
   "readme": "Alf.io",
   "repository": "https://github.com/alfio-event/Alf.ioBackoffice",
   "nativescript": {
-    "id": "com.exteso.alfio.backoffice",
+    "id": "alfio.backoffice",
     "tns-ios": {
       "version": "4.1.1"
     },
