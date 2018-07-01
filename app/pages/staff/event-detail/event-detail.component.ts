@@ -9,7 +9,7 @@ import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedEr
 import * as Toast from 'nativescript-toast';
 import { Vibrate } from 'nativescript-vibrate';
 import { BarcodeScanner } from 'nativescript-barcodescanner';
-import { keepAwake, allowSleepAgain } from 'nativescript-insomnia';
+const { keepAwake, allowSleepAgain } = require("nativescript-insomnia");
 import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-util';
 
 @Component({

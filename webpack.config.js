@@ -261,6 +261,7 @@ module.exports = env => {
             ],
             projectRoot,
             webpackConfig: config,
+            useLibs: true
         }));
     }
 

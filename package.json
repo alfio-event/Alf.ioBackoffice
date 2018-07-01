@@ -49,6 +49,7 @@
     "lazy": "1.0.11",
     "nativescript-dev-typescript": "next",
     "nativescript-dev-webpack": "^0.14.1",
-    "typescript": "~2.7.2"
+    "typescript": "~2.7.2",
+    "@angular-devkit/build-angular": "~0.7.0-rc.0"
   }
 }
