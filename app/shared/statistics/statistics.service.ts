@@ -11,7 +11,7 @@ export class StatisticsService {
     constructor(private http: Http) {}
 
     public retrieveForEvent(account: Account, eventName: string) : Observable<CheckInStatistics> {
-        return this.http.get(`${account.url}/admin/api/check-in/event/${eventName}/statistics`, { headers: authorization(account.username, account.password)})
+        return this.http.get(`${account.url}/admin/api/check-in/event/${eventName}/statistics`, { headers: authorization(account.apiKey, account.username, account.password)})
             .pipe(
                 map(resp => resp.json())
             );

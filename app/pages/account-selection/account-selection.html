@@ -16,7 +16,7 @@
 			<GridLayout columns="36, *, 50" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" class="list-group-item">
 				<Label col="0" class="icon icon-2x person-icon text-center" text="&#xf207;" [class.text-muted]="!isEditRequested(item)"></Label>
 				<StackLayout col="1" orientation="vertical" class="list-item-padding" (tap)="manage(item)" (longPress)="onLongPress(item)">
-					<Label [text]="item.username" class="accountName"></Label>
+					<Label [text]="item.title" class="accountName"></Label>
 					<Label [text]="item.url"></Label>
 				</StackLayout>
 				<StackLayout class="list-item-padding" orientation="horizontal" col="2" (tap)="delete(item)">

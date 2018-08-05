@@ -82,7 +82,7 @@ export class SponsorScanService  {
             return;
         }
         this.http.post(account.url+'/api/attendees/sponsor-scan/bulk', toSend.map(scan=> new SponsorScanRequest(eventKey, scan.code)), {
-            headers: authorization(account.username, account.password)
+            headers: authorization(account.apiKey, account.username, account.password)
         }).pipe(
             map(data => data.json())
         ).subscribe(payload => {

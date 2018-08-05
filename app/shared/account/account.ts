@@ -1,26 +1,37 @@
+import { isDefined } from "tns-core-modules/utils/types";
 
 export class Account {
     url: string;
+    apiKey: string;
     username: string;
     password: string;
     accountType: AccountType;
     configurations: Array<EventConfiguration>;
     lastUpdate: Date;
     sslCert: string;
-
-
+    description: string;
+    
     getKey(): string {
-        return this.username + "@" + this.url;
+        let prefix = isDefined(this.apiKey) ? this.apiKey : this.username;
+        return `${prefix}@${this.url}`;
     }
 
     containsEvent(key: String) : boolean {
         return this.configurations.some(ec => ec.key == key);
     }
 
+    get title(): string {
+        return isDefined(this.apiKey) ? this.description : this.username;
+    }
+
 }
 
 export class ScannedAccount {
-    constructor(public url: string, public username: string, public password: string, public sslCert: string) {
+    constructor(public url: string, 
+                public username: string, 
+                public apiKey: string,
+                public password: string,
+                public sslCert: string) {
     }
 }
 

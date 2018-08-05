@@ -19,18 +19,20 @@ export class AccountService {
         this.accounts = this.loadSavedAccounts();
     }
 
-    public registerNewAccount(url: string, username: string, password: string, sslCert: string): Observable<AccountResponse> {
-        return this.http.get(url + "/admin/api/user-type", {
-                headers: authorization(username, password)
+    public registerNewAccount(url: string, apiKey: string, username: string, password: string, sslCert: string): Observable<AccountResponse> {
+        return this.http.get(url + "/admin/api/user/details", {
+                headers: authorization(apiKey, username, password)
             }).pipe(
-                map(response => response.text()),
+                map(response => response.json()),
                 map(data => {
-                    console.log("got user type", data);
+                    console.log("got user type", data.userType);
                     let account = new Account();
                     account.url = url;
+                    account.apiKey = apiKey;
                     account.username = username;
                     account.password = password;
-                    account.accountType = this.safeParse(data) === "SPONSOR" ? AccountType.SPONSOR : AccountType.STAFF;
+                    account.description = data.description;
+                    account.accountType = data.userType === "SPONSOR" ? AccountType.SPONSOR : AccountType.STAFF;
                     account.configurations = [];
                     account.sslCert = sslCert;
                     let newAccountKey = account.getKey();
@@ -87,7 +89,7 @@ export class AccountService {
 
     public loadEventsForAccount(account: Account): Observable<Array<EventConfiguration>> {
         return this.http.get(account.url + "/admin/api/events", {
-            headers: authorization(account.username, account.password)
+            headers: authorization(account.apiKey, account.username, account.password)
         }).pipe(map(data => data.json()));
     }
 
@@ -104,6 +106,7 @@ export class AccountService {
     public notifyAccountScan(scannedAccount: ScannedAccount): void {
         let account = new Account();
         account.url = scannedAccount.url;
+        account.apiKey = scannedAccount.apiKey;
         account.username = scannedAccount.username;
         account.password = scannedAccount.password;
         account.sslCert = scannedAccount.sslCert;
@@ -116,6 +119,7 @@ export class AccountService {
             return new AccountsArray(JSON.parse(savedData).map(obj => {
                 let account = new Account();
                 account.url = obj.url;
+                account.apiKey = obj.apiKey;
                 account.username = obj.username;
                 account.password = obj.password;
                 account.accountType = <number>obj.accountType;

@@ -10,7 +10,7 @@ import { defaultScanOptions } from '../../utils/barcodescanner';
 import application = require("application");
 import { Vibrate } from 'nativescript-vibrate';
 import * as Toast from 'nativescript-toast';
-import { isUndefined } from "utils/types";
+import { isUndefined, isDefined } from "utils/types";
 import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
 import { Subject, Observable } from "rxjs";
 
@@ -135,7 +135,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     private registerNewAccount(account: ScannedAccount) {
         try {
             this.isLoading = true;
-            this.accountService.registerNewAccount(account.url, account.username, account.password, account.sslCert)
+            this.accountService.registerNewAccount(account.url, account.apiKey, account.username, account.password, account.sslCert)
                 .subscribe(resp => this.ngZone.run(() => {
                         this.processResponse(resp)
                     }), (err) => this.ngZone.run(() => {
@@ -154,10 +154,10 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         if(qrCodeParts.length >= 1 && qrCodeParts.every(v => v && v.length > 0)) {
             try {
                 let scanResult = JSON.parse(qrCodeParts.join(""));
-                if([scanResult.baseUrl, scanResult.username, scanResult.password].some(isUndefined)) {
+                if(isUndefined(scanResult.baseUrl) || [scanResult.username, scanResult.apiKey].every(isUndefined) || (isDefined(scanResult.username) && !isDefined(scanResult.password))) {
                     return new Nothing<ScannedAccount>();
                 }
-                return new Some<ScannedAccount>(new ScannedAccount(scanResult.baseUrl, scanResult.username, scanResult.password, scanResult.sslCert));
+                return new Some<ScannedAccount>(new ScannedAccount(scanResult.baseUrl, scanResult.username, scanResult.apiKey, scanResult.password, scanResult.sslCert));
             } catch(e) {
                 return new Nothing<ScannedAccount>();
             }

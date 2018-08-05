@@ -24,7 +24,7 @@ export class ScanService {
     private performCheckIn(account: Account, url: string, scan: string): Observable<TicketAndCheckInResult> {
         let start = new Date().getTime();
         return this.http.post(url, {"code": scan}, {
-            headers: authorization(account.username, account.password)
+            headers: authorization(account.apiKey, account.username, account.password)
         }).pipe(map(r => {
             console.log("1st stop, elapsed", new Date().getTime() - start);
             return r.json();

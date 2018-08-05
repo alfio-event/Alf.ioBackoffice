@@ -1,11 +1,15 @@
 import { Headers } from "@angular/http";
+import { isDefined } from "tns-core-modules/utils/types";
 
-export function authorization(username: string, password: string): Headers {
+export function authorization(apiKey: string, username: string, password: string): Headers {
     let headers = new Headers();
-    headers.append("Authorization", "Basic " + encodeBase64(username + ":" + password));
+    if(isDefined(apiKey)) {
+        headers.append("Authorization", `ApiKey ${apiKey}`);
+    } else {
+        headers.append("Authorization", "Basic " + encodeBase64(`${username}:${password}`));
+    }
     return headers;
 }
-
 
  export function encodeBase64(str: string) {
     var padChar = '=';
