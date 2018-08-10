@@ -50,6 +50,6 @@
     "nativescript-dev-typescript": "^0.7.2",
     "nativescript-dev-webpack": "^0.15.0",
     "typescript": "~2.7.2",
-    "@ngtools/webpack": "~6.1.0-rc.2"
+    "@ngtools/webpack": "~6.1.0"
   }
 }
