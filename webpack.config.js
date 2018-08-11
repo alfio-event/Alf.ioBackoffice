@@ -42,7 +42,8 @@ module.exports = env => {
         report, // --env.report
         sourceMap, // --env.sourceMap
     } = env;
-
+    
+    const ngToolsWebpackOptions = { tsConfigPath: aot ? "tsconfig.aot.json" : "tsconfig.esm.json" };
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
@@ -225,7 +226,7 @@ module.exports = env => {
             new AngularCompilerPlugin({
                 hostReplacementPaths: nsWebpack.getResolver([platform, "tns"]),
                 entryModule: resolve(appPath, "app.module#AppModule"),
-                tsConfigPath: join(__dirname, "tsconfig.esm.json"),
+                tsConfigPath: join(__dirname, ngToolsWebpackOptions.tsConfigPath),
                 skipCodeGeneration: !aot,
                 sourceMap: !!sourceMap,
             }),
