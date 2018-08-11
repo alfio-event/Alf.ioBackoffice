@@ -122,6 +122,7 @@ export class AccountService {
                 account.apiKey = obj.apiKey;
                 account.username = obj.username;
                 account.password = obj.password;
+                account.description = obj.description;
                 account.accountType = <number>obj.accountType;
                 account.configurations = (<Array<any>>obj.configurations);
                 account.sslCert = obj.sslCert;

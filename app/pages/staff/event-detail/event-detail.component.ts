@@ -6,7 +6,6 @@ import { ScanService } from "../../../shared/scan/scan.service"
 import { Account, EventConfiguration } from "../../../shared/account/account";
 import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket } from '../../../shared/scan/scan-common'
-import * as Toast from 'nativescript-toast';
 import { Vibrate } from 'nativescript-vibrate';
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
 const { keepAwake, allowSleepAgain } = require("nativescript-insomnia");

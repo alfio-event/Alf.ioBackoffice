@@ -18,7 +18,7 @@ import { Account, EventConfiguration } from "../../shared/account/account";
                         <Label text="{{ event.begin | date:'shortDate' }} {{ event.begin | date:'shortTime' }} - {{ event.end | date:'shortTime' }}" *ngIf="event.oneDay"></Label>
                         <Label [text]="event.location"></Label>
                     </StackLayout>
-                    <Label text="&#xf2fb;" col="2" class="icon icon-1-5x person-icon text-center"></Label>
+                    <Label [text]="iconText" col="2" class="icon icon-1-5x person-icon text-center" *ngIf="list"></Label>
                 </GridLayout>`,
     styleUrls: ['./event-header-common.css']
 })
@@ -27,9 +27,10 @@ export class EventHeaderComponent implements OnInit {
 
     isLoading: boolean;
     @Input() event: EventConfiguration;
+    @Input() list: boolean;
     @Input() account: Account;
     @Output() onTap = new EventEmitter();
-
+    
     eventImage: string;
 
     constructor() {
@@ -41,5 +42,9 @@ export class EventHeaderComponent implements OnInit {
 
     select(): void {
         this.onTap.emit(this.event);
+    }
+
+    get iconText(): string {
+        return this.list ? String.fromCharCode(0xf2fb) : "";
     }
 }
