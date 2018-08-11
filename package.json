@@ -6,7 +6,7 @@
   "readme": "Alf.io",
   "repository": "https://github.com/alfio-event/Alf.ioBackoffice",
   "nativescript": {
-    "id": "alfio.app",
+    "id": "alfio.scan",
     "tns-android": {
       "version": "4.2.0"
     },
@@ -42,14 +42,14 @@
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "~6.1.1",
+    "@angular/compiler-cli": "~6.1.0",
+    "@ngtools/webpack": "~6.1.0",
     "babel-traverse": "6.26.0",
     "babel-types": "6.26.0",
     "babylon": "6.18.0",
     "lazy": "1.0.11",
     "nativescript-dev-typescript": "^0.7.2",
-    "nativescript-dev-webpack": "^0.15.0",
-    "typescript": "~2.7.2",
-    "@ngtools/webpack": "~6.1.0"
+    "nativescript-dev-webpack": "0.15.1",
+    "typescript": "~2.7.2"
   }
 }
