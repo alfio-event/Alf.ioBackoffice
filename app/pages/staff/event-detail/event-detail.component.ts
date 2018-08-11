@@ -33,7 +33,6 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     ticket: Ticket;
     scannerVisible: boolean = false;
     isIos: boolean;
-    private interval: number;
     private vibrator = new Vibrate();
     actionBarTitle: string;
     
@@ -68,9 +67,6 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if(this.interval) {
-            clearInterval(this.interval);
-        }
         allowSleepAgain().then(v => console.log("allowed to sleep"));
         enableRotation();
     }
@@ -87,7 +83,6 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         this.ngZone.run(() => {
             this.scannerVisible = false;
             this.isLoading = true;
-            clearInterval(this.interval);
             this.vibrator.vibrate(50);
             let scanResult = res.text;
             this.code = scanResult;
@@ -110,27 +105,10 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             this.barcodeScanner.scan(defaultScanOptions())
                 .then((res) => this.scanResult(res), (error) => {
                     console.log("handling scan error", error);
-                    clearInterval(this.interval);
                     this.cancel();
                 });
             this.isLoading = true;
         }
-
-        let warningDisplayed = false;
-        this.interval = setInterval(() => {
-            let current = new Date().getTime();
-            let elapsed = current - scanStart;
-            if(elapsed > 45 * 1000) {
-                clearInterval(this.interval);
-                this.barcodeScanner.stop().then(() => {
-                    Toast.makeText("Timed out").show();
-                    this.ngZone.run(() => this.scannerVisible = false); 
-                });
-            } else if(elapsed > (30 * 1000) && !warningDisplayed) {
-                warningDisplayed = true;
-                Toast.makeText("Camera will be deactivated in 15 sec.").show();
-            }
-        }, 1000);
     }
 
     confirmPayment(code: string): void {
