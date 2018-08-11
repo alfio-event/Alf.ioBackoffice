@@ -165,6 +165,9 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         this.status = undefined;
         this.code = undefined;
         this.message = undefined;
+        if(this.isIos) {
+            this.barcodeScanner.stop().then(() => this.ngZone.run(() => this.scannerVisible = false));
+        }
     }
 
     getPrimaryButtonText(): string {

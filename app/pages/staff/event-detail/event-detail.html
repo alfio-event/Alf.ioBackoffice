@@ -2,7 +2,7 @@
     <NavigationButton icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Events"></NavigationButton>
 </ActionBar>
 
-<GridLayout rows="auto, 1, 8*, 3*">
+<GridLayout rows="auto, 1, 8*, 4*">
     <checkin-stats row="0" [account]="account" [event]="event"></checkin-stats>
     <StackLayout row="1" class="hr-light"></StackLayout>
     <ScrollView row="2" class="p-20 m-r-16 m-l-16" *ngIf="!isLoading && !scannerVisible" verticalAlignment="center">

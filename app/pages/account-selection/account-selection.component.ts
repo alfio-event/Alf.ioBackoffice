@@ -107,7 +107,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     }
 
     cancelScan(): void {
-        this.barcodeScanner.stop().then(() => this.ngZone.run(() => this.scannerVisible = false));        
+        this.barcodeScanner.stop().then(() => this.ngZone.run(() => this.scannerVisible = false));
     }
 
     requestQrScan(): void {
