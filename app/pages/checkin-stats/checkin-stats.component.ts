@@ -33,7 +33,7 @@ export class CheckInStatsComponent implements OnInit, OnDestroy {
     private event: EventConfiguration;
 
     private subscription: Subscription;
-    private stats: CheckInStatistics;
+    stats: CheckInStatistics;
 
     constructor(private statisticsService: StatisticsService,
                 private ngZone: NgZone) {}

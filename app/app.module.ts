@@ -1,5 +1,5 @@
 import { EventHeaderComponent } from './pages/event-header/event-header.component';
-import { NgModule } from "@angular/core";
+import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptFormsModule } from "nativescript-angular/forms";
 import { NativeScriptModule } from "nativescript-angular/nativescript.module";
 import { NativeScriptAnimationsModule } from "nativescript-angular/animations";
@@ -18,6 +18,7 @@ import { registerElement } from "nativescript-angular/element-registry";
 registerElement("BarcodeScanner", () => require("nativescript-barcodescanner").BarcodeScannerView);
 
 @NgModule({
+    schemas: [NO_ERRORS_SCHEMA],
     imports: [
         NativeScriptModule,
         NativeScriptFormsModule,

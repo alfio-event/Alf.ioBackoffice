@@ -9,7 +9,7 @@ import { Observable, Subject } from 'rxjs';
 @Component({
     moduleId: module.id,
     selector: "ios-account-icon",
-    template: `<Label [text]="text" class="delete-item icon icon-1-5x" (tap)="select(account)" [class.icon-forward]="!editEnabled" [class.icon-trash]="editEnabled"></Label>`,
+    template: `<Label [text]="text" class="delete-item icon icon-1-5x" (tap)="select()" [class.icon-forward]="!editEnabled" [class.icon-trash]="editEnabled"></Label>`,
     styleUrls: ['./ios-account-icon-common.css']
 })
 @Injectable()

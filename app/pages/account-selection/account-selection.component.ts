@@ -1,13 +1,11 @@
 import { Component, ElementRef, OnInit, OnChanges, ViewChild, NgZone } from "@angular/core";
-import { Router } from "@angular/router";
-import { Page } from "ui/page";
 import { ListView } from "ui/list-view";
 import { RouterExtensions } from "nativescript-angular/router"
 import { Account, ScannedAccount } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import { AccountResponse, Maybe, Some, Nothing } from "../../shared/account/account";
 import { defaultScanOptions } from '../../utils/barcodescanner';
-import application = require("application");
+import * as application from "application";
 import { Vibrate } from 'nativescript-vibrate';
 import * as Toast from 'nativescript-toast';
 import { isUndefined, isDefined } from "utils/types";
@@ -16,8 +14,8 @@ import { Subject, Observable } from "rxjs";
 
 @Component({
     selector: "account-selection",
-    templateUrl: "pages/account-selection/account-selection.html",
-    styleUrls: ["pages/account-selection/account-selection-common.css", "pages/account-selection/account-selection.css"],
+    templateUrl: "./account-selection.html",
+    styleUrls: ["./account-selection-common.css", "./account-selection.css"],
 })
 export class AccountSelectionComponent implements OnInit, OnChanges {
     accounts: Array<Account> = [];

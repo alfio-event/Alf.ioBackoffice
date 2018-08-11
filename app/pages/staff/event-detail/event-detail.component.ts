@@ -8,9 +8,9 @@ import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket } from '../../../shared/scan/scan-common'
 import { Vibrate } from 'nativescript-vibrate';
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
-const { keepAwake, allowSleepAgain } = require("nativescript-insomnia");
+import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-util';
-import application = require("application");
+import * as application from "application";
 
 @Component({
     moduleId: module.id,

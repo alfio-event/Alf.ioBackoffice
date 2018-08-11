@@ -12,8 +12,8 @@ import { isDefined, isUndefined } from "utils/types";
 @Component({
     selector: "account-manage",
     providers: [AccountService],
-    templateUrl: "pages/account-manage/account-manage.html",
-    styleUrls: ["pages/account-manage/account-manage-common.css"],
+    templateUrl: "./account-manage.html",
+    styleUrls: ["./account-manage-common.css"],
 })
 export class AccountManageComponent implements OnInit {
     account: Account;

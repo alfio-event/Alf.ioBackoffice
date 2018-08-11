@@ -1,8 +1,7 @@
 import { Injectable } from "@angular/core";
-import { EventConfiguration, ImageContainer, Account } from "../../shared/account/account";
-import imageSource = require("image-source");
-import fs = require("file-system");
-import enums = require("ui/enums");
+import { EventConfiguration, Account } from "../../shared/account/account";
+import * as imageSource from "image-source";
+import * as fs from "file-system";
 import { Folder } from "file-system";
 import { Http } from "@angular/http";
 import { Observable, of, from } from "rxjs";
