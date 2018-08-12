@@ -21,7 +21,7 @@ export class SponsorScanService  {
 
     public scan(eventKey: string, account: Account, uuid: string) : boolean {
 
-        if(!isValidTicketCode(uuid)) {
+        if(!isValidTicketCode(uuid) || !/^[A-Za-z0-9\-]+$/.test(uuid)) {
             console.log(`invalid ticket code received: ${uuid}`)
             return false;
         }
