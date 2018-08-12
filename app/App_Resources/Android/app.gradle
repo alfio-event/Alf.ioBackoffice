@@ -45,3 +45,14 @@ if(settingsGradleFile.exists())
 {
     apply from: settingsGradleFile;
 }
+
+project.ext.abiCodes = ['armeabi-v7a': 1, 'arm64-v8a': 2, 'x86': 3]
+
+android.applicationVariants.all { variant ->
+    variant.outputs.each { output ->
+        def baseAbiVersionCode = project.ext.abiCodes.get(output.getFilter("ABI"), 0)
+        if (baseAbiVersionCode != null) {
+            output.versionCodeOverride = baseAbiVersionCode * 10000000 + variant.versionCode
+        }
+    }
+}
