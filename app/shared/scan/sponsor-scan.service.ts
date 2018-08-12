@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Http, Headers, Response } from "@angular/http";
 
 import { SponsorScan, ScanStatus } from "./sponsor-scan";
-import { Ticket } from "./scan-common";
+import { Ticket, isValidTicketCode } from "./scan-common";
 import { Account } from "../account/account";
 import { map } from 'rxjs/operators';
 import { authorization } from "~/utils/network-util";
@@ -19,19 +19,26 @@ export class SponsorScanService  {
     constructor(private http: Http, private storage: StorageService) {
     }
 
-    public scan(eventKey: string, account: Account, uuid: string) : void {
+    public scan(eventKey: string, account: Account, uuid: string) : boolean {
+
+        if(!isValidTicketCode(uuid)) {
+            console.log(`invalid ticket code received: ${uuid}`)
+            return false;
+        }
+
         if (!this.sponsorScans[eventKey]) {
             this.sponsorScans[eventKey] = [];
         }
 
         if(this.sponsorScans[eventKey].some(s => s.code === uuid)) {
             //already scanned
-            return;
+            return true;
         }
 
         this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, null));
         this.persistSponsorScans(eventKey, account);
         this.emitFor(eventKey);
+        return true;
     }
 
     private persistSponsorScans(eventKey: string, account: Account) {

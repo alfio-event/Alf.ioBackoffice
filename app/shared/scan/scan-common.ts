@@ -21,6 +21,13 @@ export class UnexpectedError extends TicketAndCheckInResult {
     }
 }
 
+export class InvalidQrCode extends TicketAndCheckInResult {
+    constructor(error: any) {
+        let checkInResult = new CheckInResult(CheckInStatus.INVALID_TICKET_CODE, `${error}`);
+        super(null, checkInResult);
+    }
+}
+
 export class CheckInResult {
     constructor(public status: CheckInStatus,
                 public message: string,
@@ -58,3 +65,7 @@ export const statusDescriptions: {[status: string] : string} = {
     "OK_READY_TO_BE_CHECKED_IN": "OK_READY_TO_BE_CHECKED_IN"
 }
 
+const validator = new RegExp("^[^\\{\\}]+$");
+export function isValidTicketCode(scan: string) :boolean {
+    return validator.test(scan);
+}

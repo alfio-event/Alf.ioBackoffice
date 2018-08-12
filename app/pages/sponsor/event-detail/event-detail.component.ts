@@ -86,9 +86,11 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         scanOptions.continuousScanCallback = (res) => {
             this.lastUpdate = new Date().getTime();
             console.log("scanned", res.text);
-            this.sponsorScanService.scan(this.event.key, this.account, res.text);
-            this.vibrator.vibrate(250);
-            Toast.makeText("Scan enqueued!").show();
+            let result = this.sponsorScanService.scan(this.event.key, this.account, res.text);
+            if(result) {
+                this.vibrator.vibrate(250);
+                Toast.makeText("Scan enqueued!").show();
+            }            
         };
         scanOptions.closeCallback = () => {
             this.ngZone.run(() => this.isLoading = false);

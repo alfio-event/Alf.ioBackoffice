@@ -91,7 +91,13 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                         this.displayResult(res);
                         console.log("Check-in result received after", new Date().getTime() - start);
                     }, err => {
-                        this.displayResult(new UnexpectedError(err));
+                        let errorDetail : TicketAndCheckInResult = null;
+                        if(err instanceof TicketAndCheckInResult) {
+                            errorDetail = err;
+                        } else {
+                            errorDetail = new UnexpectedError(err);
+                        }
+                        this.displayResult(errorDetail);
                     }, () => this.ngZone.run(() => this.isLoading = false));
         });
     }
@@ -162,6 +168,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
 
     private displayResult(res: TicketAndCheckInResult): void {
         this.ngZone.run(() => {
+            console.log(`********** received error: ${res.result.status}`)
             this.status = res ? res.result.status : CheckInStatus.ERROR;
             this.message = statusDescriptions[this.status];
             if(this.status == CheckInStatus.MUST_PAY) {
@@ -175,7 +182,8 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             } else {
                 this.vibrator.vibrate(500);
                 //notify error
-            }            
+            }
+            this.isLoading = false;
         });
     }
 }

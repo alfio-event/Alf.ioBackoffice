@@ -5,7 +5,7 @@ import { Account } from "./shared/account/account";
 import { knownFolders, File } from 'file-system'
 import { AccountSelectionNotifier } from "./shared/account/account-selection-notifier";
 import { HttpsResponse } from "nativescript-https";
-import { merge, from, Observable } from 'rxjs';
+import { merge, from, Observable, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class RemoteConnectorService extends Http {
     }
 
     request(): Observable<Response> {
-        return Observable.throw("not implemented");
+        return throwError("not implemented");
     }
     
     get(url: string, options?: RequestOptionsArgs): Observable<Response> {
@@ -54,23 +54,23 @@ export class RemoteConnectorService extends Http {
     }
     
     put(): Observable<Response> {
-        return Observable.throw("not implemented");
+        return throwError("not implemented");
     }
 
     delete(): Observable<Response> {
-        return Observable.throw("not implemented");
+        return throwError("not implemented");
     }
     
     patch(): Observable<Response> {
-        return Observable.throw("not implemented");
+        return throwError("not implemented");
     }
     
     head(): Observable<Response> {
-        return Observable.throw("not implemented");
+        return throwError("not implemented");
     }
     
     options(): Observable<Response> {
-        return Observable.throw("not implemented");
+        return throwError("not implemented");
     }
 
     private convertHeaders(headers: Headers): {[key: string] : string} {

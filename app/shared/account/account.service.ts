@@ -6,7 +6,7 @@ import { Account, AccountType, EventConfiguration, AccountsArray, AccountRespons
 import { AccountSelectionNotifier } from "./account-selection-notifier";
 import { authorization } from "~/utils/network-util";
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { Observable } from "rxjs";
+import { Observable, throwError } from "rxjs";
 import { StorageService } from "~/shared/storage/storage.service";
 
 @Injectable()
@@ -57,7 +57,7 @@ export class AccountService {
                 catchError(error => {
                     console.log("got error! ");
                     console.log(JSON.stringify(error));
-                    return Observable.throw(error);
+                    return throwError(error);
                 })
             );
     }
