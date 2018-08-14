@@ -4,3 +4,6 @@
 .eventName {
     font-weight: bold;
 }
+.v-middle {
+  vertical-align: middle;
+}

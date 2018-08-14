@@ -18,8 +18,8 @@ import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-ut
     moduleId: module.id,
     selector: "sponsor-event-detail",
     providers: [AccountService, SponsorScanService],
-    templateUrl: 'event-detail.html',
-    styleUrls: ['event-detail-common.css']
+    templateUrl: './event-detail.html',
+    styleUrls: ['./event-detail-common.css']
 })
 @Injectable()
 export class SponsorEventDetailComponent implements OnInit, OnDestroy {
@@ -83,7 +83,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         this.isLoading = true;
         let scanOptions = defaultScanOptions();
         this.lastUpdate = new Date().getTime();
-        scanOptions.continuousScanCallback = (res) => {
+        scanOptions.continuousScanCallback = (res) => setTimeout(() => {
             this.lastUpdate = new Date().getTime();
             console.log("scanned", res.text);
             let result = this.sponsorScanService.scan(this.event.key, this.account, res.text);
@@ -91,10 +91,10 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 this.vibrator.vibrate(250);
                 Toast.makeText("Scan enqueued!").show();
             }            
-        };
-        scanOptions.closeCallback = () => {
+        }, 10);
+        scanOptions.closeCallback = () => setTimeout(() => {
             this.ngZone.run(() => this.isLoading = false);
-        };
+        }, 10);
 
         let warningDisplayed = false;
         let interval = setInterval(() => {

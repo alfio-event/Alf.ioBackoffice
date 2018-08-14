@@ -108,7 +108,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             this.scannerVisible = true;
         } else {
             this.barcodeScanner.scan(defaultScanOptions())
-                .then((res) => this.scanResult(res), (error) => {
+                .then((res) => setTimeout(() => this.scanResult(res),10), (error) => {
                     console.log("handling scan error", error);
                     this.cancel();
                 });

@@ -7,9 +7,10 @@
 
 
 
-    <GridLayout rows="auto, *, 90">
+    <GridLayout rows="auto,1, *, 90">
         <event-header col="0" [event]="event" [account]="account" class="event-header"></event-header>
-        <ListView [items]="scans" row="1" [class.visible]="listLoaded" *ngIf="scans.length > 0" #list class="list-group">
+        <StackLayout row="1" class="hr-light"></StackLayout>
+        <ListView [items]="scans" row="2" [class.visible]="listLoaded" *ngIf="scans.length > 0" #list class="list-group">
             <ng-template let-item="item" let-ticket="item.ticket">
                 <GridLayout columns="36, *" class="list-group-item">
                     <Label col="0" class="icon icon-2x person-icon text-muted text-center" text="&#xf30c;" *ngIf="!ticket"></Label>
@@ -25,13 +26,13 @@
                 </GridLayout>
             </ng-template>
         </ListView>
-        <StackLayout row="1" orientation="vertical" class="warning-msg" *ngIf="scans.length == 0">
+        <StackLayout row="2" orientation="vertical" class="warning-msg" *ngIf="scans.length == 0">
             <Label class="icon icon-3x text-muted text-center" text="&#xf208;"></Label>
             <Label text="No data collected so far" class="missing-accounts text-muted text-center"></Label>
             <Label text="Start scanning badges!" class="missing-accounts text-muted text-center"></Label>
         </StackLayout>
-        <ActivityIndicator row="1" [busy]="isLoading" class="activity-indicator"></ActivityIndicator>
-        <StackLayout row="2" orientation="vertical" class="button-group m-l-16 m-r-16">
+        <ActivityIndicator row="2" [busy]="isLoading" class="activity-indicator"></ActivityIndicator>
+        <StackLayout row="3" orientation="vertical" class="button-group m-l-16 m-r-16">
             <Button (tap)="requestQrScan()" class="button btn-primary btn-lg btn-rounded-lg" text="Scan"></Button>
         </StackLayout>
         

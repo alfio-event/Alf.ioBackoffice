@@ -117,11 +117,11 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
             this.scannerVisible = true;
         } else {
             let scanOptions = defaultScanOptions();
-            scanOptions.continuousScanCallback = (res) => this.onScanResult(res);
-            scanOptions.closeCallback = () => {
+            scanOptions.continuousScanCallback = (res) => setTimeout(() => this.onScanResult(res), 10);
+            scanOptions.closeCallback = () => setTimeout(() => {
                 console.log("Scanner closed");
                 this.ngZone.run(() => this.isLoading = false);
-            };
+            }, 10);
             this.barcodeScanner.scan(scanOptions)
                 .then(() => { }, (error) => {
                     console.log("No scan: " + error);
