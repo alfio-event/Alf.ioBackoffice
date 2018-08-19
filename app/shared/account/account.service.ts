@@ -20,14 +20,15 @@ export class AccountService {
     }
 
     public registerNewAccount(url: string, apiKey: string, username: string, password: string, sslCert: string): Observable<AccountResponse> {
-        return this.http.get(url + "/admin/api/user/details", {
+        let baseUrl = url.endsWith("/") ? url.substr(0, url.length - 1) : url;
+        return this.http.get(`${baseUrl}/admin/api/user/details`, {
                 headers: authorization(apiKey, username, password)
             }).pipe(
                 map(response => response.json()),
                 map(data => {
                     console.log("got user type", data.userType);
                     let account = new Account();
-                    account.url = url;
+                    account.url = baseUrl;
                     account.apiKey = apiKey;
                     account.username = username;
                     account.password = password;
