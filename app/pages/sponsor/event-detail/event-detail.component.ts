@@ -13,6 +13,8 @@ import * as Email from "nativescript-email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { encodeBase64 } from '~/utils/network-util';
 import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-util';
+import * as application from "application";
+import { ios as iosUtils } from "tns-core-modules/utils/utils";
 
 @Component({
     moduleId: module.id,
@@ -69,7 +71,9 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 this.isLoading = false;
             });
         });
-        forcePortraitOrientation();
+        if(!application.ios || iosUtils.getter(UIDevice, UIDevice.currentDevice).model != "iPad") {
+            forcePortraitOrientation();
+        }
     }
 
     ngOnDestroy() {

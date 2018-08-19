@@ -11,6 +11,7 @@ import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-util';
 import * as application from "application";
+import { ios as iosUtils } from "tns-core-modules/utils/utils";
 
 @Component({
     moduleId: module.id,
@@ -62,7 +63,9 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             });
         });
         keepAwake().then(v => console.log("keeping the screen awake..."));
-        forcePortraitOrientation();
+        if(!application.ios || iosUtils.getter(UIDevice, UIDevice.currentDevice).model != "iPad") {
+            forcePortraitOrientation();
+        }        
     }
 
     ngOnDestroy(): void {
