@@ -7,7 +7,7 @@ import "rxjs/add/operator/switchMap";
 import { Account, EventConfiguration, AccountType } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import * as Toast from 'nativescript-toast';
-import { isDefined, isUndefined } from "utils/types";
+import { isDefined, isUndefined } from "tns-core-modules/utils/types";
 
 @Component({
     selector: "account-manage",

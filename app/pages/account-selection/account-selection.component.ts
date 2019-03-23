@@ -1,14 +1,14 @@
 import { Component, ElementRef, OnInit, OnChanges, ViewChild, NgZone } from "@angular/core";
-import { ListView } from "ui/list-view";
+import { ListView } from "tns-core-modules/ui/list-view";
 import { RouterExtensions } from "nativescript-angular/router"
 import { Account, ScannedAccount } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import { AccountResponse, Maybe, Some, Nothing } from "../../shared/account/account";
 import { defaultScanOptions } from '../../utils/barcodescanner';
-import * as application from "application";
+import * as application from "tns-core-modules/application";
 import { Vibrate } from 'nativescript-vibrate';
 import * as Toast from 'nativescript-toast';
-import { isUndefined, isDefined } from "utils/types";
+import { isUndefined, isDefined } from "tns-core-modules/utils/types";
 import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
 import { Subject, Observable } from "rxjs";
 

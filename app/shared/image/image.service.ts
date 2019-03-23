@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { EventConfiguration, Account } from "../../shared/account/account";
-import * as imageSource from "image-source";
-import * as fs from "file-system";
-import { Folder } from "file-system";
+import * as imageSource from "tns-core-modules/image-source";
+import * as fs from "tns-core-modules/file-system";
+import { Folder } from "tns-core-modules/file-system";
 import { Http } from "@angular/http";
 import { Observable, of, from } from "rxjs";
 import { map } from 'rxjs/operators';

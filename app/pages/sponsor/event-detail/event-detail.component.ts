@@ -2,7 +2,7 @@ import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { SponsorScan } from '../../../shared/scan/sponsor-scan';
 import { Component, ElementRef, Injectable, OnInit, OnDestroy, ViewChild, NgZone } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
-import { ListView } from "ui/list-view"
+import { ListView } from "tns-core-modules/ui/list-view"
 import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../../shared/account/account.service";
 import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service"
@@ -13,7 +13,7 @@ import * as Email from "nativescript-email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { encodeBase64 } from '~/utils/network-util';
 import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-util';
-import * as application from "application";
+import * as application from "tns-core-modules/application";
 import { ios as iosUtils } from "tns-core-modules/utils/utils";
 
 @Component({

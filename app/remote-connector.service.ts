@@ -2,7 +2,7 @@ import { RequestOptionsArgs, Response, ResponseOptions, ResponseType, Http, Head
 import { Injectable } from "@angular/core";
 import * as Https from 'nativescript-https'
 import { Account } from "./shared/account/account";
-import { knownFolders, File } from 'file-system'
+import { knownFolders, File } from 'tns-core-modules/file-system'
 import { AccountSelectionNotifier } from "./shared/account/account-selection-notifier";
 import { HttpsResponse } from "nativescript-https";
 import { merge, from, Observable, throwError } from 'rxjs';
