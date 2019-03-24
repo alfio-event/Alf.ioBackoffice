@@ -9,7 +9,7 @@ import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedEr
 import { Vibrate } from 'nativescript-vibrate';
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
-import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-util';
+import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
 import * as application from "tns-core-modules/application";
 import { ios as iosUtils } from "tns-core-modules/utils/utils";
 

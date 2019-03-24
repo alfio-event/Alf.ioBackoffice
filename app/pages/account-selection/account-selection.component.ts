@@ -5,9 +5,9 @@ import { Account, ScannedAccount } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import { AccountResponse, Maybe, Some, Nothing } from "../../shared/account/account";
 import { defaultScanOptions } from '../../utils/barcodescanner';
-import * as application from "tns-core-modules/application";
+import { ios } from "tns-core-modules/application";
 import { Vibrate } from 'nativescript-vibrate';
-import * as Toast from 'nativescript-toast';
+import { makeText } from 'nativescript-toast';
 import { isUndefined, isDefined } from "tns-core-modules/utils/types";
 import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
 import { Subject, Observable } from "rxjs";
@@ -28,9 +28,8 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     editEnableObservable: Observable<boolean> = this.editEnableSubject.asObservable();
     private tapObservable: Observable<Account> = this.tapEmitter.asObservable();
     private editedAccount: Account = null;
-    @ViewChild("list") listViewContainer: ElementRef;
-    private listView: ListView;
-    private vibrator = new Vibrate();
+    @ViewChild("list") listViewContainer: ElementRef<ListView>;
+    private vibrator: Vibrate;
     private qrCodeParts: Array<string>;
     
 
@@ -38,10 +37,12 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         private routerExtensions: RouterExtensions,
         private barcodeScanner: BarcodeScanner,
         private ngZone: NgZone) {
-            this.isIos = !application.android;
+            this.isIos = !ios;
+            console.log('attempting to initialize vibrator');
+            this.vibrator = new Vibrate();
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         console.log("ngOnInit AccountSelection");
         this.accounts = this.accountService.getRegisteredAccounts();
         this.isLoading = false;
@@ -54,7 +55,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         });
     }
 
-    ngOnChanges() {
+    ngOnChanges(): void {
         console.log("ngOnChanges");
     }
 
@@ -62,7 +63,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         return this.accounts.length > 0;
     }
 
-    onScanResult(result: ScanResult) {
+    onScanResult(result: ScanResult): void {
         let splitQrCodeMatcher = /^(\d+):(\d+):(.+$)/;
         let text = <string>result.text;
         let matchResult = splitQrCodeMatcher.exec(text);
@@ -87,10 +88,10 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                     this.barcodeScanner.stop().then(() => successFn(account));
                 } else {
                     this.qrCodeParts = new Array<string>(length).fill(undefined);
-                    Toast.makeText("Corrupted QR-Code sequence. Please retry.").show();
+                    makeText("Corrupted QR-Code sequence. Please retry.").show();
                 }
             } else {
-                Toast.makeText("Please scan the next code").show();
+                makeText("Please scan the next code").show();
             }
         } else {
             let maybeScannedAccount = this.parseScannedAccount([text]);
@@ -99,7 +100,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                 this.accountService.notifyAccountScan(account);
                 this.barcodeScanner.stop().then((() => successFn(account)));
             } else {
-                Toast.makeText("Invalid QR-Code. Please retry.").show();
+                makeText("Invalid QR-Code. Please retry.").show();
             }
         }
     }
@@ -130,7 +131,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         }
     }
 
-    private registerNewAccount(account: ScannedAccount) {
+    private registerNewAccount(account: ScannedAccount): void {
         try {
             this.isLoading = true;
             this.accountService.registerNewAccount(account.url, account.apiKey, account.username, account.password, account.sslCert)
@@ -138,12 +139,12 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                         this.processResponse(resp)
                     }), (err) => this.ngZone.run(() => {
                         console.log(err);
-                        Toast.makeText("Cannot register a new Account. Please check your internet connection and retry.").show();
+                        makeText("Cannot register a new Account. Please check your internet connection and retry.").show();
                         this.isLoading = false;
                     }));
         } catch(e) {
             console.log("error", e);
-            Toast.makeText("Cannot register a new Account. Please re-scan the QR-Code(s).").show();
+            makeText("Cannot register a new Account. Please re-scan the QR-Code(s).").show();
             this.isLoading = false;
         }
     }
@@ -186,7 +187,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         }
     }
     
-    toggleEditMode():void {
+    toggleEditMode(): void {
         this.editModeEnabled = !this.editModeEnabled;
         console.log('updated editModeEnabled to ', this.editModeEnabled);
         this.editEnableSubject.next(this.editModeEnabled);
@@ -202,12 +203,8 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     }
     
     private getListView(): ListView {
-        if(this.listView) {
-            return this.listView;
-        } else if(this.listViewContainer) {
-            let container = <ListView>this.listViewContainer.nativeElement;
-            this.listView = container;
-            return this.listView;
+        if(this.listViewContainer) {
+            return this.listViewContainer.nativeElement;
         }
         return null;
     }

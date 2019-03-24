@@ -1,8 +1,8 @@
-import { Headers } from "@angular/http";
 import { isDefined } from "tns-core-modules/utils/types";
+import { HttpHeaders } from "@angular/common/http";
 
-export function authorization(apiKey: string, username: string, password: string): Headers {
-    let headers = new Headers();
+export function authorization(apiKey: string, username: string, password: string): HttpHeaders {
+    let headers = new HttpHeaders();
     if(isDefined(apiKey)) {
         headers.append("Authorization", `ApiKey ${apiKey}`);
     } else {
@@ -11,7 +11,7 @@ export function authorization(apiKey: string, username: string, password: string
     return headers;
 }
 
- export function encodeBase64(str: string) {
+export function encodeBase64(str: string) {
     var padChar = '=';
     var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
     var getByte = function (s, i) {

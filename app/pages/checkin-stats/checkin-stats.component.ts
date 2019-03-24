@@ -1,6 +1,6 @@
-import { StatisticsService, CheckInStatistics } from "~/shared/statistics/statistics.service";
+import { StatisticsService, CheckInStatistics } from "../../shared/statistics/statistics.service";
 import { Component, Injectable, OnInit, OnDestroy, Input, NgZone } from "@angular/core";
-import { Account, EventConfiguration } from "~/shared/account/account";
+import { Account, EventConfiguration } from "../../shared/account/account";
 import { Subscription, timer } from "rxjs";
 import { switchMap } from "rxjs/operators";
 

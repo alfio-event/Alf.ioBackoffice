@@ -1,13 +1,12 @@
 import { Injectable } from "@angular/core";
-import { Http, Headers, Response } from "@angular/http";
 
 import { SponsorScan, ScanStatus } from "./sponsor-scan";
 import { Ticket, isValidTicketCode } from "./scan-common";
 import { Account } from "../account/account";
-import { map } from 'rxjs/operators';
-import { authorization } from "~/utils/network-util";
+import { authorization } from "../../utils/network-util";
 import { Subject, Observable } from "rxjs";
-import { StorageService } from "~/shared/storage/storage.service";
+import { StorageService } from "../../shared/storage/storage.service";
+import { HttpClient } from "@angular/common/http";
 
 @Injectable()
 export class SponsorScanService  {
@@ -16,7 +15,7 @@ export class SponsorScanService  {
     private sources: {[eventKey: string] : Subject<Array<SponsorScan>>} = {};
     private timeoutIds: {[eventKey: string] : number} = {};
     
-    constructor(private http: Http, private storage: StorageService) {
+    constructor(private http: HttpClient, private storage: StorageService) {
     }
 
     public scan(eventKey: string, account: Account, uuid: string) : boolean {
@@ -41,7 +40,7 @@ export class SponsorScanService  {
         return true;
     }
 
-    private persistSponsorScans(eventKey: string, account: Account) {
+    private persistSponsorScans(eventKey: string, account: Account): void {
         if(this.sponsorScans[eventKey]) {
             this.storage.saveValue('ALFIO_SPONSOR_SCANS_'+eventKey+account.getKey(), JSON.stringify(this.sponsorScans[eventKey]));
         }
@@ -72,7 +71,7 @@ export class SponsorScanService  {
         return this.sponsorScans[eventKey].filter(e => e.status == ScanStatus.NEW);
     }
 
-    public destroyForEvent(eventKey: string) {
+    public destroyForEvent(eventKey: string): void {
         if (this.timeoutIds[eventKey] !== undefined) {
             console.log('Clear timeout for event ' + eventKey);
             clearTimeout(this.timeoutIds[eventKey]);
@@ -80,7 +79,7 @@ export class SponsorScanService  {
         }
     }
 
-    public forceProcess(eventKey: string, account: Account) {
+    public forceProcess(eventKey: string, account: Account): void {
         this.process(eventKey, account, true);
     }
 
@@ -88,14 +87,11 @@ export class SponsorScanService  {
         if(toSend == null || toSend.length == 0) {
             return;
         }
-        this.http.post(account.url+'/api/attendees/sponsor-scan/bulk', toSend.map(scan=> new SponsorScanRequest(eventKey, scan.code)), {
+        this.http.post<Array<any>>(account.url+'/api/attendees/sponsor-scan/bulk', toSend.map(scan=> new SponsorScanRequest(eventKey, scan.code)), {
             headers: authorization(account.apiKey, account.username, account.password)
-        }).pipe(
-            map(data => data.json())
-        ).subscribe(payload => {
-            let a = <Array<any>> payload;
-            if(a != null) {
-                a.forEach(scan => this.changeStatusFor(eventKey, (<Ticket> scan.ticket).uuid, ScanStatus.DONE, <Ticket> scan.ticket));
+        }).subscribe(payload => {
+            if(payload != null) {
+                payload.forEach(scan => this.changeStatusFor(eventKey, (<Ticket> scan.ticket).uuid, ScanStatus.DONE, <Ticket> scan.ticket));
                 this.persistSponsorScans(eventKey, account);
                 this.emitFor(eventKey);
                 this.process(eventKey, account);
@@ -110,11 +106,11 @@ export class SponsorScanService  {
         
     }
 
-    private emitFor(eventKey) {
+    private emitFor(eventKey: string): void {
         this.sources[eventKey].next(this.sponsorScans[eventKey]);
     }
 
-    private process(eventKey: string, account: Account, oneShot: boolean = false) {
+    private process(eventKey: string, account: Account, oneShot: boolean = false): void {
         let toSend = this.findAllStatusNew(eventKey);
         if(toSend.length > 0) {
             toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, null));
@@ -124,7 +120,7 @@ export class SponsorScanService  {
         }
     }
 
-    private changeStatusFor(eventKey: string, uuid: string, status: ScanStatus, ticket: Ticket) {
+    private changeStatusFor(eventKey: string, uuid: string, status: ScanStatus, ticket: Ticket): void {
         this.sponsorScans[eventKey].filter(scan => scan.code === uuid).forEach(scan => {
             scan.status = status;
             if(ticket) {
@@ -133,7 +129,7 @@ export class SponsorScanService  {
         });
     }
 
-    private doSetTimeoutProcess(eventKey: string, account: Account) {
+    private doSetTimeoutProcess(eventKey: string, account: Account): void {
         this.timeoutIds[eventKey] = setTimeout(() => {
             this.process(eventKey, account);
         }, 1000);

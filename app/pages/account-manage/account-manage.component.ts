@@ -1,9 +1,6 @@
 import { Component, OnInit, NgZone } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "nativescript-angular/router"
-import "rxjs/add/operator/map";
-import "rxjs/add/operator/switchMap";
-
 import { Account, EventConfiguration, AccountType } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import * as Toast from 'nativescript-toast';

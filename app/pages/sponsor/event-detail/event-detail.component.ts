@@ -11,8 +11,8 @@ import * as Toast from 'nativescript-toast';
 import { Vibrate } from 'nativescript-vibrate';
 import * as Email from "nativescript-email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
-import { encodeBase64 } from '~/utils/network-util';
-import { forcePortraitOrientation, enableRotation } from '~/utils/orientation-util';
+import { encodeBase64 } from '../../../utils/network-util';
+import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
 import * as application from "tns-core-modules/application";
 import { ios as iosUtils } from "tns-core-modules/utils/utils";
 

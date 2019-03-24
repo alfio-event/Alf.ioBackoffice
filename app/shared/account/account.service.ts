@@ -1,19 +1,20 @@
 import { Injectable } from "@angular/core";
-import { Http } from "@angular/http";
 const ACCOUNTS_KEY = "ALFIO_ACCOUNTS";
 
-import { Account, AccountType, EventConfiguration, AccountsArray, AccountResponse, Maybe, ScannedAccount } from "./account";
+import { Account, AccountType, EventConfiguration, AccountsArray, AccountResponse, Maybe, ScannedAccount, RemoteAccount } from "./account";
 import { AccountSelectionNotifier } from "./account-selection-notifier";
-import { authorization } from "~/utils/network-util";
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { Observable, throwError } from "rxjs";
-import { StorageService } from "~/shared/storage/storage.service";
+
+import { HttpClient } from "@angular/common/http";
+import { StorageService } from "../storage/storage.service";
+import { authorization } from "../../utils/network-util";
 
 @Injectable()
 export class AccountService {
     private accounts: AccountsArray;
 
-    constructor(private http: Http, 
+    constructor(private http: HttpClient, 
                 private accountSelectionNotifier: AccountSelectionNotifier,
                 private storage: StorageService) {
         this.accounts = this.loadSavedAccounts();
@@ -21,10 +22,9 @@ export class AccountService {
 
     public registerNewAccount(url: string, apiKey: string, username: string, password: string, sslCert: string): Observable<AccountResponse> {
         let baseUrl = url.endsWith("/") ? url.substr(0, url.length - 1) : url;
-        return this.http.get(`${baseUrl}/admin/api/user/details`, {
+        return this.http.get<RemoteAccount>(`${baseUrl}/admin/api/user/details`, {
                 headers: authorization(apiKey, username, password)
             }).pipe(
-                map(response => response.json()),
                 map(data => {
                     console.log("got user type", data.userType);
                     let account = new Account();
@@ -89,9 +89,9 @@ export class AccountService {
     }
 
     public loadEventsForAccount(account: Account): Observable<Array<EventConfiguration>> {
-        return this.http.get(account.url + "/admin/api/events", {
+        return this.http.get<Array<EventConfiguration>>(account.url + "/admin/api/events", {
             headers: authorization(account.apiKey, account.username, account.password)
-        }).pipe(map(data => data.json()));
+        });
     }
 
     public updateEventsForAccount(key:string, events: Array<EventConfiguration>) {

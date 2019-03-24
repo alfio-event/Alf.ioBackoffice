@@ -1,15 +1,15 @@
 import { Injectable } from "@angular/core";
-import { Http } from "@angular/http";
 import { TicketAndCheckInResult, InvalidQrCode, isValidTicketCode } from './scan-common';
 import { Account } from "../account/account";
-import { authorization } from "~/utils/network-util";
+import { authorization } from "../../utils/network-util";
 import { Observable, throwError } from "rxjs";
-import { map } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
+import { HttpClient } from "@angular/common/http";
 
 
 @Injectable()
 export class ScanService {
-    constructor(private http: Http) {
+    constructor(private http: HttpClient) {
     }
 
     public checkIn(eventKey: string, account: Account, scan: string): Observable<TicketAndCheckInResult> {
@@ -28,11 +28,10 @@ export class ScanService {
 
     private performCheckIn(account: Account, url: string, scan: string): Observable<TicketAndCheckInResult> {
         let start = new Date().getTime();
-        return this.http.post(url, {"code": scan}, {
+        return this.http.post<TicketAndCheckInResult>(url, {"code": scan}, {
             headers: authorization(account.apiKey, account.username, account.password)
-        }).pipe(map(r => {
+        }).pipe(tap(() => {
             console.log("1st stop, elapsed", new Date().getTime() - start);
-            return r.json();
         }));
     }
 }

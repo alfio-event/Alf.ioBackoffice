@@ -8,48 +8,42 @@
   "nativescript": {
     "id": "alfio.scan",
     "tns-android": {
-      "version": "4.2.0"
+      "version": "5.2.1"
     },
     "tns-ios": {
-      "version": "4.2.0"
+      "version": "5.2.0"
     }
   },
   "dependencies": {
-    "@angular/animations": "~6.1.0",
-    "@angular/common": "~6.1.0",
-    "@angular/compiler": "~6.1.0",
-    "@angular/core": "~6.1.0",
-    "@angular/forms": "~6.1.0",
-    "@angular/http": "~6.1.0",
-    "@angular/platform-browser": "~6.1.0",
-    "@angular/platform-browser-dynamic": "~6.1.0",
-    "@angular/router": "~6.1.0",
-    "nativescript-angular": "~6.1.0",
-    "nativescript-barcodescanner": "~2.7.8",
+    "@angular/animations": "~7.2.0",
+    "@angular/common": "~7.2.0",
+    "@angular/compiler": "~7.2.0",
+    "@angular/core": "~7.2.0",
+    "@angular/forms": "~7.2.0",
+    "@angular/http": "~7.2.0",
+    "@angular/platform-browser": "~7.2.0",
+    "@angular/platform-browser-dynamic": "~7.2.0",
+    "@angular/router": "~7.2.0",
+    "nativescript-angular": "~7.2.1",
+    "nativescript-theme-core": "~1.0.4",
+    "reflect-metadata": "~0.1.12",
+    "rxjs": "~6.3.0",
+    "tns-core-modules": "~5.2.0",
+    "zone.js": "~0.8.26",
+    "nativescript-barcodescanner": "^3.1.2",
     "nativescript-email": "~1.5.3",
-    "nativescript-https": "git://github.com/cbellone/nativescript-https.git#alfio",
     "nativescript-insomnia": "~1.2.2",
     "nativescript-orientation": "~2.2.1",
-    "nativescript-secure-storage": "~2.3.0",
-    "nativescript-theme-core": "~1.0.4",
-    "nativescript-toast": "~1.4.6",
-    "nativescript-vibrate": "~2.1.1",
-    "reflect-metadata": "~0.1.12",
-    "rxjs": "~6.0.0 || >=6.1.0",
-    "rxjs-compat": "~6.0.0 || >=6.1.0",
-    "tns-core-modules": "^4.2.0",
-    "tns-platform-declarations": "~4.1.0",
-    "zone.js": "~0.8.26"
+    "nativescript-secure-storage": "~2.4.0",
+    "nativescript-toast": "~2.0.0",
+    "nativescript-vibrate": "~2.1.3",
+    "tns-platform-declarations": "~5.2.0"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "~6.1.0",
-    "@ngtools/webpack": "~6.1.0",
-    "babel-traverse": "6.26.0",
-    "babel-types": "6.26.0",
-    "babylon": "6.18.0",
-    "lazy": "1.0.11",
-    "nativescript-dev-typescript": "^0.7.2",
-    "nativescript-dev-webpack": "0.15.1",
-    "typescript": "~2.7.2"
+    "@angular/compiler-cli": "~7.2.0",
+    "@nativescript/schematics": "~0.5.0",
+    "@ngtools/webpack": "~7.2.0",
+    "nativescript-dev-typescript": "~0.9.0",
+    "nativescript-dev-webpack": "~0.20.0"
   }
 }

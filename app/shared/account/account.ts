@@ -77,6 +77,11 @@ export class AccountResponse {
     }
 }
 
+export class RemoteAccount {
+    description: string;
+    userType: string;
+}
+
 export class AccountsArray {
 
     constructor(private accounts: Array<Account>) {}

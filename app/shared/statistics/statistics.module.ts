@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { StatisticsService } from "~/shared/statistics/statistics.service";
+import { StatisticsService } from "../../shared/statistics/statistics.service";
 
 @NgModule({
     providers: [
