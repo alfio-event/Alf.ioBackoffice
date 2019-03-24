@@ -1,5 +1,5 @@
 import { defaultScanOptions } from '../../../utils/barcodescanner';
-import { SponsorScan } from '../../../shared/scan/sponsor-scan';
+import { SponsorScan, ScanResult } from '../../../shared/scan/sponsor-scan';
 import { Component, ElementRef, Injectable, OnInit, OnDestroy, ViewChild, NgZone } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
 import { ListView } from "tns-core-modules/ui/list-view"
@@ -96,16 +96,29 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             this.lastUpdate = new Date().getTime();
             console.log("scanned", res.text);
             let result = this.sponsorScanService.scan(this.event.key, this.account, res.text);
-            if(result) {
-                this.vibrateService.success();
-                this.feedbackService.success("Scan enqueued!");
-            }            
+            switch(result) {
+                case ScanResult.OK: {
+                    this.vibrateService.success();
+                    this.feedbackService.success('Scan enqueued!');
+                    break;
+                }
+                case ScanResult.DUPLICATE: {
+                    this.vibrateService.warning();
+                    this.feedbackService.warning('Already scanned');
+                    break;
+                }
+                case ScanResult.INVALID: {
+                    this.vibrateService.error();
+                    this.feedbackService.error('Invalid code');
+                    break;
+                }
+            }
         }, 10);
         scanOptions.closeCallback = () => setTimeout(() => {
             this.ngZone.run(() => this.isLoading = false);
             clearInterval(this.interval);
         }, 10);
-        // scanOptions.reportDuplicates = true;
+        scanOptions.reportDuplicates = true;
 
         let warningDisplayed = false;
         this.interval = setInterval(() => {

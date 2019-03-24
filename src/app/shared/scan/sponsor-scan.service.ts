@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 
-import { SponsorScan, ScanStatus } from "./sponsor-scan";
+import { SponsorScan, ScanStatus, ScanResult } from "./sponsor-scan";
 import { Ticket, isValidTicketCode } from "./scan-common";
 import { Account } from "../account/account";
 import { authorization } from "../../utils/network-util";
@@ -18,11 +18,11 @@ export class SponsorScanService  {
     constructor(private http: HttpClient, private storage: StorageService) {
     }
 
-    public scan(eventKey: string, account: Account, uuid: string) : boolean {
+    public scan(eventKey: string, account: Account, uuid: string): ScanResult {
 
         if(!isValidTicketCode(uuid) || !/^[A-Za-z0-9\-]+$/.test(uuid)) {
             console.log(`invalid ticket code received: ${uuid}`)
-            return false;
+            return ScanResult.INVALID;
         }
 
         if (!this.sponsorScans[eventKey]) {
@@ -31,13 +31,13 @@ export class SponsorScanService  {
 
         if(this.sponsorScans[eventKey].some(s => s.code === uuid)) {
             //already scanned
-            return true;
+            return ScanResult.DUPLICATE;
         }
 
         this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, null));
         this.persistSponsorScans(eventKey, account);
         this.emitFor(eventKey);
-        return true;
+        return ScanResult.OK;
     }
 
     private persistSponsorScans(eventKey: string, account: Account): void {

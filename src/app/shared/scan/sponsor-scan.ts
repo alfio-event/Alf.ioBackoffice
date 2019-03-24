@@ -12,3 +12,9 @@ export class SponsorScan {
 export enum ScanStatus {
     NEW, IN_PROCESS, ERROR, DONE
 }
+
+export enum ScanResult {
+    OK = 'OK',
+    DUPLICATE = 'DUPLICATE',
+    INVALID = 'INVALID'
+}
