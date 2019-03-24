@@ -14,14 +14,16 @@
 	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts()" class="list-group">
 		<ng-template let-item="item">
 			<GridLayout columns="36, *, 50" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" class="list-group-item">
-				<Label col="0" class="icon icon-2x person-icon text-center" text="&#xf207;" [class.text-muted]="!isEditRequested(item)"></Label>
+				<Label col="0" class="icon icon-2x person-icon text-center" text="&#xf207;" [class.text-muted]="!isEditRequested(item)" (tap)="manage(item)"></Label>
 				<StackLayout col="1" orientation="vertical" class="list-item-padding" (tap)="manage(item)" (longPress)="onLongPress(item)">
 					<Label [text]="item.title" class="accountName"></Label>
 					<Label [text]="item.url"></Label>
 				</StackLayout>
 				<StackLayout class="list-item-padding" orientation="horizontal" col="2" (tap)="delete(item)">
-					<ios-account-icon *ngIf="isIos" [account]="item" [tapEmitter]="tapEmitter" [editEnableObservable]="editEnableObservable"></ios-account-icon>
-					<Label text="&#xf154;" *ngIf="!isIos && isEditRequested(item)" class="icon icon-1-5x person-icon text-center"></Label>
+					<ios-account-icon *ifIos [account]="item" [tapEmitter]="tapEmitter" [editEnableObservable]="editEnableObservable"></ios-account-icon>
+					<android>
+						<Label text="&#xf154;" *ngIf="isEditRequested(item)" class="icon icon-1-5x person-icon text-center"></Label>
+					</android>
 				</StackLayout>
 			</GridLayout>
 		</ng-template>

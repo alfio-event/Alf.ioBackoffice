@@ -10,9 +10,9 @@ import { Account, EventConfiguration } from "../../shared/account/account";
 @Component({
     moduleId: module.id,
     selector: "event-header",
-    template: `<GridLayout columns="35, *, 35" *ngIf="event">
+    template: `<GridLayout columns="35, *, 35" *ngIf="event" (tap)="select()">
                     <Label text="&#xf1df;" col="0" class="icon icon-1-5x person-icon text-primary text-center v-middle"></Label>
-                    <StackLayout col="1" class="medium-spacing" orientation="vertical" (tap)="select()">
+                    <StackLayout col="1" class="medium-spacing" orientation="vertical">
                         <Label [text]="event.name" class="eventName" textWrap="true"></Label>
                         <Label text="{{ event.begin | date:'short' }} - {{ event.end | date:'short' }}" *ngIf="!event.oneDay"></Label>
                         <Label text="{{ event.begin | date:'shortDate' }} {{ event.begin | date:'shortTime' }} - {{ event.end | date:'shortTime' }}" *ngIf="event.oneDay"></Label>
