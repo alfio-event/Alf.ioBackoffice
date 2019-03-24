@@ -1,5 +1,6 @@
 <ActionBar class="action-bar" title="Select Event">
-    <NavigationButton text="Accounts" icon="res://ic_arrow_back_white" (tap)="onBackTap()"></NavigationButton>
+    <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Accounts"></NavigationButton>
+    <NavigationButton *ifIos (tap)="onBackTap()" text="Accounts"></NavigationButton>
     <ActionItem (tap)="reloadEvents()" icon="res://ic_refresh_white" ios.systemIcon="13" ios.position="right" text="Refresh Data"></ActionItem>
 </ActionBar>
 

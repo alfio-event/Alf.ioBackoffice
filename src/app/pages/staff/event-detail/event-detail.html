@@ -1,5 +1,6 @@
 <ActionBar class="action-bar" [title]="actionBarTitle">
-    <NavigationButton icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Events"></NavigationButton>
+    <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Events"></NavigationButton>
+    <NavigationButton *ifIos (tap)="onBackTap()" text="Events"></NavigationButton>
 </ActionBar>
 
 <GridLayout rows="auto, 1, 8*, 4*">
