@@ -10,7 +10,7 @@ import { Account, EventConfiguration } from "../../shared/account/account";
 @Component({
     moduleId: module.id,
     selector: "event-header",
-    template: `<GridLayout columns="35, *, 35" *ngIf="event" (tap)="select()">
+    template: `<GridLayout columns="35, *, 35" *ngIf="event">
                     <Label text="&#xf1df;" col="0" class="icon icon-1-5x person-icon text-primary text-center v-middle"></Label>
                     <StackLayout col="1" class="medium-spacing" orientation="vertical">
                         <Label [text]="event.name" class="eventName" textWrap="true"></Label>
@@ -38,10 +38,6 @@ export class EventHeaderComponent implements OnInit {
 
     ngOnInit(): void {
         this.isLoading = true;
-    }
-
-    select(): void {
-        this.onTap.emit(this.event);
     }
 
     get iconText(): string {

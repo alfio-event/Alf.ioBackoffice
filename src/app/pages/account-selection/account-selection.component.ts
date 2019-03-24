@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, OnChanges, ViewChild, NgZone } from "@angular/core";
-import { ListView } from "tns-core-modules/ui/list-view";
+import { ListView, ItemEventData } from "tns-core-modules/ui/list-view";
 import { RouterExtensions } from "nativescript-angular/router"
 import { Account, ScannedAccount } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
@@ -24,7 +24,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     tapEmitter = new Subject<Account>();
     private editEnableSubject = new Subject<boolean>();
     editEnableObservable: Observable<boolean> = this.editEnableSubject.asObservable();
-    private tapObservable: Observable<Account> = this.tapEmitter.asObservable();
     private editedAccount: Account = null;
     @ViewChild("list") listViewContainer: ElementRef<ListView>;
     
@@ -41,13 +40,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         console.log("ngOnInit AccountSelection");
         this.accounts = this.accountService.getRegisteredAccounts();
         this.isLoading = false;
-        this.tapObservable.subscribe(account => {
-            if(this.editModeEnabled) {
-                this.delete(account);
-            } else {
-                this.manage(account);
-            }
-        });
     }
 
     ngOnChanges(): void {

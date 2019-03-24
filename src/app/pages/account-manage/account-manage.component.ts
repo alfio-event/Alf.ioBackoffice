@@ -5,6 +5,7 @@ import { Account, EventConfiguration, AccountType } from "../../shared/account/a
 import { AccountService } from "../../shared/account/account.service";
 import { isDefined, isUndefined } from "tns-core-modules/utils/types";
 import { FeedbackService } from "~/app/shared/notification/feedback.service";
+import { ItemEventData } from "tns-core-modules/ui/list-view/list-view";
 
 @Component({
     selector: "account-manage",
@@ -76,9 +77,12 @@ export class AccountManageComponent implements OnInit {
         this.routerExtensions.back();
     }
 
-    select(item: EventConfiguration): void {
-        let accountType = this.account.accountType == AccountType.STAFF ? "STAFF" : "SPONSOR";
-        this.routerExtensions.navigate(['/event-detail/', this.account.getKey(), accountType, item.key]);
+    select(eventData: ItemEventData): void {
+        let item = this.events[eventData.index];
+        if(item.key != null) {
+            let accountType = this.account.accountType == AccountType.STAFF ? "STAFF" : "SPONSOR";
+            this.routerExtensions.navigate(['/event-detail/', this.account.getKey(), accountType, item.key]);
+        }
     }
 
 }

@@ -5,9 +5,9 @@
 </ActionBar>
 
 <GridLayout rows="10, *, auto">
-  <ListView [items]="events" row="1" *ngIf="account && !isLoading" class="list-group">
+  <ListView [items]="events" row="1" *ngIf="account && !isLoading" class="list-group" (itemTap)="select($event)">
     <ng-template let-item="item" class="event">
-      <event-header [event]="item" [account]="account" list="true" (onTap)="select($event)" class="list-group-item"></event-header>
+      <event-header [event]="item" [account]="account" list="true" class="list-group-item"></event-header>
     </ng-template>
   </ListView>
 
