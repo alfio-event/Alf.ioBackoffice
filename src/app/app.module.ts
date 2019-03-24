@@ -13,9 +13,8 @@ import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { StatisticsModule } from './shared/statistics/statistics.module';
 import { CheckInStatsComponent } from './pages/checkin-stats/checkin-stats.component';
 import { StorageModule } from './shared/storage/storage.module';
-import { registerElement } from "nativescript-angular/element-registry";
-import { HttpClientModule } from '@angular/common/http';
-registerElement("BarcodeScanner", () => require("nativescript-barcodescanner").BarcodeScannerView);
+import { NativeScriptHttpClientModule } from "nativescript-angular/http-client";
+import { VibrateService } from './shared/notification/vibrate.service';
 
 @NgModule({
     schemas: [NO_ERRORS_SCHEMA],
@@ -25,7 +24,7 @@ registerElement("BarcodeScanner", () => require("nativescript-barcodescanner").B
         NativeScriptRouterModule,
         NativeScriptRouterModule.forRoot(routes),
         NativeScriptAnimationsModule,
-        HttpClientModule,
+        NativeScriptHttpClientModule,
         AccountModule,
         StatisticsModule,
         StorageModule
@@ -37,7 +36,11 @@ registerElement("BarcodeScanner", () => require("nativescript-barcodescanner").B
         IosAccountIconComponent,
         ...navigatableComponents
     ],
-    providers: [ CurrencyPipe, BarcodeScanner ],
+    providers: [ 
+        CurrencyPipe, 
+        { provide: BarcodeScanner, useValue: new BarcodeScanner() },
+        VibrateService
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

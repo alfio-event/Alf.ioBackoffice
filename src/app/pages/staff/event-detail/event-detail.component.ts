@@ -6,12 +6,12 @@ import { ScanService } from "../../../shared/scan/scan.service"
 import { Account, EventConfiguration } from "../../../shared/account/account";
 import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket } from '../../../shared/scan/scan-common'
-import { Vibrate } from 'nativescript-vibrate';
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
 import * as application from "tns-core-modules/application";
 import { ios as iosUtils } from "tns-core-modules/utils/utils";
+import { VibrateService } from '~/app/shared/notification/vibrate.service';
 
 @Component({
     moduleId: module.id,
@@ -31,9 +31,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     message: string;
     detail: string;
     ticket: Ticket;
-    scannerVisible: boolean = false;
     isIos: boolean;
-    private vibrator = new Vibrate();
     actionBarTitle: string;
     
     
@@ -42,7 +40,8 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 private accountService: AccountService,
                 private barcodeScanner: BarcodeScanner,
                 private scanService: ScanService,
-                private ngZone: NgZone) {
+                private ngZone: NgZone,
+                private vibrateService: VibrateService) {
                     this.isIos = !application.android;
     }
 
@@ -83,9 +82,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
 
     scanResult(res: ScanResult) {
         this.ngZone.run(() => {
-            this.scannerVisible = false;
             this.isLoading = true;
-            this.vibrator.vibrate(50);
             let scanResult = res.text;
             this.code = scanResult;
             let start = new Date().getTime();
@@ -106,17 +103,12 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     }
 
     scan(): void {
-        let scanStart = new Date().getTime();
-        if(this.isIos) {
-            this.scannerVisible = true;
-        } else {
-            this.barcodeScanner.scan(defaultScanOptions())
-                .then((res) => setTimeout(() => this.scanResult(res),10), (error) => {
-                    console.log("handling scan error", error);
-                    this.cancel();
-                });
-            this.isLoading = true;
-        }
+        this.barcodeScanner.scan(defaultScanOptions())
+            .then((res) => setTimeout(() => this.scanResult(res),10), (error) => {
+                console.log("handling scan error", error);
+                this.cancel();
+            });
+        this.isLoading = true;
     }
 
     confirmPayment(code: string): void {
@@ -151,9 +143,6 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         this.status = undefined;
         this.code = undefined;
         this.message = undefined;
-        if(this.isIos) {
-            this.barcodeScanner.stop().then(() => this.ngZone.run(() => this.scannerVisible = false));
-        }
     }
 
     getPrimaryButtonText(): string {
@@ -181,10 +170,10 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             this.ticket = res ? res.ticket : null;
             if(this.status == CheckInStatus.SUCCESS) {
                 //notify success
-                this.vibrator.vibrate([50, 50, 50]);
+                this.vibrateService.success();
             } else {
-                this.vibrator.vibrate(500);
                 //notify error
+                this.vibrateService.error();
             }
             this.isLoading = false;
         });

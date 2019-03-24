@@ -6,7 +6,6 @@ import { AccountService } from "../../shared/account/account.service";
 import { AccountResponse, Maybe, Some, Nothing } from "../../shared/account/account";
 import { defaultScanOptions } from '../../utils/barcodescanner';
 import { ios } from "tns-core-modules/application";
-import { Vibrate } from 'nativescript-vibrate';
 import { makeText } from 'nativescript-toast';
 import { isUndefined, isDefined } from "tns-core-modules/utils/types";
 import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
@@ -21,7 +20,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     accounts: Array<Account> = [];
     isLoading: boolean;
     isIos: boolean;
-    scannerVisible: boolean = false;
     editModeEnabled: boolean = false;
     tapEmitter = new Subject<Account>();
     private editEnableSubject = new Subject<boolean>();
@@ -29,8 +27,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     private tapObservable: Observable<Account> = this.tapEmitter.asObservable();
     private editedAccount: Account = null;
     @ViewChild("list") listViewContainer: ElementRef<ListView>;
-    private vibrator: Vibrate;
-    private qrCodeParts: Array<string>;
     
 
     constructor(private accountService: AccountService, 
@@ -38,8 +34,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         private barcodeScanner: BarcodeScanner,
         private ngZone: NgZone) {
             this.isIos = !ios;
-            console.log('attempting to initialize vibrator');
-            this.vibrator = new Vibrate();
     }
 
     ngOnInit(): void {
@@ -64,71 +58,31 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     }
 
     onScanResult(result: ScanResult): void {
-        let splitQrCodeMatcher = /^(\d+):(\d+):(.+$)/;
-        let text = <string>result.text;
-        let matchResult = splitQrCodeMatcher.exec(text);
-        this.vibrator.vibrate(50);
-        let successFn = (account: ScannedAccount) => {
-            this.ngZone.run(() => {
-                this.registerNewAccount(account);
-                this.scannerVisible = false;
-            });
-        };
-        if(matchResult && matchResult.length == 4) {
-            let length = +matchResult[2];
-            if(!this.qrCodeParts) {
-                this.qrCodeParts = new Array<string>(length).fill(undefined);
-            }
-            this.qrCodeParts[(+matchResult[1]) -1] = matchResult[3];
-            if(this.qrCodeParts.length == length && this.qrCodeParts.every(v => v && v.length > 0)) {
-                let maybeScannedAccount = this.parseScannedAccount(this.qrCodeParts);
-                if(maybeScannedAccount.isPresent()) {
-                    let account = maybeScannedAccount.value;
-                    this.accountService.notifyAccountScan(account);
-                    this.barcodeScanner.stop().then(() => successFn(account));
-                } else {
-                    this.qrCodeParts = new Array<string>(length).fill(undefined);
-                    makeText("Corrupted QR-Code sequence. Please retry.").show();
-                }
-            } else {
-                makeText("Please scan the next code").show();
-            }
+        let maybeScannedAccount = this.parseScannedAccount([result.text]);
+        if(maybeScannedAccount.isPresent()) {
+            let account = maybeScannedAccount.value;
+            this.accountService.notifyAccountScan(account);
+            this.barcodeScanner.stop().then((() => this.registerNewAccount(account)));
         } else {
-            let maybeScannedAccount = this.parseScannedAccount([text]);
-            if(maybeScannedAccount.isPresent()) {
-                let account = maybeScannedAccount.value;
-                this.accountService.notifyAccountScan(account);
-                this.barcodeScanner.stop().then((() => successFn(account)));
-            } else {
-                makeText("Invalid QR-Code. Please retry.").show();
-            }
+            makeText("Invalid QR-Code. Please retry.").show();
         }
     }
 
     cancelScan(): void {
-        this.barcodeScanner.stop().then(() => this.ngZone.run(() => this.scannerVisible = false));
+        this.barcodeScanner.stop();
     }
 
     requestQrScan(): void {
         if(this.editModeEnabled) {
             this.toggleEditMode();
         }
-
-        if(this.isIos) {
-            this.scannerVisible = true;
-        } else {
-            let scanOptions = defaultScanOptions();
-            scanOptions.continuousScanCallback = (res) => setTimeout(() => this.onScanResult(res), 10);
-            scanOptions.closeCallback = () => setTimeout(() => {
-                console.log("Scanner closed");
-                this.ngZone.run(() => this.isLoading = false);
-            }, 10);
-            this.barcodeScanner.scan(scanOptions)
-                .then(() => { }, (error) => {
-                    console.log("No scan: " + error);
-                    this.isLoading = false;
-                });
-        }
+        let scanOptions = defaultScanOptions();
+        this.barcodeScanner.scan(scanOptions)
+            .then(result => this.onScanResult(result), (error) => {
+                console.log("No scan: " + error);
+                this.isLoading = false;
+            });
+        
     }
 
     private registerNewAccount(account: ScannedAccount): void {

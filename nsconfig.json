@@ -1,4 +1,4 @@
 {
-  "appResourcesPath": "app/App_Resources",
-  "appPath": "app"
+  "appResourcesPath": "App_Resources",
+  "appPath": "src"
 }

@@ -5,13 +5,13 @@
 </ActionBar>
 
 <GridLayout rows="auto, *">
-	<StackLayout row="1" *ngIf="!hasAccounts() && !isLoading && !scannerVisible" orientation="vertical" class="missing-accounts" (tap)="requestQrScan()">
+	<StackLayout row="1" *ngIf="!hasAccounts() && !isLoading" orientation="vertical" class="missing-accounts" (tap)="requestQrScan()">
 		<Label class="icon icon-3x text-muted text-center" text="&#xf1f0;"></Label>
 		<Label text="No accounts configured yet." class="missing-accounts text-muted text-center"></Label>
 		<Label text="Please add one" class="missing-accounts text-muted text-center"></Label>
 	</StackLayout>
 	
-	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts() && !scannerVisible" class="list-group">
+	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts()" class="list-group">
 		<ng-template let-item="item">
 			<GridLayout columns="36, *, 50" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" class="list-group-item">
 				<Label col="0" class="icon icon-2x person-icon text-center" text="&#xf207;" [class.text-muted]="!isEditRequested(item)"></Label>
@@ -26,20 +26,5 @@
 			</GridLayout>
 		</ng-template>
 	</ListView>
-	<StackLayout row="1" orientation="vertical" *ngIf="scannerVisible">
-		<BarcodeScanner
-			class="qr-code-reader"
-			height="300"
-			formats="QR_CODE"
-			beepOnScan="false"
-			reportDuplicates="false"
-			preferFrontCamera="false"
-			(scanResult)="onScanResult($event)">
-		</BarcodeScanner>
-		<StackLayout orientation="vertical" verticalAlignment="center" class="m-t-16 m-l-16 m-r-16">
-            <Label text="Scan your Account QR Code" class="missing-accounts text-muted text-center"></Label>
-            <Button class="button btn-lg btn-rounded-lg btn-primary m-t-16" (tap)="cancelScan()" text="Cancel"></Button>
-        </StackLayout>
-	</StackLayout>
 	<ActivityIndicator row="1" [busy]="isLoading"  class="activity-indicator"></ActivityIndicator>
 </GridLayout>

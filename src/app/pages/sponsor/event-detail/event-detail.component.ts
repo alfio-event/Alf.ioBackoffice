@@ -7,14 +7,14 @@ import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../../shared/account/account.service";
 import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service"
 import { Account, EventConfiguration } from "../../../shared/account/account";
-import * as Toast from 'nativescript-toast';
-import { Vibrate } from 'nativescript-vibrate';
+import { makeText } from 'nativescript-toast';
 import * as Email from "nativescript-email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { encodeBase64 } from '../../../utils/network-util';
 import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
 import * as application from "tns-core-modules/application";
 import { ios as iosUtils } from "tns-core-modules/utils/utils";
+import { VibrateService } from '~/app/shared/notification/vibrate.service';
 
 @Component({
     moduleId: module.id,
@@ -33,14 +33,14 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     private lastUpdate: number = 0;
     @ViewChild("list") listViewContainer: ElementRef;
     private listView: ListView;
-    private vibrator = new Vibrate();
-
+    
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
                 private accountService: AccountService,
                 private barcodeScanner: BarcodeScanner,
                 private sponsorScanService: SponsorScanService,
-                private ngZone: NgZone) {
+                private ngZone: NgZone,
+                private vibrateService: VibrateService) {
     }
 
     onBackTap() {
@@ -92,8 +92,8 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             console.log("scanned", res.text);
             let result = this.sponsorScanService.scan(this.event.key, this.account, res.text);
             if(result) {
-                this.vibrator.vibrate(250);
-                Toast.makeText("Scan enqueued!").show();
+                this.vibrateService.success();
+                makeText("Scan enqueued!").show();
             }            
         }, 10);
         scanOptions.closeCallback = () => setTimeout(() => {
@@ -108,12 +108,12 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 clearInterval(interval);
                 this.barcodeScanner.stop()
                     .then(() => {
-                        Toast.makeText("Timed out").show();
+                        makeText("Timed out").show();
                         this.toggleLoading(false);
                     });
             } else if(elapsed > (30 * 1000) && !warningDisplayed) {
                 warningDisplayed = true;
-                Toast.makeText("Camera will be deactivated in 15 sec.").show();
+                makeText("Camera will be deactivated in 15 sec.").show();
             }
         }, 1000);
         
