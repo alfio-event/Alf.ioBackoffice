@@ -3,8 +3,8 @@ import { ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "nativescript-angular/router"
 import { Account, EventConfiguration, AccountType } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
-import { makeText } from 'nativescript-toast';
 import { isDefined, isUndefined } from "tns-core-modules/utils/types";
+import { FeedbackService } from "~/app/shared/notification/feedback.service";
 
 @Component({
     selector: "account-manage",
@@ -20,7 +20,9 @@ export class AccountManageComponent implements OnInit {
     constructor(private route: ActivatedRoute,
         private routerExtensions: RouterExtensions,
         private accountService: AccountService,
-        private ngZone: NgZone) { }
+        private ngZone: NgZone,
+        private feedbackService: FeedbackService) {            
+        }
 
     ngOnInit(): void {
         this.isLoading = true;
@@ -57,7 +59,7 @@ export class AccountManageComponent implements OnInit {
                     console.log("error while loading events", error);
                     this.events = account.configurations;
                     this.isLoading = false;
-                    makeText("Error while refreshing events").show();
+                    this.feedbackService.error('Error while refreshing events');
                 });
             }, () => this.ngZone.run(() => {
                 if(isDefined(onComplete)) {

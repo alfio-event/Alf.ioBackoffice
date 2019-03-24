@@ -6,10 +6,10 @@ import { AccountService } from "../../shared/account/account.service";
 import { AccountResponse, Maybe, Some, Nothing } from "../../shared/account/account";
 import { defaultScanOptions } from '../../utils/barcodescanner';
 import { ios } from "tns-core-modules/application";
-import { makeText } from 'nativescript-toast';
 import { isUndefined, isDefined } from "tns-core-modules/utils/types";
 import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
 import { Subject, Observable } from "rxjs";
+import { FeedbackService } from "~/app/shared/notification/feedback.service";
 
 @Component({
     selector: "account-selection",
@@ -32,7 +32,8 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     constructor(private accountService: AccountService, 
         private routerExtensions: RouterExtensions,
         private barcodeScanner: BarcodeScanner,
-        private ngZone: NgZone) {
+        private ngZone: NgZone,
+        private feedbackService: FeedbackService) {
             this.isIos = !ios;
     }
 
@@ -64,7 +65,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
             this.accountService.notifyAccountScan(account);
             this.barcodeScanner.stop().then((() => this.registerNewAccount(account)));
         } else {
-            makeText("Invalid QR-Code. Please retry.").show();
+            this.feedbackService.error('Invalid QR-Code. Please retry.');
         }
     }
 
@@ -93,12 +94,12 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                         this.processResponse(resp)
                     }), (err) => this.ngZone.run(() => {
                         console.log(err);
-                        makeText("Cannot register a new Account. Please check your internet connection and retry.").show();
+                        this.feedbackService.error('Cannot register a new Account. Please check your internet connection and retry.');
                         this.isLoading = false;
                     }));
         } catch(e) {
             console.log("error", e);
-            makeText("Cannot register a new Account. Please re-scan the QR-Code(s).").show();
+            this.feedbackService.error('Cannot register a new Account. Please re-scan the QR-Code(s).');
             this.isLoading = false;
         }
     }

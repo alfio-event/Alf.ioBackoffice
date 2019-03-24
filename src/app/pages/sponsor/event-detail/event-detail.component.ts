@@ -7,7 +7,6 @@ import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../../shared/account/account.service";
 import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service"
 import { Account, EventConfiguration } from "../../../shared/account/account";
-import { makeText } from 'nativescript-toast';
 import * as Email from "nativescript-email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { encodeBase64 } from '../../../utils/network-util';
@@ -15,6 +14,7 @@ import { forcePortraitOrientation, enableRotation } from '../../../utils/orienta
 import * as application from "tns-core-modules/application";
 import { ios as iosUtils } from "tns-core-modules/utils/utils";
 import { VibrateService } from '~/app/shared/notification/vibrate.service';
+import { FeedbackService } from '~/app/shared/notification/feedback.service';
 
 @Component({
     moduleId: module.id,
@@ -33,6 +33,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     private lastUpdate: number = 0;
     @ViewChild("list") listViewContainer: ElementRef;
     private listView: ListView;
+    private interval: number;
     
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
@@ -40,7 +41,8 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 private barcodeScanner: BarcodeScanner,
                 private sponsorScanService: SponsorScanService,
                 private ngZone: NgZone,
-                private vibrateService: VibrateService) {
+                private vibrateService: VibrateService,
+                private feedbackService: FeedbackService) {
     }
 
     onBackTap() {
@@ -80,6 +82,9 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         if(this.event && this.event.key) {
             this.sponsorScanService.destroyForEvent(this.event.key);
         }
+        if(this.interval) {
+            clearInterval(this.interval);
+        }
         enableRotation();
     }
 
@@ -93,34 +98,36 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             let result = this.sponsorScanService.scan(this.event.key, this.account, res.text);
             if(result) {
                 this.vibrateService.success();
-                makeText("Scan enqueued!").show();
+                this.feedbackService.success("Scan enqueued!");
             }            
         }, 10);
         scanOptions.closeCallback = () => setTimeout(() => {
             this.ngZone.run(() => this.isLoading = false);
+            clearInterval(this.interval);
         }, 10);
+        // scanOptions.reportDuplicates = true;
 
         let warningDisplayed = false;
-        let interval = setInterval(() => {
+        this.interval = setInterval(() => {
             let current = new Date().getTime();
             let elapsed = current - this.lastUpdate;
             if(elapsed > 45 * 1000) {
-                clearInterval(interval);
+                clearInterval(this.interval);
                 this.barcodeScanner.stop()
                     .then(() => {
-                        makeText("Timed out").show();
+                        this.feedbackService.warning("Timed out");
                         this.toggleLoading(false);
                     });
             } else if(elapsed > (30 * 1000) && !warningDisplayed) {
                 warningDisplayed = true;
-                makeText("Camera will be deactivated in 15 sec.").show();
+                this.feedbackService.warning("Camera will be deactivated in 15 sec.");
             }
         }, 1000);
         
         this.barcodeScanner.scan(scanOptions)
             .then(() => {
                     console.log("barcode scanner exited");
-                    clearInterval(interval);
+                    clearInterval(this.interval);
                     this.toggleLoading(false);
                 }, (error) => {
                     console.log("No scan: " + error);

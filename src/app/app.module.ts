@@ -15,6 +15,11 @@ import { CheckInStatsComponent } from './pages/checkin-stats/checkin-stats.compo
 import { StorageModule } from './shared/storage/storage.module';
 import { NativeScriptHttpClientModule } from "nativescript-angular/http-client";
 import { VibrateService } from './shared/notification/vibrate.service';
+import { FeedbackService } from './shared/notification/feedback.service';
+
+export function createBarcodeScanner() {
+    return new BarcodeScanner();
+}
 
 @NgModule({
     schemas: [NO_ERRORS_SCHEMA],
@@ -38,8 +43,9 @@ import { VibrateService } from './shared/notification/vibrate.service';
     ],
     providers: [ 
         CurrencyPipe, 
-        { provide: BarcodeScanner, useValue: new BarcodeScanner() },
-        VibrateService
+        { provide: BarcodeScanner, useFactory: (createBarcodeScanner) },
+        VibrateService,
+        FeedbackService
     ],
     bootstrap: [AppComponent]
 })
