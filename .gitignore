@@ -38,3 +38,4 @@ typings/
 .vscode/
 .DS_Store
 buildRelease*.sh
+.cloud
