@@ -11,7 +11,7 @@ import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
 import * as application from "tns-core-modules/application";
 import { ios as iosUtils } from "tns-core-modules/utils/utils";
-import { VibrateService } from '~/app/shared/notification/vibrate.service';
+import { VibrateService } from '../../../shared/notification/vibrate.service';
 
 @Component({
     moduleId: module.id,

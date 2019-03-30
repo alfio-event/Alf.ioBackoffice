@@ -4,7 +4,7 @@ import { RouterExtensions } from "nativescript-angular/router"
 import { Account, EventConfiguration, AccountType } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import { isDefined, isUndefined } from "tns-core-modules/utils/types";
-import { FeedbackService } from "~/app/shared/notification/feedback.service";
+import { FeedbackService } from "../../shared/notification/feedback.service";
 import { ItemEventData } from "tns-core-modules/ui/list-view/list-view";
 
 @Component({

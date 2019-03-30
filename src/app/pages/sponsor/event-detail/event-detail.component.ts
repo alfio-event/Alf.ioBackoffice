@@ -13,8 +13,8 @@ import { encodeBase64 } from '../../../utils/network-util';
 import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
 import * as application from "tns-core-modules/application";
 import { ios as iosUtils } from "tns-core-modules/utils/utils";
-import { VibrateService } from '~/app/shared/notification/vibrate.service';
-import { FeedbackService } from '~/app/shared/notification/feedback.service';
+import { VibrateService } from '../../../shared/notification/vibrate.service';
+import { FeedbackService } from '../../../shared/notification/feedback.service';
 
 @Component({
     moduleId: module.id,
