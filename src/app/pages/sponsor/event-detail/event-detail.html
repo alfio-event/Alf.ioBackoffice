@@ -14,15 +14,17 @@
         <ListView [items]="scans" row="2" [class.visible]="listLoaded" *ngIf="scans.length > 0" #list class="list-group">
             <ng-template let-item="item" let-ticket="item.ticket">
                 <GridLayout columns="36, *" class="list-group-item">
-                    <Label col="0" class="icon icon-2x person-icon text-muted text-center" text="&#xf30c;" *ngIf="!ticket"></Label>
-                    <Label col="0" class="icon icon-2x person-icon text-muted text-center" text="&#xf206;" *ngIf="ticket"></Label>
+                    <Label col="0" class="icon person-icon text-center" 
+                        [class.text-muted]="!hasSuccessStatus(item)"
+                        [class.text-success]="hasSuccessStatus(item)" 
+                        [text]="iconForItem(item)"></Label>
                     <StackLayout col="1" class="medium-spacing" orientation="vertical" *ngIf="ticket">
                         <Label class="title" [text]="ticket.fullName"></Label>
-                        <Label [text]="ticket.uuid"></Label>
+                        <Label [text]="ticket.uuid | slice:0:8 | uppercase"></Label>
                     </StackLayout>
                     <StackLayout col="1" class="medium-spacing" orientation="vertical" *ngIf="!ticket">
-                        <Label class="title" text="Synchronization in progress..." ></Label>
-                        <Label [text]="item.code"></Label>
+                        <Label class="title" [class.text-muted]="hasErrorStatus(item)" [text]="getPlaceholderText(item)" ></Label>
+                        <Label [class.text-muted]="hasErrorStatus(item)" [text]="item.code"></Label>
                     </StackLayout>
                 </GridLayout>
             </ng-template>

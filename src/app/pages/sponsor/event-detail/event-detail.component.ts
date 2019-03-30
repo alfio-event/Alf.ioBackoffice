@@ -1,5 +1,5 @@
 import { defaultScanOptions } from '../../../utils/barcodescanner';
-import { SponsorScan, ScanResult } from '../../../shared/scan/sponsor-scan';
+import { SponsorScan, ScanResult, ScanStatus } from '../../../shared/scan/sponsor-scan';
 import { Component, ElementRef, Injectable, OnInit, OnDestroy, ViewChild, NgZone } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
 import { ListView } from "tns-core-modules/ui/list-view"
@@ -189,6 +189,34 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             }, function(err) {
                 console.log("Error: " + err);
             });
+    }
+
+    iconForItem(item: SponsorScan): string {
+        switch(item.status) {
+            case ScanStatus.DONE:
+                return String.fromCharCode(0xf26b);
+            case ScanStatus.ERROR:
+                return String.fromCharCode(0xf1f0);
+            default:
+                return String.fromCharCode(0xf30c);
+        }
+    }
+
+    hasErrorStatus(item: SponsorScan) {
+        return item.status === ScanStatus.ERROR;
+    }
+
+    hasSuccessStatus(item: SponsorScan) {
+        return item.status === ScanStatus.DONE;
+    }
+
+    getPlaceholderText(item: SponsorScan) {
+        if(this.hasErrorStatus(item)) {
+            return "Invalid code";
+        } else if(!this.hasSuccessStatus(item)) {
+            return "Synchronization in progress...";
+        }
+
     }
     
     private refreshListView(): void {

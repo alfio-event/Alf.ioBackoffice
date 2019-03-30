@@ -6,7 +6,7 @@ import { SecureStorage } from "nativescript-secure-storage";
 export class StorageService {
     private secureStorage : SecureStorage;
     constructor() {
-        this.secureStorage = application.ios ? new SecureStorage(kSecAttrAccessibleWhenUnlocked) : new SecureStorage();
+        this.secureStorage = application.ios ? new SecureStorage(kSecAttrAccessibleWhenUnlockedThisDeviceOnly) : new SecureStorage();
     }
 
     public getOrDefault(key: string, defaultValue: string = null) : string {

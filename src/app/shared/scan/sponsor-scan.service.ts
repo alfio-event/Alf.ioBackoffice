@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 
-import { SponsorScan, ScanStatus, ScanResult } from "./sponsor-scan";
-import { Ticket, isValidTicketCode } from "./scan-common";
+import { SponsorScan, ScanStatus, ScanResult, checkInStatusToScanStatus } from "./sponsor-scan";
+import { Ticket, isValidTicketCode, TicketAndCheckInResult } from "./scan-common";
 import { Account } from "../account/account";
 import { authorization } from "../../utils/network-util";
 import { Subject, Observable } from "rxjs";
@@ -87,23 +87,40 @@ export class SponsorScanService  {
         if(toSend == null || toSend.length == 0) {
             return;
         }
-        this.http.post<Array<any>>(account.url+'/api/attendees/sponsor-scan/bulk', toSend.map(scan=> new SponsorScanRequest(eventKey, scan.code)), {
+        this.http.post<Array<TicketAndCheckInResult>>(account.url+'/api/attendees/sponsor-scan/bulk', toSend.map(scan=> new SponsorScanRequest(eventKey, scan.code)), {
             headers: authorization(account.apiKey, account.username, account.password)
         }).subscribe(payload => {
             if(payload != null) {
-                payload.forEach(scan => this.changeStatusFor(eventKey, (<Ticket> scan.ticket).uuid, ScanStatus.DONE, <Ticket> scan.ticket));
-                this.persistSponsorScans(eventKey, account);
-                this.emitFor(eventKey);
-                this.process(eventKey, account);
+                const requestResponseSameSize = payload.length === toSend.length;
+                // if there is a result, we assume that it would contain the elements in the same order as we sent them.
+                // If the size of the result is not equal to the size of the request, we skip the error.
+                // this will be improved in a future release, by adding the scanned code as correlation ID.
+                for(let i = 0; i < payload.length; i++) {
+                    let scan = payload[i];
+                    let uuid: string;
+                    if(scan.ticket) {
+                        uuid = scan.ticket.uuid;
+                    } else if(requestResponseSameSize) {
+                        uuid = toSend[i].code;
+                    }
+                    if(uuid != null) {
+                        this.changeStatusFor(eventKey, uuid, checkInStatusToScanStatus(scan.result.status), scan.ticket);
+                    }
+                }
+                this.publishResults(eventKey, account);
             }
         }, error => {
-            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.ERROR, null));
-            this.persistSponsorScans(eventKey, account);
-            this.emitFor(eventKey);
             console.log('error while bulk scanning:', JSON.stringify(error));
-            this.process(eventKey, account);
+            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null));
+            this.publishResults(eventKey, account);
         });
         
+    }
+
+    private publishResults(eventKey: string, account: Account): void {
+        this.persistSponsorScans(eventKey, account);
+        this.emitFor(eventKey);
+        this.process(eventKey, account);
     }
 
     private emitFor(eventKey: string): void {
@@ -121,6 +138,7 @@ export class SponsorScanService  {
     }
 
     private changeStatusFor(eventKey: string, uuid: string, status: ScanStatus, ticket: Ticket): void {
+        console.log('changing status for ', uuid, status);
         this.sponsorScans[eventKey].filter(scan => scan.code === uuid).forEach(scan => {
             scan.status = status;
             if(ticket) {

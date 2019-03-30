@@ -1,4 +1,4 @@
-import { Ticket } from './scan-common';
+import { Ticket, CheckInStatus } from './scan-common';
 
 export class SponsorScan {
     constructor(public code: string,
@@ -11,6 +11,20 @@ export class SponsorScan {
 
 export enum ScanStatus {
     NEW, IN_PROCESS, ERROR, DONE
+}
+
+export function checkInStatusToScanStatus(checkInStatus: CheckInStatus): ScanStatus {
+    switch(checkInStatus) {
+        case "INVALID_TICKET_STATE":
+            // the ticket status has not been uploaded yet, so we will retry.
+            return ScanStatus.NEW;
+
+        case "SUCCESS":
+            return ScanStatus.DONE;
+
+        default:
+            return ScanStatus.ERROR;
+    }
 }
 
 export enum ScanResult {
