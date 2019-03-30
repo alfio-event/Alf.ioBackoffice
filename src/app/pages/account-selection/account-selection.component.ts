@@ -9,7 +9,7 @@ import { ios } from "tns-core-modules/application";
 import { isUndefined, isDefined } from "tns-core-modules/utils/types";
 import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
 import { Subject, Observable } from "rxjs";
-import { FeedbackService } from "~/app/shared/notification/feedback.service";
+import { FeedbackService } from "../../shared/notification/feedback.service";
 
 @Component({
     selector: "account-selection",
