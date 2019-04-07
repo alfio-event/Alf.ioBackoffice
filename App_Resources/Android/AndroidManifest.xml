@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    xmlns:android="http://schemas.android.com/apk/res/android" package="__PACKAGE__" android:versionCode="1808200" android:versionName="1.0.3">
+    xmlns:android="http://schemas.android.com/apk/res/android" package="__PACKAGE__" android:versionCode="1904020" android:versionName="1.1.0">
     <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" />
     <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="__APILEVEL__" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
