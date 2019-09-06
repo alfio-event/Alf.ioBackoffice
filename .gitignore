@@ -40,3 +40,4 @@ typings/
 buildRelease*.sh
 .cloud
 .migration_backup
+.update_backup
