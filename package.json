@@ -29,6 +29,7 @@
     "nativescript-email": "~1.5.3",
     "nativescript-feedback": "^1.3.9",
     "nativescript-insomnia": "~1.2.2",
+    "nativescript-screen-orientation": "^2.0.0",
     "nativescript-secure-storage": "~2.4.0",
     "nativescript-taptic-engine": "^2.1.0",
     "nativescript-theme-core": "~1.0.4",
