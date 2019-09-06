@@ -2,17 +2,16 @@ import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { SponsorScan, ScanResult, ScanStatus } from '../../../shared/scan/sponsor-scan';
 import { Component, ElementRef, Injectable, OnInit, OnDestroy, ViewChild, NgZone } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
-import { ListView } from "tns-core-modules/ui/list-view"
+import { ListView } from "tns-core-modules/ui/list-view";
 import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../../shared/account/account.service";
-import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service"
+import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service";
 import { Account, EventConfiguration } from "../../../shared/account/account";
 import * as Email from "nativescript-email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { encodeBase64 } from '../../../utils/network-util';
 import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
-import * as application from "tns-core-modules/application";
-import { ios as iosUtils } from "tns-core-modules/utils/utils";
+import { device } from "tns-core-modules/platform";
 import { VibrateService } from '../../../shared/notification/vibrate.service';
 import { FeedbackService } from '../../../shared/notification/feedback.service';
 
@@ -31,10 +30,10 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     event: EventConfiguration;
     scans: Array<SponsorScan> = [];
     private lastUpdate: number = 0;
-    @ViewChild("list") listViewContainer: ElementRef;
+    @ViewChild("list", { static: false }) listViewContainer: ElementRef;
     private listView: ListView;
     private interval: number;
-    
+
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
                 private accountService: AccountService,
@@ -53,7 +52,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         this.scans = [];
         this.isLoading = true;
         this.route.params.subscribe((params: Params) => {
-            console.log("params", params['accountId'], params['eventId'])
+            console.log("params", params['accountId'], params['eventId']);
             let id = params['accountId'];
             let eventId = params['eventId'];
             this.accountService.findAccountById(id).ifPresent(account => {
@@ -67,22 +66,22 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                     });
                 });
                 let list = this.sponsorScanService.loadInitial(this.event.key);
-                if(list) {
+                if (list) {
                     this.scans = list;
                 }
                 this.isLoading = false;
             });
         });
-        if(!application.ios || iosUtils.getter(UIDevice, UIDevice.currentDevice).model != "iPad") {
+        if (device.deviceType === 'Phone') {
             forcePortraitOrientation();
         }
     }
 
     ngOnDestroy() {
-        if(this.event && this.event.key) {
+        if (this.event && this.event.key) {
             this.sponsorScanService.destroyForEvent(this.event.key);
         }
-        if(this.interval) {
+        if (this.interval) {
             clearInterval(this.interval);
         }
         enableRotation();
@@ -96,7 +95,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             this.lastUpdate = new Date().getTime();
             console.log("scanned", res.text);
             let result = this.sponsorScanService.scan(this.event.key, this.account, res.text);
-            switch(result) {
+            switch (result) {
                 case ScanResult.OK: {
                     this.vibrateService.success();
                     this.feedbackService.success('Scan enqueued!');
@@ -124,19 +123,19 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         this.interval = setInterval(() => {
             let current = new Date().getTime();
             let elapsed = current - this.lastUpdate;
-            if(elapsed > 45 * 1000) {
+            if (elapsed > 45 * 1000) {
                 clearInterval(this.interval);
                 this.barcodeScanner.stop()
                     .then(() => {
                         this.feedbackService.warning("Timed out");
                         this.toggleLoading(false);
                     });
-            } else if(elapsed > (30 * 1000) && !warningDisplayed) {
+            } else if (elapsed > (30 * 1000) && !warningDisplayed) {
                 warningDisplayed = true;
                 this.feedbackService.warning("Camera will be deactivated in 15 sec.");
             }
         }, 1000);
-        
+
         this.barcodeScanner.scan(scanOptions)
             .then(() => {
                     console.log("barcode scanner exited");
@@ -156,7 +155,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         this.sponsorScanService.forceProcess(this.event.key, this.account);
     }
 
-    //from http://stackoverflow.com/a/12646864
+    // from http://stackoverflow.com/a/12646864
     shuffleArray<T>(array: Array<T>): void {
         for (let i = array.length - 1; i > 0; i--) {
             let j = Math.floor(Math.random() * (i + 1));
@@ -192,7 +191,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     }
 
     iconForItem(item: SponsorScan): string {
-        switch(item.status) {
+        switch (item.status) {
             case ScanStatus.DONE:
                 return String.fromCharCode(0xf26b);
             case ScanStatus.ERROR:
@@ -211,26 +210,26 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     }
 
     getPlaceholderText(item: SponsorScan) {
-        if(this.hasErrorStatus(item)) {
+        if (this.hasErrorStatus(item)) {
             return "Invalid code";
-        } else if(!this.hasSuccessStatus(item)) {
+        } else if (!this.hasSuccessStatus(item)) {
             return "Synchronization in progress...";
         }
 
     }
-    
+
     private refreshListView(): void {
         let view = this.getListView();
-        if(view) {
+        if (view) {
             console.log("refreshing...");
             view.refresh();
         }
     }
-    
+
     private getListView(): ListView {
-        if(this.listView) {
+        if (this.listView) {
             return this.listView;
-        } else if(this.listViewContainer) {
+        } else if (this.listViewContainer) {
             let container = <ListView>this.listViewContainer.nativeElement;
             this.listView = container;
             return this.listView;

@@ -39,3 +39,4 @@ typings/
 .DS_Store
 buildRelease*.sh
 .cloud
+.migration_backup
