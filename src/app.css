@@ -99,3 +99,7 @@
   border: 5px solid white;
   border-radius: 32px;
 }
+
+.text-warning {
+  color: #f57c00;
+}

@@ -5,7 +5,6 @@ export class Ticket {
                 public firstName: string,
                 public lastName: string,
                 public fullName: string,
-                public email: string,
                 public categoryName: string) {}
 }
 
@@ -36,7 +35,8 @@ export class CheckInResult {
 }
 
 export type CheckInStatus = "EVENT_NOT_FOUND" | "TICKET_NOT_FOUND" | "EMPTY_TICKET_CODE"
-  | "INVALID_TICKET_CODE" | "INVALID_TICKET_STATE" | "ALREADY_CHECK_IN" | "MUST_PAY" | "OK_READY_TO_BE_CHECKED_IN" | "SUCCESS" | "ERROR";
+  | "INVALID_TICKET_CODE" | "INVALID_TICKET_STATE" | "ALREADY_CHECK_IN" | "MUST_PAY" | "OK_READY_TO_BE_CHECKED_IN"
+  | "BADGE_SCAN_SUCCESS" | "BADGE_SCAN_ALREADY_DONE" | "SUCCESS" | "ERROR";
 
 export const CheckInStatus = {
   SUCCESS: "SUCCESS" as CheckInStatus,
@@ -48,11 +48,16 @@ export const CheckInStatus = {
   EMPTY_TICKET_CODE: "EMPTY_TICKET_CODE" as CheckInStatus,
   INVALID_TICKET_CODE: "INVALID_TICKET_CODE" as CheckInStatus,
   INVALID_TICKET_STATE: "INVALID_TICKET_STATE" as CheckInStatus,
-  OK_READY_TO_BE_CHECKED_IN: "OK_READY_TO_BE_CHECKED_IN" as CheckInStatus
+  OK_READY_TO_BE_CHECKED_IN: "OK_READY_TO_BE_CHECKED_IN" as CheckInStatus,
+  BADGE_SCAN_SUCCESS: "BADGE_SCAN_SUCCESS" as CheckInStatus,
+  BADGE_SCAN_ALREADY_DONE: "BADGE_SCAN_ALREADY_DONE" as CheckInStatus
 };
 
+export const WarningStatuses: CheckInStatus[] = [CheckInStatus.BADGE_SCAN_ALREADY_DONE];
+export const SuccessStatuses: CheckInStatus[] = [CheckInStatus.SUCCESS, CheckInStatus.BADGE_SCAN_SUCCESS];
 
-export const statusDescriptions: {[status: string] : string} = {
+
+export const statusDescriptions: {[status: string]: string} = {
     "SUCCESS": "Success",
     "MUST_PAY": "Outstanding payment:",
     "ALREADY_CHECK_IN": "Ticket already checked in!!",
@@ -62,10 +67,12 @@ export const statusDescriptions: {[status: string] : string} = {
     "EMPTY_TICKET_CODE": "Invalid ticket code. Please scan the QR-Code again.",
     "INVALID_TICKET_CODE": "Invalid ticket code. Please report the issue to the organizers.",
     "INVALID_TICKET_STATE": "This ticket cannot be checked in. Please report the issue to the organizers.",
-    "OK_READY_TO_BE_CHECKED_IN": "OK_READY_TO_BE_CHECKED_IN"
-}
+    "OK_READY_TO_BE_CHECKED_IN": "OK_READY_TO_BE_CHECKED_IN",
+    "BADGE_SCAN_ALREADY_DONE": "Badge Scan already performed today.",
+    "BADGE_SCAN_SUCCESS": "Badge Scan successful"
+};
 
 const validator = new RegExp("^[^\\{\\}]+$");
-export function isValidTicketCode(scan: string) :boolean {
+export function isValidTicketCode(scan: string): boolean {
     return validator.test(scan);
 }

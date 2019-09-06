@@ -5,7 +5,7 @@ import { AccountService } from "../../../shared/account/account.service";
 import { ScanService } from "../../../shared/scan/scan.service";
 import { Account, EventConfiguration } from "../../../shared/account/account";
 import { defaultScanOptions } from '../../../utils/barcodescanner';
-import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket } from '../../../shared/scan/scan-common';
+import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses } from '../../../shared/scan/scan-common';
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
@@ -120,17 +120,29 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     }
 
     getStatusIcon(): string {
+        let code: number = 0xf135;
         if (this.isStatusSuccess()) {
-            return String.fromCharCode(0xf269);
-        } else if (this.status === CheckInStatus.MUST_PAY) {
-            return String.fromCharCode(0xf19a);
-        } else {
-            return String.fromCharCode(0xf135);
+            code = 0xf269;
+        } else if (this.isStatusMustPay()) {
+            code = 0xf19a;
+        } else if (this.isStatusWarning()) {
+            code = 0xf1f4;
         }
+        return String.fromCharCode(code);
     }
 
     isStatusSuccess(): boolean {
-        return this.status === CheckInStatus.SUCCESS;
+        return SuccessStatuses.indexOf(this.status) > -1;
+    }
+
+    isStatusError(): boolean {
+        return !this.isStatusSuccess()
+            && !this.isStatusMustPay()
+            && !this.isStatusWarning();
+    }
+
+    isStatusWarning(): boolean {
+        return WarningStatuses.indexOf(this.status) > -1;
     }
 
     isStatusMustPay(): boolean {
@@ -149,7 +161,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         // Scan Attendees
         if (!this.status) {
             return "Scan Attendees";
-        } else if (this.isStatusSuccess()) {
+        } else if (this.isStatusSuccess() || this.isStatusWarning()) {
             return "Scan Next";
         } else if (this.status === CheckInStatus.MUST_PAY) {
             return "Confirm Payment";
@@ -160,7 +172,6 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
 
     private displayResult(res: TicketAndCheckInResult): void {
         this.ngZone.run(() => {
-            console.log(`********** received error: ${res.result.status}`);
             this.status = res ? res.result.status : CheckInStatus.ERROR;
             this.message = statusDescriptions[this.status];
             if (this.status === CheckInStatus.MUST_PAY) {
@@ -168,7 +179,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 this.message += " " + formattedAmount;
             }
             this.ticket = res ? res.ticket : null;
-            if (this.status === CheckInStatus.SUCCESS) {
+            if (this.isStatusSuccess()) {
                 // notify success
                 this.vibrateService.success();
             } else {

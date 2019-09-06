@@ -13,9 +13,17 @@ export class ScanService {
     }
 
     public checkIn(eventKey: string, account: Account, scan: string): Observable<TicketAndCheckInResult> {
-        if(isValidTicketCode(scan)) {
-            let split = scan.split("/");
-            return this.performCheckIn(account, `${account.url}/admin/api/check-in/event/${eventKey}/ticket/${split[0]}`, scan);
+        if (isValidTicketCode(scan)) {
+            let ticketId = null, code = null;
+            if (scan.includes("/")) {
+                let split = scan.split("/");
+                ticketId = split[0];
+                code = scan;
+            } else {
+                ticketId = scan;
+                code = null;
+            }
+            return this.performCheckIn(account, `${account.url}/admin/api/check-in/event/${eventKey}/ticket/${ticketId}`, code);
         } else {
             return throwError(new InvalidQrCode("Invalid QR-Code!"));
         }
