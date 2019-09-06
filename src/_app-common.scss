@@ -1,0 +1,97 @@
+@import '~nativescript-theme-core/orange';
+.small-spacing {
+margin: 5;
+}
+.medium-spacing {
+margin: 10;
+}
+.submit-button {
+color: white;
+margin-top: 20;
+}
+
+.button-group {
+margin-top: 20;
+margin-bottom: 20;
+}
+
+.button  {
+min-height:40;
+}
+
+.fab-button {
+    height: 70;
+    margin: 15;
+    horizontal-align: right; 
+    vertical-align: bottom; 
+    background-color: #2962ff; 
+}
+.loading-indicator {
+height: 50;
+}
+
+.icon {
+font-family: 'Material-Design-Iconic-Font';
+font-weight: normal;
+font-style: normal;
+font-size: 24;
+}
+
+.icon-1-5x {
+font-size: 36;
+}
+
+.icon-2x {
+font-size: 48;
+}
+
+.icon-3x {
+font-size: 72;
+}
+
+.icon-4x {
+font-size: 96;
+}
+
+.text-white {
+color: white;
+}
+
+.text-success {
+color: #4CAF50;
+}
+
+.btn-danger {
+background-color: #F44336;
+color: white;
+}
+
+.btn-success {
+background-color: #4CAF50;
+color: white;
+}
+
+.text-danger {
+color: #F44336;
+}
+
+.strong {
+font-weight: bold;
+}
+
+.mr-1 {
+margin-right: 10px;
+}
+
+.btn-lg {
+height: 120px;
+font-size: 22;
+}
+
+.text-warning {
+color: #f57c00;
+}
+
+.text-muted {
+color: gray;
+}

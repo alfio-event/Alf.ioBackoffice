@@ -32,7 +32,7 @@
     "nativescript-screen-orientation": "^2.0.0",
     "nativescript-secure-storage": "~2.5.0",
     "nativescript-taptic-engine": "^2.1.0",
-    "nativescript-theme-core": "~1.0.4",
+    "nativescript-theme-core": "^2.0.17",
     "nativescript-vibrate": "~2.1.3",
     "reflect-metadata": "~0.1.12",
     "rxjs": "^6.3.3",
@@ -44,7 +44,8 @@
     "@nativescript/schematics": "~0.5.0",
     "@ngtools/webpack": "8.0.0",
     "nativescript-dev-webpack": "~1.2.0",
+    "tns-platform-declarations": "6.1.0",
     "typescript": "3.4.5",
-    "tns-platform-declarations": "6.0.1"
+    "node-sass": "4.12.0"
   }
 }
