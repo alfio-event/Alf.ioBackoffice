@@ -2,7 +2,7 @@ import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { SponsorScan, ScanResult, ScanStatus } from '../../../shared/scan/sponsor-scan';
 import { Component, ElementRef, Injectable, OnInit, OnDestroy, ViewChild, NgZone } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
-import { ListView } from "tns-core-modules/ui/list-view";
+import { ListView, ItemEventData } from "tns-core-modules/ui/list-view";
 import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../../shared/account/account.service";
 import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service";
@@ -58,6 +58,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             this.accountService.findAccountById(id).ifPresent(account => {
                 this.account = account;
                 this.event = this.account.configurations.filter(c => c.key === eventId)[0];
+                this.sponsorScanService.destroyForEvent(this.event.key);
                 this.sponsorScanService.getForEvent(this.event.key, this.account).subscribe(list => {
                     console.log("received ", list.length);
                     this.ngZone.run(() => {
@@ -235,6 +236,17 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             return this.listView;
         }
         return null;
+    }
+
+    select(eventData: ItemEventData): void {
+        let item = this.scans[eventData.index];
+        if (item.code != null) {
+            this.routerExtensions.navigate(['/attendee-detail/', this.account.getKey(), this.event.key, item.code]);
+        }
+    }
+
+    commentText(item: SponsorScan): string {
+        return item.notes != null && item.notes.length > 0 ? String.fromCharCode(0xf260) : "";
     }
 
 

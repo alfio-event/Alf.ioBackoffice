@@ -4,7 +4,7 @@ import { NativeScriptFormsModule } from "nativescript-angular/forms";
 import { NativeScriptModule } from "nativescript-angular/nativescript.module";
 import { NativeScriptAnimationsModule } from "nativescript-angular/animations";
 import { NativeScriptRouterModule } from "nativescript-angular/router";
-import { AccountModule } from "./shared/account/account.module"
+import { AccountModule } from "./shared/account/account.module";
 import { IosAccountIconComponent } from "./pages/ios-account-icon/ios-account-icon.component";
 import { AppComponent } from "./app.component";
 import { routes, navigatableComponents } from "./app.routing";
@@ -44,8 +44,8 @@ export function createBarcodeScanner() {
         IfIosDirective,
         ...navigatableComponents
     ],
-    providers: [ 
-        CurrencyPipe, 
+    providers: [
+        CurrencyPipe,
         { provide: BarcodeScanner, useFactory: (createBarcodeScanner) },
         VibrateService,
         FeedbackService

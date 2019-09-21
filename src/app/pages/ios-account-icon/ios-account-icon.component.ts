@@ -13,30 +13,30 @@ import { Observable, Subject } from 'rxjs';
     styleUrls: ['./ios-account-icon-common.css']
 })
 @Injectable()
-export class IosAccountIconComponent implements OnInit{
+export class IosAccountIconComponent implements OnInit {
 
     text: string;
     @Input() account: Account;
     @Input() editEnableObservable: Observable<boolean>;
-    @Input() tapEmitter:Subject<Account>;
+    @Input() tapEmitter: Subject<Account>;
     editEnabled: boolean;
 
     constructor() {
     }
-    
-    ngOnInit():void {
+
+    ngOnInit(): void {
         this.setText(false);
         this.editEnableObservable.subscribe(enabled => this.setText(enabled));
     }
-    
+
     private setText(enabled: boolean) {
         this.editEnabled = enabled;
-        if(enabled) {
+        if (enabled) {
             this.text = String.fromCharCode(0xf154);
         } else {
             this.text = String.fromCharCode(0xf2fb);
         }
-    } 
+    }
 
     select(): void {
         this.tapEmitter.next(this.account);

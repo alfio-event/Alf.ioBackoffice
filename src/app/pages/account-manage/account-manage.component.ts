@@ -1,6 +1,6 @@
 import { Component, OnInit, NgZone } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
-import { RouterExtensions } from "nativescript-angular/router"
+import { RouterExtensions } from "nativescript-angular/router";
 import { Account, EventConfiguration, AccountType } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import { isDefined, isUndefined } from "tns-core-modules/utils/types";
@@ -22,7 +22,7 @@ export class AccountManageComponent implements OnInit {
         private routerExtensions: RouterExtensions,
         private accountService: AccountService,
         private ngZone: NgZone,
-        private feedbackService: FeedbackService) {            
+        private feedbackService: FeedbackService) {
         }
 
     ngOnInit(): void {
@@ -32,7 +32,7 @@ export class AccountManageComponent implements OnInit {
             console.log("AccountManageComponent accountId:", id);
             this.accountService.findAccountById(id).ifPresent((account: Account) => {
                 let now = new Date();
-                if(isUndefined(account.lastUpdate) || now.getTime() - account.lastUpdate.getTime() > 3600) {
+                if (isUndefined(account.lastUpdate) || now.getTime() - account.lastUpdate.getTime() > 3600) {
                     this.internalReloadEvents(account, () => this.account = account);
                 } else {
                     this.events = this.account.configurations;
@@ -63,7 +63,7 @@ export class AccountManageComponent implements OnInit {
                     this.feedbackService.error('Error while refreshing events');
                 });
             }, () => this.ngZone.run(() => {
-                if(isDefined(onComplete)) {
+                if (isDefined(onComplete)) {
                     onComplete();
                 }
             }));
@@ -79,8 +79,8 @@ export class AccountManageComponent implements OnInit {
 
     select(eventData: ItemEventData): void {
         let item = this.events[eventData.index];
-        if(item.key != null) {
-            let accountType = this.account.accountType == AccountType.STAFF ? "STAFF" : "SPONSOR";
+        if (item.key != null) {
+            let accountType = this.account.accountType === AccountType.STAFF ? "STAFF" : "SPONSOR";
             this.routerExtensions.navigate(['/event-detail/', this.account.getKey(), accountType, item.key]);
         }
     }

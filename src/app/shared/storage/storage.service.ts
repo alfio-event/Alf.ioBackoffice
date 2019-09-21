@@ -4,12 +4,12 @@ import { SecureStorage } from "nativescript-secure-storage";
 
 @Injectable()
 export class StorageService {
-    private secureStorage : SecureStorage;
+    private secureStorage: SecureStorage;
     constructor() {
         this.secureStorage = application.ios ? new SecureStorage(kSecAttrAccessibleWhenUnlockedThisDeviceOnly) : new SecureStorage();
     }
 
-    public getOrDefault(key: string, defaultValue: string = null) : string {
+    public getOrDefault(key: string, defaultValue: string = null): string {
         return this.secureStorage.getSync({key: key}) || defaultValue;
     }
 

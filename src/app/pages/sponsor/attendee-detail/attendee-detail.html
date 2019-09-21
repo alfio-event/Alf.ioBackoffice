@@ -1,0 +1,8 @@
+<ActionBar class="action-bar" title="Edit Details">
+    <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Scan"></NavigationButton>
+    <NavigationButton *ifIos (tap)="onBackTap()" text="Scan"></NavigationButton>
+</ActionBar>
+<StackLayout>
+    <Label text="Enter text:" class="label"></Label>
+    <TextView [(ngModel)]="scan.notes" hint="Enter some notes" editable="true" class="input input-border" *ngIf="scan"></TextView>
+</StackLayout>

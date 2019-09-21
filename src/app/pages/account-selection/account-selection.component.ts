@@ -120,7 +120,9 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     }
 
     onLongPress(account: Account): void {
-        this.editedAccount = account;
+        if (!ios) {
+            this.editedAccount = account;
+        }
     }
 
     isEditRequested(account: Account): boolean {
