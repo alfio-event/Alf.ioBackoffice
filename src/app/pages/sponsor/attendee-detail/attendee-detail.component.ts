@@ -12,12 +12,14 @@ import { RouterExtensions } from 'nativescript-angular/router';
     moduleId: module.id,
     selector: "attendee-detail-component",
     templateUrl: "./attendee-detail.html",
+    styleUrls: [ "./attendee-detail.css" ]
 })
 export class AttendeeDetailComponent implements OnInit, AfterViewInit {
 
     isLoading = false;
     scan: SponsorScan;
     eventId: string;
+    maxChars = 2000;
 
     constructor(private sponsorScanService: SponsorScanService,
         private route: ActivatedRoute,
@@ -46,11 +48,11 @@ export class AttendeeDetailComponent implements OnInit, AfterViewInit {
         });
     }
 
-    get remainingChars(): Number {
-        if (this.scan == null) {
+    get charCount(): Number {
+        if (this.scan == null || this.scan.notes == null) {
             return 0;
         }
-        return this.scan.notes != null ? this.scan.notes.length : 2000;
+        return this.scan.notes.length;
     }
 
     onBackTap() {

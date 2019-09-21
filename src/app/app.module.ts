@@ -18,6 +18,7 @@ import { VibrateService } from './shared/notification/vibrate.service';
 import { FeedbackService } from './shared/notification/feedback.service';
 import { IfAndroidDirective, IfIosDirective } from './utils/if-platform.directive';
 import { SponsorModule } from './shared/scan/sponsor.module';
+import { SponsorScanBadgeComponent } from './pages/sponsor-scan-badge/sponsor-scan-badge.component';
 
 export function createBarcodeScanner() {
     return new BarcodeScanner();
@@ -44,6 +45,7 @@ export function createBarcodeScanner() {
         IosAccountIconComponent,
         IfAndroidDirective,
         IfIosDirective,
+        SponsorScanBadgeComponent,
         ...navigatableComponents
     ],
     providers: [

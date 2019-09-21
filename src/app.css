@@ -103,3 +103,7 @@
 .text-warning {
   color: #f57c00;
 }
+
+.title {
+  font-weight: bold;
+}

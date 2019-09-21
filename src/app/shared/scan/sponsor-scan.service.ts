@@ -56,7 +56,6 @@ export class SponsorScanService  {
 
     private loadIfExists(eventKey: string, account: Account): Array<SponsorScan> {
         let stringified = this.storage.getOrDefault('ALFIO_SPONSOR_SCANS_' + eventKey + account.getKey());
-        console.log("found", stringified);
         if (stringified != null) {
             let found = <Array<SponsorScan>> JSON.parse(stringified);
             return found.map(sponsorScan => new SponsorScan(sponsorScan.code, SponsorScanService.fixStatusOnLoad(sponsorScan.status), sponsorScan.ticket, sponsorScan.notes));
@@ -88,7 +87,7 @@ export class SponsorScanService  {
         if (toSend == null || toSend.length === 0) {
             return;
         }
-        this.http.post<Array<TicketAndCheckInResult>>(account.url + '/api/attendees/sponsor-scan/bulk', toSend.map(scan => new SponsorScanRequest(eventKey, scan.code)), {
+        this.http.post<Array<TicketAndCheckInResult>>(account.url + '/api/attendees/sponsor-scan/bulk', toSend.map(scan => new SponsorScanRequest(eventKey, scan.code, scan.notes)), {
             headers: authorization(account.apiKey, account.username, account.password)
         }).subscribe(payload => {
             if (payload != null) {
@@ -189,5 +188,5 @@ export class SponsorScanService  {
 }
 
 class SponsorScanRequest {
-    constructor(private eventName: string, private ticketIdentifier: string) {}
+    constructor(private eventName: string, private ticketIdentifier: string, private notes: string) {}
 }

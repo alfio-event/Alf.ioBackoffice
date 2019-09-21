@@ -2,7 +2,14 @@
     <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Scan"></NavigationButton>
     <NavigationButton *ifIos (tap)="onBackTap()" text="Scan"></NavigationButton>
 </ActionBar>
-<StackLayout>
-    <Label text="Enter text:" class="label"></Label>
-    <TextView [(ngModel)]="scan.notes" hint="Enter some notes" editable="true" class="input input-border" *ngIf="scan"></TextView>
-</StackLayout>
+<ScrollView>
+    <GridLayout rows="auto, 1, 20, 30, 20, *, 50" columns="16, *, auto, 16">
+        <StackLayout row="0" col="1" colSpan="2">
+            <sponsor-scan-badge [item]="scan" [showArrow]="false"></sponsor-scan-badge>
+        </StackLayout>
+        <StackLayout row="1" col="0" colSpan="4" class="hr-light"></StackLayout>
+        <Label row="3" col="1" text="Enter comments" class="title"></Label>
+        <Label row="3" col="2" class="text-muted" [text]="charCount + ' / ' + maxChars"></Label>
+        <TextView row="5" col="1" colSpan="2" [(ngModel)]="scan.notes" hint="Enter some notes" editable="true" class="input input-border" *ngIf="scan" [maxLength]="maxChars"></TextView>
+    </GridLayout>
+</ScrollView>

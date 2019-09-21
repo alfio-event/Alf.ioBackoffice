@@ -1,0 +1,9 @@
+.input-border {
+    border-width: 1; 
+    border-color: black;
+}
+
+TextView {
+    padding: 8;
+    font-size: 15;
+}

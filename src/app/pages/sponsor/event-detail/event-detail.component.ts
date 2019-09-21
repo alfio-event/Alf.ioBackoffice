@@ -190,34 +190,6 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             });
     }
 
-    iconForItem(item: SponsorScan): string {
-        switch (item.status) {
-            case ScanStatus.DONE:
-                return String.fromCharCode(0xf26b);
-            case ScanStatus.ERROR:
-                return String.fromCharCode(0xf1f0);
-            default:
-                return String.fromCharCode(0xf30c);
-        }
-    }
-
-    hasErrorStatus(item: SponsorScan) {
-        return item.status === ScanStatus.ERROR;
-    }
-
-    hasSuccessStatus(item: SponsorScan) {
-        return item.status === ScanStatus.DONE;
-    }
-
-    getPlaceholderText(item: SponsorScan) {
-        if (this.hasErrorStatus(item)) {
-            return "Invalid code";
-        } else if (!this.hasSuccessStatus(item)) {
-            return "Synchronization in progress...";
-        }
-
-    }
-
     private refreshListView(): void {
         let view = this.getListView();
         if (view) {
