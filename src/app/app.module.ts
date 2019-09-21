@@ -17,6 +17,7 @@ import { NativeScriptHttpClientModule } from "nativescript-angular/http-client";
 import { VibrateService } from './shared/notification/vibrate.service';
 import { FeedbackService } from './shared/notification/feedback.service';
 import { IfAndroidDirective, IfIosDirective } from './utils/if-platform.directive';
+import { SponsorModule } from './shared/scan/sponsor.module';
 
 export function createBarcodeScanner() {
     return new BarcodeScanner();
@@ -33,7 +34,8 @@ export function createBarcodeScanner() {
         NativeScriptHttpClientModule,
         AccountModule,
         StatisticsModule,
-        StorageModule
+        StorageModule,
+        SponsorModule
     ],
     declarations: [
         AppComponent,

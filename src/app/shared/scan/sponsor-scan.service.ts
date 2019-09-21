@@ -178,7 +178,7 @@ export class SponsorScanService  {
     }
 
     public loadInitial(eventKey: string): Array<SponsorScan> {
-        return this.sponsorScans[eventKey];
+        return this.sponsorScans[eventKey] || [];
     }
 
     public update(eventKey: string, scan: SponsorScan): void {

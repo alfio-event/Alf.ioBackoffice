@@ -1,10 +1,10 @@
 import { NgModule } from "@angular/core";
-import { AccountService } from "./account.service"
+import { AccountService } from "./account.service";
 import { AccountSelectionNotifier } from "./account-selection-notifier";
 
 @NgModule({
     providers: [
-        AccountService, 
+        AccountService,
         AccountSelectionNotifier
     ]
 })

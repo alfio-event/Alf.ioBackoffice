@@ -18,7 +18,6 @@ import { FeedbackService } from '../../../shared/notification/feedback.service';
 @Component({
     moduleId: module.id,
     selector: "sponsor-event-detail",
-    providers: [AccountService, SponsorScanService],
     templateUrl: './event-detail.html',
     styleUrls: ['./event-detail-common.css']
 })
