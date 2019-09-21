@@ -54,4 +54,8 @@ export class SponsorScanBadgeComponent implements OnInit {
         return this.item.ticket.uuid;
     }
 
+    get commentText(): string {
+        return this.item.notes != null && this.item.notes.length > 0 ? String.fromCharCode(0xf260) : "";
+    }
+
 }

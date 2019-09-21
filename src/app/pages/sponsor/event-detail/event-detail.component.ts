@@ -215,10 +215,4 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             this.routerExtensions.navigate(['/attendee-detail/', this.account.getKey(), this.event.key, item.code]);
         }
     }
-
-    commentText(item: SponsorScan): string {
-        return item.notes != null && item.notes.length > 0 ? String.fromCharCode(0xf260) : "";
-    }
-
-
 }
