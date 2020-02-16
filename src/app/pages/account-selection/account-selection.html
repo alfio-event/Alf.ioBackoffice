@@ -11,9 +11,9 @@
 		<Label text="Please add one" class="missing-accounts text-muted text-center"></Label>
 	</StackLayout>
 	
-	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts()" class="list-group">
+	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts()">
 		<ng-template let-item="item">
-			<GridLayout columns="36, *, 50" [class.edit-inactive]="!isEditRequested(item)" [class.edit-active]="isEditRequested(item)" class="list-group-item">
+			<GridLayout columns="36, *, 50">
 				<Label col="0" class="icon icon-2x person-icon text-center" text="&#xf207;" [class.text-muted]="!isEditRequested(item)" (tap)="manage(item)"></Label>
 				<StackLayout col="1" orientation="vertical" class="list-item-padding" (tap)="manage(item)" (longPress)="onLongPress(item)">
 					<Label [text]="item.title" class="accountName"></Label>
