@@ -17,13 +17,13 @@
             </ng-template>
         </ListView>
         <StackLayout row="2" orientation="vertical" class="warning-msg" *ngIf="scans.length == 0">
-            <Label class="icon icon-3x text-muted text-center" text="&#xf208;"></Label>
-            <Label text="No data collected so far" class="missing-accounts text-muted text-center"></Label>
-            <Label text="Start scanning badges!" class="missing-accounts text-muted text-center"></Label>
+            <Label class="icon icon-3x text-center" text="&#xf208;"></Label>
+            <Label text="No data collected so far" class="missing-accounts text-center"></Label>
+            <Label text="Start scanning badges!" class="missing-accounts text-center"></Label>
         </StackLayout>
         <ActivityIndicator row="2" [busy]="isLoading" class="activity-indicator"></ActivityIndicator>
         <StackLayout row="3" orientation="vertical" class="button-group m-l-16 m-r-16">
-            <Button (tap)="requestQrScan()" class="button btn-primary btn-lg btn-rounded-lg" text="Scan"></Button>
+            <Button (tap)="requestQrScan()" class="-primary -rounded-sm" text="Scan"></Button>
         </StackLayout>
         
     </GridLayout>

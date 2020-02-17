@@ -59,24 +59,6 @@
   color: white;
 }
 
-.text-success {
-  color: #4CAF50;
-}
-
-.btn-danger {
-  background-color: #F44336;
-  color: white;
-}
-
-.btn-success {
-  background-color: #4CAF50;
-  color: white;
-}
-
-.text-danger {
-  color: #F44336;
-}
-
 .strong {
   font-weight: bold;
 }
@@ -90,10 +72,6 @@
   font-size: 22;
 }
 
-.text-muted {
-  color: gray;
-}
-
 .qr-code-reader {
   margin: 16px;
   padding: 20px;
@@ -101,10 +79,10 @@
   border-radius: 32px;
 }
 
-.text-warning {
-  color: #f57c00;
-}
-
 .title {
   font-weight: bold;
+}
+
+.ns-dark .fill-bg {
+  background-color: #303030;
 }

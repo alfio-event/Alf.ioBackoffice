@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, OnChanges, ViewChild, NgZone } from "@angular/core";
-import { ListView, ItemEventData } from "tns-core-modules/ui/list-view";
+import { RadListView, ListViewEventData } from "nativescript-ui-listview";
 import { RouterExtensions } from "nativescript-angular/router";
 import { Account, ScannedAccount } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
@@ -10,6 +10,7 @@ import { isUndefined, isDefined } from "tns-core-modules/utils/types";
 import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
 import { Subject, Observable } from "rxjs";
 import { FeedbackService } from "../../shared/notification/feedback.service";
+import { ObservableArray } from "tns-core-modules/data/observable-array/observable-array";
 
 @Component({
     selector: "account-selection",
@@ -17,16 +18,11 @@ import { FeedbackService } from "../../shared/notification/feedback.service";
     styleUrls: ["./account-selection-common.css", "./account-selection.css"],
 })
 export class AccountSelectionComponent implements OnInit, OnChanges {
-    accounts: Array<Account> = [];
+    accounts: ObservableArray<Account> = new ObservableArray<Account>();
     isLoading: boolean;
     isIos: boolean;
-    editModeEnabled: boolean = false;
-    tapEmitter = new Subject<Account>();
-    private editEnableSubject = new Subject<boolean>();
-    editEnableObservable: Observable<boolean> = this.editEnableSubject.asObservable();
+    private editModeEnabled: boolean = false;
     private editedAccount: Account = null;
-    @ViewChild("list", { static: false }) listViewContainer: ElementRef<ListView>;
-
 
     constructor(private accountService: AccountService,
         private routerExtensions: RouterExtensions,
@@ -38,7 +34,8 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {
         console.log("ngOnInit AccountSelection");
-        this.accounts = this.accountService.getRegisteredAccounts();
+        this.accounts.push(this.accountService.getRegisteredAccounts());
+        console.log("accounts", this.accounts.length);
         this.isLoading = false;
     }
 
@@ -67,7 +64,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
 
     requestQrScan(): void {
         if (this.editModeEnabled) {
-            this.toggleEditMode();
+            return;
         }
         let scanOptions = defaultScanOptions();
         this.barcodeScanner.scan(scanOptions)
@@ -110,52 +107,47 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         }
     }
 
-    manage(account: Account): void {
-        if (this.isEditRequested(account)) {
-            this.editedAccount = null;
-        } else {
-            this.routerExtensions.navigate(['/manage-account/', account.getKey()]);
-        }
-
+    onSwipeCellStarted(args: ListViewEventData) {
+        this.editModeEnabled = true;
+        const swipeLimits = args.data.swipeLimits;
+        swipeLimits.left = 150;
+        swipeLimits.right = 0;
+        swipeLimits.treshold = 70;
     }
 
-    onLongPress(account: Account): void {
-        if (!ios) {
-            this.editedAccount = account;
+    onSwipeCellFinished(args: ListViewEventData) {
+        this.editModeEnabled = args.data.x !== 0;
+        console.log("swipe finished. Edit mode is enabled", this.editModeEnabled);
+    }
+
+    onItemSelected(args: ListViewEventData): void {
+        if (this.editModeEnabled) {
+            return;
         }
+        const listView = args.object as RadListView;
+        const account = listView.getSelectedItems()[0] as Account;
+        this.routerExtensions.navigate(['/manage-account/', account.getKey()]);
+    }
+
+    select(account: Account): void {
+        if (this.editModeEnabled) {
+            return;
+        }
+        this.routerExtensions.navigate(['/manage-account/', account.getKey()]);
     }
 
     isEditRequested(account: Account): boolean {
         return this.editedAccount === account;
     }
 
-    delete(account: Account): void {
-        if (this.editModeEnabled || this.isEditRequested(account)) {
-            let newAccounts = this.accountService.deleteAccount(account);
-            this.accounts = newAccounts;
+    onDeleteButtonTap(args: ListViewEventData) {
+        const indexToDelete = this.accounts.indexOf(args.object.bindingContext);
+        if (indexToDelete > -1) {
+            const accountToDelete = this.accounts.getItem(indexToDelete);
+            this.accountService.deleteAccount(accountToDelete);
+            this.accounts.splice(indexToDelete, 1);
+            this.editModeEnabled = false;
         }
-    }
-
-    toggleEditMode(): void {
-        this.editModeEnabled = !this.editModeEnabled;
-        console.log('updated editModeEnabled to ', this.editModeEnabled);
-        this.editEnableSubject.next(this.editModeEnabled);
-        this.refreshListView();
-    }
-
-    private refreshListView(): void {
-        let view = this.getListView();
-        if (view) {
-            console.log("refreshing...");
-            view.refresh();
-        }
-    }
-
-    private getListView(): ListView {
-        if (this.listViewContainer) {
-            return this.listViewContainer.nativeElement;
-        }
-        return null;
     }
 
     private processResponse(accountResponse: AccountResponse) {
@@ -166,14 +158,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
             console.log("done. current list size: " + this.accounts.length);
         }
         this.isLoading = false;
-    }
-
-    isIosEditButtonVisible() {
-        return this.isIos && this.hasAccounts() && !this.editModeEnabled;
-    }
-
-    isIosDoneButtonVisible() {
-        return this.isIos && this.hasAccounts() && this.editModeEnabled;
     }
 
 }

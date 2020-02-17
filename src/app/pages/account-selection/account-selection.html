@@ -1,32 +1,35 @@
-<ActionBar class="action-bar" title="Your accounts">
-	<ActionItem (tap)="toggleEditMode()" *ngIf="!editModeEnabled" ios.systemIcon="2" ios.position="left"></ActionItem>
-	<ActionItem (tap)="toggleEditMode()" *ngIf="editModeEnabled" ios.systemIcon="0" ios.position="left"></ActionItem>
+<ActionBar class="nt-action-bar" title="Your accounts">
 	<ActionItem (tap)="requestQrScan()" icon="res://ic_add_circle_white" ios.systemIcon="4" ios.position="right" text="Add new Configuration" android.position="actionBarIfRoom"></ActionItem>
 </ActionBar>
 
-<GridLayout rows="auto, *">
+<GridLayout rows="auto, *, 70">
 	<StackLayout row="1" *ngIf="!hasAccounts() && !isLoading" orientation="vertical" class="missing-accounts" (tap)="requestQrScan()">
-		<Label class="icon icon-3x text-muted text-center" text="&#xf1f0;"></Label>
-		<Label text="No accounts configured yet." class="missing-accounts text-muted text-center"></Label>
-		<Label text="Please add one" class="missing-accounts text-muted text-center"></Label>
+		<Label class="icon icon-3x text-center" text="&#xf1f0;"></Label>
+		<Label text="No accounts configured yet." class="missing-accounts text-center"></Label>
+		<Label text="Please add one" class="missing-accounts text-center"></Label>
 	</StackLayout>
 	
-	<ListView #list id="list" [items]="accounts" row="1" *ngIf="hasAccounts()">
-		<ng-template let-item="item">
-			<GridLayout columns="36, *, 50">
-				<Label col="0" class="icon icon-2x person-icon text-center" text="&#xf207;" [class.text-muted]="!isEditRequested(item)" (tap)="manage(item)"></Label>
-				<StackLayout col="1" orientation="vertical" class="list-item-padding" (tap)="manage(item)" (longPress)="onLongPress(item)">
-					<Label [text]="item.title" class="accountName"></Label>
+	<RadListView id="list" [items]="accounts" row="1" *ngIf="hasAccounts()" 
+		multipleSelection="false" selectionBehavior="None" (itemSelected)="onItemSelected($event)"
+		swipeActions="true"
+		(itemSwipeProgressStarted)="onSwipeCellStarted($event)"
+		(itemSwipeProgressEnded)="onSwipeCellFinished($event)">
+		<ng-template tkListItemTemplate let-item="item">
+			<GridLayout columns="40, *, 35" class="-separator fill-bg" (tap)="select(item)">
+				<Label col="0" class="icon icon-2x person-icon text-center" text="&#xf207;"></Label>
+				<StackLayout col="1" orientation="vertical" class="list-item-padding">
+					<Label [text]="item.title" class="h2"></Label>
 					<Label [text]="item.url"></Label>
 				</StackLayout>
-				<StackLayout class="list-item-padding" orientation="horizontal" col="2" (tap)="delete(item)">
-					<ios-account-icon *ifIos [account]="item" [tapEmitter]="tapEmitter" [editEnableObservable]="editEnableObservable"></ios-account-icon>
-					<android>
-						<Label text="&#xf154;" *ngIf="isEditRequested(item)" class="icon icon-1-5x person-icon text-center"></Label>
-					</android>
-				</StackLayout>
+				<Label col="2" text="&#xf2fb;" class="icon icon-2x person-icon text-center"></Label>
 			</GridLayout>
 		</ng-template>
-	</ListView>
+		<ng-template tkListItemSwipeTemplate>
+			<GridLayout columns="50, *" (tap)="onDeleteButtonTap($event)" class="-separator text-center bg-danger">
+				<Label text="&#xf154;" col="0" class="icon icon-1-5x person-icon text-center"></Label>
+			</GridLayout>
+		</ng-template>
+	</RadListView>
 	<ActivityIndicator row="1" [busy]="isLoading"  class="activity-indicator"></ActivityIndicator>
+	<Button row="2" (tap)="requestQrScan()" class="-primary -rounded-sm" text="Add new Configuration"></Button>
 </GridLayout>
