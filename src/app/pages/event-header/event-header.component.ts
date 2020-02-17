@@ -30,7 +30,7 @@ export class EventHeaderComponent implements OnInit {
     @Input() list: boolean;
     @Input() account: Account;
     @Output() onTap = new EventEmitter();
-    
+
     eventImage: string;
 
     constructor() {

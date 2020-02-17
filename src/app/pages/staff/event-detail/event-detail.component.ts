@@ -9,7 +9,6 @@ import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedEr
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
-import * as application from "tns-core-modules/application";
 import { device } from "tns-core-modules/platform";
 import { VibrateService } from '../../../shared/notification/vibrate.service';
 
@@ -31,7 +30,6 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     message: string;
     detail: string;
     ticket: Ticket;
-    isIos: boolean;
     actionBarTitle: string;
 
 
@@ -42,7 +40,6 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
                 private scanService: ScanService,
                 private ngZone: NgZone,
                 private vibrateService: VibrateService) {
-                    this.isIos = !application.android;
     }
 
     onBackTap(): void {

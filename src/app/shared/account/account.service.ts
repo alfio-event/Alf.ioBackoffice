@@ -14,7 +14,7 @@ import { authorization } from "../../utils/network-util";
 export class AccountService {
     private accounts: AccountsArray;
 
-    constructor(private http: HttpClient, 
+    constructor(private http: HttpClient,
                 private accountSelectionNotifier: AccountSelectionNotifier,
                 private storage: StorageService) {
         this.accounts = this.loadSavedAccounts();
@@ -66,7 +66,7 @@ export class AccountService {
     private safeParse(data: string): string {
         try {
             return JSON.parse(data);
-        } catch(e) {
+        } catch (e) {
             return data;
         }
     }
@@ -94,7 +94,7 @@ export class AccountService {
         });
     }
 
-    public updateEventsForAccount(key:string, events: Array<EventConfiguration>) {
+    public updateEventsForAccount(key: string, events: Array<EventConfiguration>) {
         console.log("updating account configurations, events size:", events.length);
         this.accounts.get(key).ifPresent(v => {
             v.lastUpdate = new Date();
@@ -114,7 +114,7 @@ export class AccountService {
         this.accountSelectionNotifier.notifyAccountScanned(account);
     }
 
-    private loadSavedAccounts() :AccountsArray {
+    private loadSavedAccounts(): AccountsArray {
         let savedData = this.storage.getOrDefault(ACCOUNTS_KEY, "--");
         if (savedData !== "--") {
             return new AccountsArray(JSON.parse(savedData).map(obj => {

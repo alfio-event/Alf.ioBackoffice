@@ -6,6 +6,8 @@ import { AccountService } from "../../shared/account/account.service";
 import { isDefined, isUndefined } from "tns-core-modules/utils/types";
 import { FeedbackService } from "../../shared/notification/feedback.service";
 import { ItemEventData } from "tns-core-modules/ui/list-view/list-view";
+import { ListViewEventData } from "nativescript-ui-listview";
+import { ObservableArray } from "tns-core-modules/data/observable-array/observable-array";
 
 @Component({
     selector: "account-manage",
@@ -15,7 +17,7 @@ import { ItemEventData } from "tns-core-modules/ui/list-view/list-view";
 })
 export class AccountManageComponent implements OnInit {
     account: Account;
-    events: Array<EventConfiguration>;
+    events: ObservableArray<EventConfiguration> = new ObservableArray<EventConfiguration>();
     isLoading: boolean;
 
     constructor(private route: ActivatedRoute,
@@ -33,40 +35,44 @@ export class AccountManageComponent implements OnInit {
             this.accountService.findAccountById(id).ifPresent((account: Account) => {
                 let now = new Date();
                 if (isUndefined(account.lastUpdate) || now.getTime() - account.lastUpdate.getTime() > 3600) {
-                    this.internalReloadEvents(account, () => this.account = account);
+                    this.reloadEvents(account, () => this.account = account);
                 } else {
-                    this.events = this.account.configurations;
+                    this.events.splice(0);
+                    this.events.push(this.account.configurations);
                     this.isLoading = false;
                 }
             });
         });
     }
 
-    reloadEvents(): void {
-        this.internalReloadEvents(this.account);
-    }
-
-    private internalReloadEvents(account: Account, onComplete?: () => void): void {
+    private reloadEvents(account: Account, onCompleteOrError?: () => void): void {
         this.isLoading = true;
         this.accountService.loadEventsForAccount(account)
-            .subscribe(events => {
-                this.accountService.updateEventsForAccount(account.getKey(), events);
-                this.ngZone.run(() => {
-                    this.events = events;
+            .subscribe({
+                next: events => {
+                    this.accountService.updateEventsForAccount(account.getKey(), events);
+                    this.events.splice(0);
+                    this.events.push(events);
                     this.isLoading = false;
-                });
-            }, error => {
-                this.ngZone.run(() => {
-                    console.log("error while loading events", error);
-                    this.events = account.configurations;
-                    this.isLoading = false;
+                },
+                error: () => {
+                    console.log("error while loading events");
                     this.feedbackService.error('Error while refreshing events');
-                });
-            }, () => this.ngZone.run(() => {
-                if (isDefined(onComplete)) {
-                    onComplete();
-                }
-            }));
+                    if (account != null && account.configurations != null) {
+                        console.log("setting events from account");
+                        this.ngZone.run(() => {
+                            // remote server is not available. Let's initialize the list with the latest local version
+                            this.events.splice(0);
+                            this.events.push(account.configurations);
+                            this.isLoading = false;
+                        });
+                    }
+                    if (isDefined(onCompleteOrError)) {
+                        onCompleteOrError();
+                    }
+                },
+                complete: onCompleteOrError
+            });
     }
 
     hasEvents(): boolean {
@@ -77,12 +83,17 @@ export class AccountManageComponent implements OnInit {
         this.routerExtensions.back();
     }
 
-    select(eventData: ItemEventData): void {
-        let item = this.events[eventData.index];
+    select(args: ListViewEventData): void {
+        let index = this.events.indexOf(args.object.bindingContext);
+        let item = this.events.getItem(index);
         if (item.key != null) {
             let accountType = this.account.accountType === AccountType.STAFF ? "STAFF" : "SPONSOR";
             this.routerExtensions.navigate(['/event-detail/', this.account.getKey(), accountType, item.key]);
         }
+    }
+
+    onPullToRefreshInitiated(args: ListViewEventData) {
+        this.reloadEvents(this.account, () => args.object.notifyPullToRefreshFinished());
     }
 
 }

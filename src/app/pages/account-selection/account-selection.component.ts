@@ -5,10 +5,8 @@ import { Account, ScannedAccount } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import { AccountResponse, Maybe, Some, Nothing } from "../../shared/account/account";
 import { defaultScanOptions } from '../../utils/barcodescanner';
-import { ios } from "tns-core-modules/application";
 import { isUndefined, isDefined } from "tns-core-modules/utils/types";
 import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
-import { Subject, Observable } from "rxjs";
 import { FeedbackService } from "../../shared/notification/feedback.service";
 import { ObservableArray } from "tns-core-modules/data/observable-array/observable-array";
 
@@ -20,7 +18,6 @@ import { ObservableArray } from "tns-core-modules/data/observable-array/observab
 export class AccountSelectionComponent implements OnInit, OnChanges {
     accounts: ObservableArray<Account> = new ObservableArray<Account>();
     isLoading: boolean;
-    isIos: boolean;
     private editModeEnabled: boolean = false;
     private editedAccount: Account = null;
 
@@ -29,7 +26,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         private barcodeScanner: BarcodeScanner,
         private ngZone: NgZone,
         private feedbackService: FeedbackService) {
-            this.isIos = !ios;
     }
 
     ngOnInit(): void {

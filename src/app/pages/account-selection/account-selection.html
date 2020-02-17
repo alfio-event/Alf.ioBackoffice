@@ -16,12 +16,12 @@
 		(itemSwipeProgressEnded)="onSwipeCellFinished($event)">
 		<ng-template tkListItemTemplate let-item="item">
 			<GridLayout columns="40, *, 35" class="-separator fill-bg" (tap)="select(item)">
-				<Label col="0" class="icon icon-2x person-icon text-center" text="&#xf207;"></Label>
+				<Label col="0" class="icon icon-1-5x person-icon text-center" text="&#xf207;"></Label>
 				<StackLayout col="1" orientation="vertical" class="list-item-padding">
 					<Label [text]="item.title" class="h2"></Label>
 					<Label [text]="item.url"></Label>
 				</StackLayout>
-				<Label col="2" text="&#xf2fb;" class="icon icon-2x person-icon text-center"></Label>
+				<Label col="2" text="&#xf2fb;" class="icon icon-1-5x person-icon text-center"></Label>
 			</GridLayout>
 		</ng-template>
 		<ng-template tkListItemSwipeTemplate>
