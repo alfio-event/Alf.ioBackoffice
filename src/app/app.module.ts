@@ -5,7 +5,6 @@ import { NativeScriptModule } from "nativescript-angular/nativescript.module";
 import { NativeScriptAnimationsModule } from "nativescript-angular/animations";
 import { NativeScriptRouterModule } from "nativescript-angular/router";
 import { AccountModule } from "./shared/account/account.module";
-import { IosAccountIconComponent } from "./pages/ios-account-icon/ios-account-icon.component";
 import { AppComponent } from "./app.component";
 import { routes, navigatableComponents } from "./app.routing";
 import { CurrencyPipe } from "@angular/common";
@@ -44,7 +43,6 @@ export function createBarcodeScanner() {
         AppComponent,
         EventHeaderComponent,
         CheckInStatsComponent,
-        IosAccountIconComponent,
         IfAndroidDirective,
         IfIosDirective,
         SponsorScanBadgeComponent,

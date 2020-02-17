@@ -78,7 +78,7 @@ export class AccountService {
     }
 
     public deleteAccount(account: Account): Array<Account> {
-        let newArray = this.accounts.getAllAccounts().filter(it => it.getKey() != account.getKey());
+        let newArray = this.accounts.getAllAccounts().filter(it => it.getKey() !== account.getKey());
         this.accounts = new AccountsArray(newArray);
         this.persistAccounts();
         return this.getRegisteredAccounts();
