@@ -1,4 +1,4 @@
-<ActionBar class="action-bar" title="Select Event">
+<ActionBar class="nt-action-bar" title="Select Event">
     <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Accounts"></NavigationButton>
     <NavigationButton *ifIos (tap)="onBackTap()" text="Accounts"></NavigationButton>
 </ActionBar>
@@ -14,7 +14,7 @@
       <GridLayout rows="50, 100" columns="*, 35" class="-separator" (tap)="select($event)">
         <Image [src]="account.url + event.imageUrl" loadMode="async" stretch="aspectFit" row="0" col="0"></Image>
         <StackLayout col="0" row="1" orientation="vertical">
-            <Label [text]="event.name" class="h2" textWrap="true"></Label>
+            <Label [text]="event.name" class="h3" textWrap="true"></Label>
             <Label text="{{ event.begin | date:'short' }} - {{ event.end | date:'short' }}" *ngIf="!event.oneDay"></Label>
             <Label text="{{ event.begin | date:'shortDate' }} {{ event.begin | date:'shortTime' }} - {{ event.end | date:'shortTime' }}" *ngIf="event.oneDay"></Label>
             <Label [text]="event.location"></Label>

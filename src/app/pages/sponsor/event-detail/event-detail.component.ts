@@ -14,6 +14,10 @@ import { forcePortraitOrientation, enableRotation } from '../../../utils/orienta
 import { device } from "tns-core-modules/platform";
 import { VibrateService } from '../../../shared/notification/vibrate.service';
 import { FeedbackService } from '../../../shared/notification/feedback.service';
+import { ListViewEventData } from 'nativescript-ui-listview';
+import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
+import { Subject, Observable } from 'rxjs';
+import { timeout } from 'rxjs/operators';
 
 @Component({
     moduleId: module.id,
@@ -27,10 +31,9 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     isLoading: boolean;
     account: Account;
     event: EventConfiguration;
-    scans: Array<SponsorScan> = [];
+    scans = new ObservableArray<SponsorScan>();
+    private dataReceived = new Subject<Date>();
     private lastUpdate: number = 0;
-    @ViewChild("list", { static: false }) listViewContainer: ElementRef;
-    private listView: ListView;
     private interval: number;
 
     constructor(private route: ActivatedRoute,
@@ -43,12 +46,11 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 private feedbackService: FeedbackService) {
     }
 
-    onBackTap() {
+    onBackTap(): void {
         this.routerExtensions.back();
     }
 
-    ngOnInit() {
-        this.scans = [];
+    ngOnInit(): void {
         this.isLoading = true;
         this.route.params.subscribe((params: Params) => {
             console.log("params", params['accountId'], params['eventId']);
@@ -60,14 +62,13 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 this.sponsorScanService.destroyForEvent(this.event.key);
                 this.sponsorScanService.getForEvent(this.event.key, this.account).subscribe(list => {
                     console.log("received ", list.length);
-                    this.ngZone.run(() => {
-                        this.scans = list;
-                        this.refreshListView();
-                    });
+                    this.scans.splice(0);
+                    this.scans.push(list);
+                    this.dataReceived.next(new Date());
                 });
                 let list = this.sponsorScanService.loadInitial(this.event.key);
                 if (list) {
-                    this.scans = list;
+                    this.scans.push(list);
                 }
                 this.isLoading = false;
             });
@@ -77,7 +78,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.event && this.event.key) {
             this.sponsorScanService.destroyForEvent(this.event.key);
         }
@@ -87,7 +88,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         enableRotation();
     }
 
-    requestQrScan() {
+    requestQrScan(): void {
         this.isLoading = true;
         let scanOptions = defaultScanOptions();
         this.lastUpdate = new Date().getTime();
@@ -166,7 +167,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     }
 
     shuffle(): void {
-        this.shuffleArray(this.scans);
+        this.shuffleArray(this.scans.slice());
     }
 
     sendByEmail(): void {
@@ -190,29 +191,28 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             });
     }
 
-    private refreshListView(): void {
-        let view = this.getListView();
-        if (view) {
-            console.log("refreshing...");
-            view.refresh();
-        }
-    }
-
-    private getListView(): ListView {
-        if (this.listView) {
-            return this.listView;
-        } else if (this.listViewContainer) {
-            let container = <ListView>this.listViewContainer.nativeElement;
-            this.listView = container;
-            return this.listView;
-        }
-        return null;
-    }
-
-    select(eventData: ItemEventData): void {
-        let item = this.scans[eventData.index];
+    select(eventData: ListViewEventData): void {
+        let item = this.scans.getItem(eventData.index);
         if (item.code != null) {
             this.routerExtensions.navigate(['/attendee-detail/', this.account.getKey(), this.event.key, item.code]);
         }
+    }
+
+    private listenToChanges(): Observable<Date> {
+        return this.dataReceived.asObservable();
+    }
+
+    onPullToRefreshInitiated(args: ListViewEventData) {
+        this.forceUpload();
+        this.listenToChanges() // not ideal, but it's the best we can do with the current implementation
+            .pipe(timeout(5000))
+            .subscribe({
+                next: d => {
+                    args.object.notifyPullToRefreshFinished();
+                },
+                error: () => {
+                    args.object.notifyPullToRefreshFinished();
+                }
+            });
     }
 }

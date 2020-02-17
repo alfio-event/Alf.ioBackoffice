@@ -1,31 +1,30 @@
-<ActionBar class="action-bar" title="Scan Attendees">
+<ActionBar class="nt-action-bar" title="Scan Attendees">
     <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Events"></NavigationButton>
     <NavigationButton *ifIos (tap)="onBackTap()" text="Events"></NavigationButton>
     <ActionItem (tap)="shuffle()" icon="res://ic_shuffle_white" ios.systemIcon="10" *ngIf="scans.length > 1" ios.position="right" text="Shuffle" android.position="actionBarIfRoom"></ActionItem>
-    <ActionItem (tap)="forceUpload()" icon="res://ic_cloud_upload_white" ios.systemIcon="9" *ngIf="scans.length > 0" ios.position="right" text="Force Upload" android.position="actionBarIfRoom"></ActionItem>
-    <ActionItem (tap)="sendByEmail()" icon="res://ic_mail_outline_white" ios.systemIcon="7" *ngIf="scans.length > 0" ios.position="right" text="Send By Email" android.position="actionBarIfRoom"></ActionItem>
+    <!-- ActionItem (tap)="sendByEmail()" icon="res://ic_mail_outline_white" ios.systemIcon="7" *ngIf="scans.length > 0" ios.position="right" text="Send By Email" android.position="actionBarIfRoom"></ActionItem-->
 </ActionBar>
 
-
-
-    <GridLayout rows="auto,1, *, 90">
-        <event-header col="0" [event]="event" [account]="account" class="event-header"></event-header>
-        <StackLayout row="1" class="hr-light"></StackLayout>
-        <ListView [items]="scans" row="2" [class.visible]="listLoaded" *ngIf="scans.length > 0" #list class="list-group" (itemTap)="select($event)">
-            <ng-template let-item="item">
-                <sponsor-scan-badge [item]="item"></sponsor-scan-badge>
-            </ng-template>
-        </ListView>
-        <StackLayout row="2" orientation="vertical" class="warning-msg" *ngIf="scans.length == 0">
-            <Label class="icon icon-3x text-center" text="&#xf208;"></Label>
-            <Label text="No data collected so far" class="missing-accounts text-center"></Label>
-            <Label text="Start scanning badges!" class="missing-accounts text-center"></Label>
-        </StackLayout>
-        <ActivityIndicator row="2" [busy]="isLoading" class="activity-indicator"></ActivityIndicator>
-        <StackLayout row="3" orientation="vertical" class="button-group m-l-16 m-r-16">
-            <Button (tap)="requestQrScan()" class="-primary -rounded-sm" text="Scan"></Button>
-        </StackLayout>
-        
-    </GridLayout>
-
-
+<GridLayout rows="auto,1, *, 90">
+    <Label [text]="event.name" class="h2 text-center m-t-15" col="0" textWrap="true"></Label>
+    <RadListView id="list" *ngIf="account" [items]="scans" row="2" 
+		multipleSelection="false" selectionBehavior="None"
+        swipeActions="false"
+        pullToRefresh="true"
+        (itemTap)="select($event)"
+        (pullToRefreshInitiated)="onPullToRefreshInitiated($event)">
+		<ng-template tkListItemTemplate let-item="item">
+            <sponsor-scan-badge [item]="item"></sponsor-scan-badge>
+        </ng-template>
+        <ng-template tkListViewFooter *ngIf="scans.length == 0">
+            <StackLayout orientation="vertical" class="warning-msg m-t-30" (tap)="requestQrScan()">
+                <Label class="icon icon-3x text-center" text="&#xf208;" ></Label>
+                <Label text="No data collected so far" class="missing-accounts text-center"></Label>
+                <Label text="Start scanning badges!" class="missing-accounts text-center"></Label>
+            </StackLayout>
+        </ng-template>  
+    </RadListView>
+    <StackLayout row="3" orientation="vertical">
+        <Button (tap)="requestQrScan()" class="-primary -rounded-sm" text="Scan"></Button>
+    </StackLayout>
+</GridLayout>

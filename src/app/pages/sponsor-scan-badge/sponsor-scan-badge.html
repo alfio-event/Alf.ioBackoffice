@@ -1,10 +1,10 @@
-<GridLayout columns="36, 5, *, auto, 50, auto" rows="10, 20, 20, 10" class="list-group-item">
+<GridLayout columns="36, 5, *, auto, 50, auto" rows="20, 25, 25, 20" class="-separator">
     <Label col="0" row="1" rowSpan="2" class="icon person-icon text-center" 
         [class.text-muted]="!successStatus"
         [class.text-success]="successStatus" 
         [text]="iconForItem"></Label>
-    <Label class="title" col="2" row="1" [text]="ticketFullName"></Label>
+    <Label class="h3" col="2" row="1" [text]="ticketFullName"></Label>
     <Label col="2" row="2" class="text-muted" [text]="ticketUuid | slice:0:8 | uppercase"></Label>
-    <Label col="3" row="1" rowSpan="2" [text]="commentText" class="icon text-muted person-icon text-center"></Label>
+    <Label col="3" row="1" rowSpan="2" [text]="commentText" class="icon person-icon text-center"></Label>
     <Label col="5" row="1" rowSpan="2" text="&#xf2fb;" class="icon icon-1-5x person-icon text-right" *ngIf="showArrow"></Label>
 </GridLayout>
