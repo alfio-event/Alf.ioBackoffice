@@ -4,7 +4,8 @@ export class SponsorScan {
     constructor(public code: string,
                 public status: ScanStatus = ScanStatus.NEW,
                 public ticket: Ticket,
-                public notes: string) {}
+                public notes: string,
+                public leadStatus: LeadStatus = LeadStatus.WARM) {}
     isPending(): boolean {
         return [ScanStatus.IN_PROCESS, ScanStatus.NEW].some(s => s === this.status);
     }
@@ -12,6 +13,10 @@ export class SponsorScan {
 
 export enum ScanStatus {
     NEW, IN_PROCESS, ERROR, DONE, UPDATED
+}
+
+export enum LeadStatus {
+    COLD, WARM, HOT
 }
 
 export function checkInStatusToScanStatus(checkInStatus: CheckInStatus): ScanStatus {

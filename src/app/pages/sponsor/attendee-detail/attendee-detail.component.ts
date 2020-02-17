@@ -7,6 +7,8 @@ import { empty, of } from 'rxjs';
 import { SponsorScan } from '~/app/shared/scan/sponsor-scan';
 import { Page } from 'tns-core-modules/ui/page/page';
 import { RouterExtensions } from 'nativescript-angular/router';
+import { SponsorScanViewModel, sponsorScanMetadata } from './attendee-detail.model';
+import { RadDataForm } from 'nativescript-ui-dataform';
 
 @Component({
     moduleId: module.id,
@@ -18,6 +20,7 @@ export class AttendeeDetailComponent implements OnInit, AfterViewInit {
 
     isLoading = false;
     scan: SponsorScan;
+    metadata = sponsorScanMetadata;
     eventId: string;
     maxChars = 2000;
 
@@ -37,7 +40,13 @@ export class AttendeeDetailComponent implements OnInit, AfterViewInit {
                 return of(this.sponsorScanService.loadInitial(this.eventId).find(s => s.code === params['code']));
             }
             return empty();
-        })).subscribe(scan => this.scan = scan, () => this.isLoading = false, () => this.isLoading = false);
+        })).subscribe({
+            next: scan => {
+                this.scan = scan;
+                this.isLoading = false;
+            },
+            error: () => this.isLoading = false
+        });
     }
 
     ngAfterViewInit(): void {
@@ -57,6 +66,15 @@ export class AttendeeDetailComponent implements OnInit, AfterViewInit {
 
     onBackTap() {
         this.routerExtensions.back();
+    }
+
+    dataFormLoaded(event: any): void {
+        const dataForm = event.object as RadDataForm;
+        dataForm.getPropertyByName("leadStatus").valuesProvider = [
+            { key: "COLD", label: "Cold (low interest)" },
+            { key: "WARM", label: "Warm (moderate interest)" },
+            { key: "HOT", label: "Hot (high interest)" },
+        ];
     }
 
 }

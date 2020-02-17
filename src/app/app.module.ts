@@ -19,6 +19,7 @@ import { IfAndroidDirective, IfIosDirective } from './utils/if-platform.directiv
 import { SponsorModule } from './shared/scan/sponsor.module';
 import { SponsorScanBadgeComponent } from './pages/sponsor-scan-badge/sponsor-scan-badge.component';
 import { NativeScriptUIListViewModule } from "nativescript-ui-listview/angular";
+import { NativeScriptUIDataFormModule } from "nativescript-ui-dataform/angular";
 
 export function createBarcodeScanner() {
     return new BarcodeScanner();
@@ -34,6 +35,7 @@ export function createBarcodeScanner() {
         NativeScriptAnimationsModule,
         NativeScriptHttpClientModule,
         NativeScriptUIListViewModule,
+        NativeScriptUIDataFormModule,
         AccountModule,
         StatisticsModule,
         StorageModule,
