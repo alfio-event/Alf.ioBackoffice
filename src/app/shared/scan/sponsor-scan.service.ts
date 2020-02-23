@@ -120,7 +120,7 @@ export class SponsorScanService  {
     private publishResults(eventKey: string, account: Account): void {
         this.persistSponsorScans(eventKey, account);
         this.emitFor(eventKey);
-        this.process(eventKey, account);
+        this.doSetTimeoutProcess(eventKey, account);
     }
 
     private emitFor(eventKey: string): void {
@@ -151,6 +151,10 @@ export class SponsorScanService  {
     }
 
     private doSetTimeoutProcess(eventKey: string, account: Account): void {
+        if (this.timeoutIds[eventKey] != null) {
+            clearTimeout(this.timeoutIds[eventKey]);
+        }
+
         this.timeoutIds[eventKey] = setTimeout(() => {
             this.process(eventKey, account);
         }, 1000);
@@ -160,6 +164,8 @@ export class SponsorScanService  {
     public getForEvent(eventKey: string, account: Account): Observable<Array<SponsorScan>> {
 
         if (this.sources[eventKey]) {
+            // we trigger the process timeout, in case there is something pending
+            this.doSetTimeoutProcess(eventKey, account);
             return this.sources[eventKey];
         }
 
