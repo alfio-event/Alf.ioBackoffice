@@ -86,3 +86,11 @@
 .ns-dark .fill-bg {
   background-color: #303030;
 }
+
+.ns-light .text-muted {
+  color: #6c757d;
+}
+
+.ns-dark .text-muted{
+  color:#446f83
+}
