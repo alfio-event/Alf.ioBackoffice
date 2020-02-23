@@ -7,7 +7,7 @@ import { empty, of } from 'rxjs';
 import { SponsorScan } from '~/app/shared/scan/sponsor-scan';
 import { Page } from 'tns-core-modules/ui/page/page';
 import { RouterExtensions } from 'nativescript-angular/router';
-import { SponsorScanViewModel, sponsorScanMetadata } from './attendee-detail.model';
+import { sponsorScanMetadata } from './attendee-detail.model';
 import { RadDataForm } from 'nativescript-ui-dataform';
 
 @Component({
