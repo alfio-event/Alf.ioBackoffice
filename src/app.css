@@ -108,7 +108,7 @@
   font-weight: bold;
 }
 
-.-danger {
+.-danger, .ns-dark .-danger {
   background-color: var(--color-error);
   color: var(--color-white);
 }
@@ -118,11 +118,16 @@
   color: var(--color-white);
 }
 
+.ns-dark .-success {
+  background-color: var(--color-white);
+  color: #28a745;
+}
+
 .text-warning {
   color: var(--color-orange);
 }
 
-.-warning {
+.-warning, .ns-dark .-warning {
   color: var(--color-white);
   background-color: var(--color-orange);
 }
