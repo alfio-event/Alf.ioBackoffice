@@ -1,8 +1,7 @@
 import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { SponsorScan, ScanResult, ScanStatus } from '../../../shared/scan/sponsor-scan';
-import { Component, ElementRef, Injectable, OnInit, OnDestroy, ViewChild, NgZone } from '@angular/core';
+import { Component, ElementRef, Injectable, OnInit, OnDestroy, ViewChild, NgZone, OnChanges, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
-import { ListView, ItemEventData } from "tns-core-modules/ui/list-view";
 import { RouterExtensions } from "nativescript-angular/router";
 import { AccountService } from "../../../shared/account/account.service";
 import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service";
@@ -14,10 +13,11 @@ import { forcePortraitOrientation, enableRotation } from '../../../utils/orienta
 import { device } from "tns-core-modules/platform";
 import { VibrateService } from '../../../shared/notification/vibrate.service';
 import { FeedbackService } from '../../../shared/notification/feedback.service';
-import { ListViewEventData } from 'nativescript-ui-listview';
+import { ListViewEventData, RadListView } from 'nativescript-ui-listview';
 import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 import { Subject, Observable } from 'rxjs';
 import { timeout } from 'rxjs/operators';
+import { android } from "tns-core-modules/application";
 
 @Component({
     moduleId: module.id,
@@ -28,13 +28,12 @@ import { timeout } from 'rxjs/operators';
 @Injectable()
 export class SponsorEventDetailComponent implements OnInit, OnDestroy {
 
-    isLoading: boolean;
     account: Account;
     event: EventConfiguration;
     scans = new ObservableArray<SponsorScan>();
     private dataReceived = new Subject<Date>();
-    private lastUpdate: number = 0;
-    private interval: number;
+    @ViewChild("scanList", { static: false })
+    private scanView: ElementRef<RadListView>;
 
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
@@ -51,7 +50,6 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.isLoading = true;
         this.route.params.subscribe((params: Params) => {
             console.log("params", params['accountId'], params['eventId']);
             let id = params['accountId'];
@@ -70,7 +68,6 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 if (list) {
                     this.scans.push(list);
                 }
-                this.isLoading = false;
             });
         });
         if (device.deviceType === 'Phone') {
@@ -82,18 +79,12 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         if (this.event && this.event.key) {
             this.sponsorScanService.destroyForEvent(this.event.key);
         }
-        if (this.interval) {
-            clearInterval(this.interval);
-        }
         enableRotation();
     }
 
     requestQrScan(): void {
-        this.isLoading = true;
         let scanOptions = defaultScanOptions();
-        this.lastUpdate = new Date().getTime();
         scanOptions.continuousScanCallback = (res) => setTimeout(() => {
-            this.lastUpdate = new Date().getTime();
             console.log("scanned", res.text);
             let result = this.sponsorScanService.scan(this.event.key, this.account, res.text);
             switch (result) {
@@ -114,42 +105,26 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 }
             }
         }, 10);
-        scanOptions.closeCallback = () => setTimeout(() => {
-            this.ngZone.run(() => this.isLoading = false);
-            clearInterval(this.interval);
-        }, 10);
         scanOptions.reportDuplicates = true;
-
-        let warningDisplayed = false;
-        this.interval = setInterval(() => {
-            let current = new Date().getTime();
-            let elapsed = current - this.lastUpdate;
-            if (elapsed > 45 * 1000) {
-                clearInterval(this.interval);
-                this.barcodeScanner.stop()
-                    .then(() => {
-                        this.feedbackService.warning("Timed out");
-                        this.toggleLoading(false);
-                    });
-            } else if (elapsed > (30 * 1000) && !warningDisplayed) {
-                warningDisplayed = true;
-                this.feedbackService.warning("Camera will be deactivated in 15 sec.");
-            }
-        }, 1000);
+        scanOptions.closeCallback = () => this.forceRefreshList();
 
         this.barcodeScanner.scan(scanOptions)
             .then(() => {
                     console.log("barcode scanner exited");
-                    clearInterval(this.interval);
-                    this.toggleLoading(false);
+                    this.forceRefreshList();
                 }, (error) => {
                     console.log("No scan: " + error);
-                    this.toggleLoading(false);
+                    this.forceRefreshList();
                 });
     }
 
-    private toggleLoading(state: boolean): void {
-        this.ngZone.run(() => this.isLoading = state);
+    private forceRefreshList(): void {
+        if (android && this.scanView != null) {
+            setTimeout(() => {
+                this.scanView.nativeElement.refresh();
+                console.log("forced scanView refresh...");
+            });
+        }
     }
 
     forceUpload(): void {
@@ -203,16 +178,24 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     }
 
     onPullToRefreshInitiated(args: ListViewEventData) {
+        const listView = args.object;
         this.forceUpload();
         this.listenToChanges() // not ideal, but it's the best we can do with the current implementation
-            .pipe(timeout(5000))
+            .pipe(timeout(2000))
             .subscribe({
-                next: d => {
-                    args.object.notifyPullToRefreshFinished();
-                },
-                error: () => {
-                    args.object.notifyPullToRefreshFinished();
-                }
+                next: d => this.ngZone.run(() => {
+                    listView.notifyPullToRefreshFinished();
+                }),
+                error: () => this.ngZone.run(() => {
+                    listView.notifyPullToRefreshFinished();
+                    if (listView.ios) {
+                        listView.scrollToIndex(0, true);
+                    }
+                })
             });
+    }
+
+    get rowLayout(): string {
+        return this.scans.length > 0 ? "70, *, auto, 70" : "70, 10, *, 70";
     }
 }

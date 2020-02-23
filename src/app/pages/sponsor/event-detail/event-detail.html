@@ -5,9 +5,9 @@
     <!-- ActionItem (tap)="sendByEmail()" icon="res://ic_mail_outline_white" ios.systemIcon="7" *ngIf="scans.length > 0" ios.position="right" text="Send By Email" android.position="actionBarIfRoom"></ActionItem-->
 </ActionBar>
 
-<GridLayout rows="auto,1, *, 90">
-    <Label [text]="event.name" class="h2 text-center m-t-15" col="0" textWrap="true"></Label>
-    <RadListView id="list" *ngIf="account" [items]="scans" row="2" 
+<GridLayout [rows]="rowLayout">
+    <Image [src]="account.url + event.imageUrl" loadMode="async" stretch="aspectFit" row="0"></Image>
+    <RadListView #scanList id="list" [items]="scans" row="1" 
 		multipleSelection="false" selectionBehavior="None"
         swipeActions="false"
         pullToRefresh="true"
@@ -16,14 +16,12 @@
 		<ng-template tkListItemTemplate let-item="item">
             <sponsor-scan-badge [item]="item"></sponsor-scan-badge>
         </ng-template>
-        <ng-template tkListViewFooter *ngIf="scans.length == 0">
-            <StackLayout orientation="vertical" class="warning-msg m-t-30" (tap)="requestQrScan()">
-                <Label class="icon icon-3x text-center" text="&#xf208;" ></Label>
-                <Label text="No data collected so far" class="missing-accounts text-center"></Label>
-                <Label text="Start scanning badges!" class="missing-accounts text-center"></Label>
-            </StackLayout>
-        </ng-template>  
     </RadListView>
+    <StackLayout orientation="vertical" class="warning-msg m-t-30" (tap)="requestQrScan()" row="2" *ngIf="scans.length == 0">
+        <Label class="icon icon-3x text-center" text="&#xf208;" ></Label>
+        <Label text="No data collected so far" class="missing-accounts text-center"></Label>
+        <Label text="Start scanning badges!" class="missing-accounts text-center"></Label>
+    </StackLayout>
     <StackLayout row="3" orientation="vertical">
         <Button (tap)="requestQrScan()" class="-primary -rounded-sm" text="Scan"></Button>
     </StackLayout>
