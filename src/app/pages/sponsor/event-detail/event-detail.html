@@ -6,7 +6,7 @@
 </ActionBar>
 
 <GridLayout [rows]="rowLayout">
-    <Image [src]="account.url + event.imageUrl" loadMode="async" stretch="aspectFit" row="0"></Image>
+    <Image [src]="account.url + event.imageUrl" class="m-10 m-b-0" loadMode="async" stretch="aspectFit" row="0"></Image>
     <RadListView #scanList id="list" [items]="scans" row="1" 
 		multipleSelection="false" selectionBehavior="None"
         swipeActions="false"
