@@ -36,7 +36,7 @@ export class FeedbackService {
     }
 
     private fallbackIfAndroid(message: string, fn: () => Promise<void>): Promise<void> {
-        if(androidApplication) {
+        if (androidApplication) {
             // at the moment we use ZXing full screen, and apparently we cannot overlay something on top of it.
             // we'll fallback to a simple "toast" for now
             // source: https://github.com/TobiasHennig/nativescript-toast/blob/master/src/toast.android.js
