@@ -98,3 +98,31 @@
 .ns-dark .text-muted{
   color:#446f83
 }
+
+.text-success {
+  color: #28a745;
+}
+
+.ns-dark .text-success {
+  color: var(--color-white);
+  font-weight: bold;
+}
+
+.-danger {
+  background-color: var(--color-error);
+  color: var(--color-white);
+}
+
+.-success {
+  background-color: #28a745;
+  color: var(--color-white);
+}
+
+.text-warning {
+  color: var(--color-orange);
+}
+
+.-warning {
+  color: var(--color-white);
+  background-color: var(--color-orange);
+}

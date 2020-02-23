@@ -26,7 +26,7 @@ import { switchMap } from "rxjs/operators";
 })
 @Injectable()
 export class CheckInStatsComponent implements OnInit, OnDestroy {
-    
+
     @Input()
     private account: Account;
     @Input()
@@ -43,9 +43,9 @@ export class CheckInStatsComponent implements OnInit, OnDestroy {
             switchMap(() => this.statisticsService.retrieveForEvent(this.account, this.event.key))
         ).subscribe(stats => this.ngZone.run(() => this.stats = stats));
     }
-    
+
     ngOnDestroy(): void {
-        if(this.subscription) {
+        if (this.subscription) {
             console.log("calling unsubscribe...");
             this.subscription.unsubscribe();
         }
