@@ -83,11 +83,15 @@
   font-weight: bold;
 }
 
+.fill-bg {
+  background-color: white;
+}
+
 .ns-dark .fill-bg {
   background-color: #303030;
 }
 
-.ns-light .text-muted {
+.text-muted {
   color: #6c757d;
 }
 
