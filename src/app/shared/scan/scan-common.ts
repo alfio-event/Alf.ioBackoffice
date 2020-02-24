@@ -8,9 +8,23 @@ export class Ticket {
                 public categoryName: string) {}
 }
 
+export class AdditionalServiceInfo {
+    constructor(public name: string,
+                public count: Number,
+                public fields: Array<TicketFieldValueForAdditionalService>) {}
+}
+
+export class TicketFieldValueForAdditionalService {
+    constructor(public fieldName: string,
+                public fieldValue: string,
+                public additionalServiceId: Number) {}
+}
+
 export class TicketAndCheckInResult {
     constructor(public ticket: Ticket,
-                public result: CheckInResult) {}
+                public result: CheckInResult,
+                public additionalServices?: Array<AdditionalServiceInfo>,
+                public boxColor?: string) {}
 }
 
 export class UnexpectedError extends TicketAndCheckInResult {

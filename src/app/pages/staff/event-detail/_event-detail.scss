@@ -1,3 +1,28 @@
+@import "../../../../variables";
+
+@mixin badge-color($name, $lightFinalColor, $darkFinalColor) {
+    &-#{$name} {
+        background: $background;
+        background: linear-gradient(0deg, $lightFinalColor 0%, $background 50%, $background 100%);
+    }
+
+    :host-context(.ns-dark) &-#{$name} {
+        background: $background-dark;
+        background: linear-gradient(0deg, $darkFinalColor 0%, $background-dark 50%, $background-dark 100%);
+    }
+}
+
 .logo {
     max-height: 100;
+}
+
+.ck {
+    @include badge-color('primary', $alfio-primary, $alfio-primary-dark);
+    @include badge-color('secondary', $grey-background, $grey-background);
+    @include badge-color('success', $success, $success-dark);
+    @include badge-color('danger', $error, $error-dark);
+    @include badge-color('warning', $warning, $warning-dark);
+    @include badge-color('info', $info, $info-dark);
+    @include badge-color('light', $white, $white);
+    @include badge-color('dark', $background-dark, $background-dark);
 }

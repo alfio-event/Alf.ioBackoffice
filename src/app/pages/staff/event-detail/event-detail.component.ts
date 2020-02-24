@@ -5,7 +5,7 @@ import { AccountService } from "../../../shared/account/account.service";
 import { ScanService } from "../../../shared/scan/scan.service";
 import { Account, EventConfiguration } from "../../../shared/account/account";
 import { defaultScanOptions } from '../../../utils/barcodescanner';
-import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses } from '../../../shared/scan/scan-common';
+import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses, AdditionalServiceInfo } from '../../../shared/scan/scan-common';
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
@@ -31,6 +31,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     detail: string;
     ticket: Ticket;
     actionBarTitle: string;
+    private result: TicketAndCheckInResult;
 
 
     constructor(private route: ActivatedRoute,
@@ -167,8 +168,21 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         }
     }
 
+    get notificationBoxClass(): string {
+        if (this.isStatusSuccess()) {
+            console.log("color", this.result.boxColor);
+            return "ck-" + (this.result.boxColor || "success");
+        }
+        return "";
+    }
+
+    get additionalServicesInfo(): Array<AdditionalServiceInfo> {
+        return this.result.additionalServices || [];
+    }
+
     private displayResult(res: TicketAndCheckInResult): void {
         this.ngZone.run(() => {
+            this.result = res;
             this.status = res ? res.result.status : CheckInStatus.ERROR;
             this.message = statusDescriptions[this.status];
             if (this.status === CheckInStatus.MUST_PAY) {

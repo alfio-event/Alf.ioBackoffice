@@ -3,10 +3,10 @@
     <NavigationButton *ifIos (tap)="onBackTap()" text="Events"></NavigationButton>
 </ActionBar>
 
-<GridLayout rows="auto, 1, 8*, 4*">
-    <checkin-stats row="0" [account]="account" [event]="event"></checkin-stats>
-    <StackLayout row="1" class="hr-light"></StackLayout>
-    <ScrollView row="2" class="p-20 m-r-16 m-l-16" *ngIf="!isLoading" verticalAlignment="center">
+<GridLayout rows="auto, 1, 8*, 2*" columns="16, *, 16" [ngClass]="notificationBoxClass">
+    <checkin-stats row="0" col="0" colSpan="3" [account]="account" [event]="event"></checkin-stats>
+    <StackLayout row="1" col="0" colSpan="3" class="hr"></StackLayout>
+    <ScrollView row="2" col="1" *ngIf="!isLoading" verticalAlignment="center">
         <StackLayout orientation="vertical" verticalAlignment="center" *ngIf="!status" (tap)="scan()">
             <Image [src]="account.url + event.imageUrl" class="m-10 m-b-0" loadMode="async" stretch="aspectFit" height="100"></Image>
             <Label text="Start scanning!" class="text-center label font-weight-bold h2"></Label>
@@ -15,15 +15,22 @@
         <StackLayout orientation="vertical" *ngIf="status" verticalAlignment="center" class="p-l-16 p-r-16">
             <Label class="icon icon-4x text-center" [ngClass]="{'text-success m-t-10': isStatusSuccess(), 'text-danger': isStatusError(), 'text-warning': isStatusWarning() || isStatusMustPay()}" [text]="getStatusIcon()"></Label>
             <Label [text]="message" class="h2 text-center m-t-10" *ngIf="!isStatusSuccess() || ticket == null" textWrap="true" [class.text-danger]="isStatusError()" [class.text-warning]="isStatusWarning() || isStatusMustPay()"></Label>
-            <StackLayout *ngIf="isStatusSuccess() && ticket != null" orientation="vertical">
+            <ng-container *ngIf="isStatusSuccess() && ticket != null">
                 <Label [text]="ticket.fullName" class="h2 text-center"></Label>
                 <Label [text]="ticket.categoryName" class="h2 text-center"></Label>
                 <Label text="{{ticket.uuid}}" class="h6 text-center"></Label>
-            </StackLayout>
+            </ng-container>
+            <ng-container *ngIf="additionalServicesInfo.length > 0">
+                <Label text="+" class="h1 text-center"></Label>
+                <ng-container *ngFor="let item of additionalServicesInfo">
+                    <Label [text]="item.count + ' x ' + item.name" class="h2"></Label>
+                    <Label [text]="field.fieldName + ': ' + field.fieldValue" class="h3" *ngFor="let field of item.fields"></Label>
+                </ng-container>
+            </ng-container>
         </StackLayout>
     </ScrollView>
-    <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="2" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
-    <StackLayout row="3" *ngIf="!isLoading" orientation="vertical">
+    <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="2" col="1" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
+    <StackLayout row="3" *ngIf="!isLoading" orientation="vertical" col="0" colSpan="3">
         <Button class="-rounded-sm" 
             [class.-primary]="!status || isStatusWarning()" 
             [class.-warning]="status && isStatusMustPay()" 

@@ -1,10 +1,12 @@
 @import '~@nativescript/theme/scss/variables';
 
+$alfio-primary: #007bff;
 $info: #17a2b8;
 $success: #28a745;
 $warning: #ffc107;
 $error: #dc3545;
 
+$alfio-primary-dark: darken($alfio-primary, 10%);
 $info-dark: darken($info, 10%);
 $success-dark: darken($success, 10%);
 $warning-dark: darken($warning, 10%);
