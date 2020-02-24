@@ -8,7 +8,7 @@ import { switchMap } from "rxjs/operators";
     moduleId: module.id,
     selector: "checkin-stats",
     providers: [StatisticsService],
-    template: `<StackLayout>
+    template: `<StackLayout class="fill-bg">
                     <GridLayout columns="70, auto" *ngIf="stats">
                         <Label col="0" class="icon icon-3x text-success text-center" text="&#xf39e;"></Label>
                         <StackLayout col="1" class="m-5" orientation="vertical">

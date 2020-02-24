@@ -2,14 +2,6 @@
 @import "~@nativescript/theme/core";
 @import "~@nativescript/theme/orange";
 
-.ns-light Page {
-  color: $primary;
-}
-
-.ns-dark Page {
-  color: $primary-dark;
-}
-
 .icon {
   font-family: 'Material-Design-Iconic-Font';
   font-weight: normal;

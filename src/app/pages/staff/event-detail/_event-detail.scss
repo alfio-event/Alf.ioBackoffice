@@ -1,14 +1,33 @@
 @import "../../../../variables";
 
-@mixin badge-color($name, $lightFinalColor, $darkFinalColor) {
-    &-#{$name} {
-        background: $background;
-        background: linear-gradient(0deg, $lightFinalColor 0%, $background 50%, $background 100%);
+@mixin light-badge-color($name, $lightFinalColor, $textColor: $white, $buttonBackground: $white, $buttonText: $lightFinalColor) {
+    :host-context(.ns-light) &-#{$name} {
+        background: $lightFinalColor;
+    }
+
+    :host-context(.ns-light) &-#{$name} Label {
+        color: $textColor;
+    }
+
+    :host-context(.ns-light) &-#{$name} Button {
+        color: $buttonText;
+        background-color: $buttonBackground;
+    }
+}
+
+@mixin dark-badge-color($name, $darkFinalColor, $textColor: $background-dark, $buttonBackground: $background-dark, $buttonText: $darkFinalColor) {
+
+    :host-context(.ns-dark) &-#{$name} Label {
+        color: $textColor;
+    }
+
+    :host-context(.ns-dark) &-#{$name} Button {
+        color: $buttonText;
+        background-color: $buttonBackground;
     }
 
     :host-context(.ns-dark) &-#{$name} {
-        background: $background-dark;
-        background: linear-gradient(0deg, $darkFinalColor 0%, $background-dark 50%, $background-dark 100%);
+        background: $darkFinalColor;
     }
 }
 
@@ -17,12 +36,23 @@
 }
 
 .ck {
-    @include badge-color('primary', $alfio-primary, $alfio-primary-dark);
-    @include badge-color('secondary', $grey-background, $grey-background);
-    @include badge-color('success', $success, $success-dark);
-    @include badge-color('danger', $error, $error-dark);
-    @include badge-color('warning', $warning, $warning-dark);
-    @include badge-color('info', $info, $info-dark);
-    @include badge-color('light', $white, $white);
-    @include badge-color('dark', $background-dark, $background-dark);
+    //light
+    @include light-badge-color('primary', $alfio-primary);
+    @include light-badge-color('success', $success);
+    @include light-badge-color('danger', $error);
+    @include light-badge-color('warning', $warning, $primary, $white, $primary);
+    @include light-badge-color('info', $info);
+    @include light-badge-color('dark', $background-dark);
+    @include light-badge-color('light', $white, $primary, $primary);    
+    @include light-badge-color('secondary', $grey-background, $primary, $primary);
+
+    //dark
+    @include dark-badge-color('primary', $alfio-primary-dark, $white, $white);
+    @include dark-badge-color('success', $success-dark, $white, $white);
+    @include dark-badge-color('danger', $error-dark, $white, $white);
+    @include dark-badge-color('warning', $warning-dark);
+    @include dark-badge-color('info', $info-dark, $white, $white, $background-dark);
+    @include dark-badge-color('light', $white);
+    @include dark-badge-color('dark', $background-dark, $white, $white, $background-dark);
+    @include dark-badge-color('secondary', $grey-background);
 }
