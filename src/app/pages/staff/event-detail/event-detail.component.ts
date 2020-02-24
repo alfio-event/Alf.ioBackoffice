@@ -170,7 +170,6 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
 
     get notificationBoxClass(): string {
         if (this.isStatusSuccess()) {
-            console.log("color", this.result.boxColor);
             return "ck-" + (this.result.boxColor || "success");
         }
         return "";
