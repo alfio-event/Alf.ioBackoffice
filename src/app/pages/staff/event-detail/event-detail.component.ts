@@ -117,13 +117,13 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     }
 
     getStatusIcon(): string {
-        let code: number = 0xf135;
+        let code: number = 0xf1f0;
         if (this.isStatusSuccess()) {
-            code = 0xf269;
+            code = 0xf26b;
         } else if (this.isStatusMustPay()) {
             code = 0xf19a;
         } else if (this.isStatusWarning()) {
-            code = 0xf1f4;
+            code = 0xf1f7;
         }
         return String.fromCharCode(code);
     }
