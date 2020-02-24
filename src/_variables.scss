@@ -1,0 +1,11 @@
+@import '~@nativescript/theme/scss/variables';
+
+$info: #17a2b8;
+$success: #28a745;
+$warning: #ffc107;
+$error: #dc3545;
+
+$info-dark: darken($info, 10%);
+$success-dark: darken($success, 10%);
+$warning-dark: darken($warning, 10%);
+$error-dark: darken($error, 10%);

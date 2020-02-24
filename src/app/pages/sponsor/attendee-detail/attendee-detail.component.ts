@@ -14,7 +14,7 @@ import { RadDataForm } from 'nativescript-ui-dataform';
     moduleId: module.id,
     selector: "attendee-detail-component",
     templateUrl: "./attendee-detail.html",
-    styleUrls: [ "./attendee-detail.css" ]
+    styleUrls: [ "./attendee-detail.scss" ]
 })
 export class AttendeeDetailComponent implements OnInit, AfterViewInit {
 

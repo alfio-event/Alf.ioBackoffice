@@ -13,7 +13,7 @@ import { ObservableArray } from "tns-core-modules/data/observable-array/observab
 @Component({
     selector: "account-selection",
     templateUrl: "./account-selection.html",
-    styleUrls: ["./account-selection-common.css", "./account-selection.css"],
+    styleUrls: ["./account-selection.scss"],
 })
 export class AccountSelectionComponent implements OnInit, OnChanges {
     accounts: ObservableArray<Account> = new ObservableArray<Account>();

@@ -17,7 +17,7 @@ import { VibrateService } from '../../../shared/notification/vibrate.service';
     selector: "staff-event-detail",
     providers: [AccountService, ScanService],
     templateUrl: 'event-detail.html',
-    styleUrls: ['./event-detail-common.css', './event-detail.css']
+    styleUrls: ['./event-detail.scss']
 })
 @Injectable()
 export class StaffEventDetailComponent implements OnInit, OnDestroy {

@@ -36,6 +36,7 @@
     "nativescript-ui-dataform": "^6.0.0",
     "nativescript-ui-listview": "^8.0.1",
     "nativescript-vibrate": "~3.0.0",
+    "node-sass": "^4.13.1",
     "reflect-metadata": "~0.1.12",
     "rxjs": "^6.4.0",
     "tns-core-modules": "~6.4.0",

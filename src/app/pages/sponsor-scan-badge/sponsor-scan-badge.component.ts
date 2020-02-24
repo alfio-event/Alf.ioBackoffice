@@ -6,7 +6,7 @@ import { Ticket } from "~/app/shared/scan/scan-common";
     moduleId: module.id,
     selector: "sponsor-scan-badge",
     templateUrl: "./sponsor-scan-badge.html",
-    styleUrls: ["./sponsor-scan-badge.css"]
+    styleUrls: ["./sponsor-scan-badge.scss"]
 })
 export class SponsorScanBadgeComponent implements OnInit {
 

@@ -23,7 +23,7 @@ import { android } from "tns-core-modules/application";
     moduleId: module.id,
     selector: "sponsor-event-detail",
     templateUrl: './event-detail.html',
-    styleUrls: ['./event-detail-common.css']
+    styleUrls: ['./event-detail-common.scss']
 })
 @Injectable()
 export class SponsorEventDetailComponent implements OnInit, OnDestroy {

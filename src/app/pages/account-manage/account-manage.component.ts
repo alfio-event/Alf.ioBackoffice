@@ -13,7 +13,7 @@ import { ObservableArray } from "tns-core-modules/data/observable-array/observab
     selector: "account-manage",
     providers: [AccountService],
     templateUrl: "./account-manage.html",
-    styleUrls: ["./account-manage-common.css"],
+    styleUrls: ["./account-manage-common.scss"],
 })
 export class AccountManageComponent implements OnInit {
     account: Account;
