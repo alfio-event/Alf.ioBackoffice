@@ -101,12 +101,12 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     }
 
     scan(): void {
+        this.isLoading = true;
         this.barcodeScanner.scan(defaultScanOptions())
             .then((res) => setTimeout(() => this.scanResult(res), 10), (error) => {
                 console.log("handling scan error", error);
                 this.cancel();
             });
-        this.isLoading = true;
     }
 
     confirmPayment(code: string): void {
@@ -169,14 +169,21 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     }
 
     get notificationBoxClass(): string {
-        if (this.isStatusSuccess() && this.result.boxColor != null) {
-            return "ck-" + this.result.boxColor;
+        if (!this.isLoading && this.isStatusSuccess()) {
+            return "ck-animate ck-" + (this.result.boxColor || "none");
         }
         return "";
     }
 
     get additionalServicesInfo(): Array<AdditionalServiceInfo> {
+        if (this.result == null) {
+            return [];
+        }
         return this.result.additionalServices || [];
+    }
+
+    get resultRows(): string {
+        return this.additionalServicesInfo.length > 0 ? "*, *, 70" : "*, auto, 70";
     }
 
     private displayResult(res: TicketAndCheckInResult): void {
