@@ -87,7 +87,7 @@ export class SponsorScanService  {
         if (toSend == null || toSend.length === 0) {
             return;
         }
-        this.http.post<Array<TicketAndCheckInResult>>(account.url + '/api/attendees/sponsor-scan/bulk', toSend.map(scan => new SponsorScanRequest(eventKey, scan.code, scan.notes)), {
+        this.http.post<Array<TicketAndCheckInResult>>(account.url + '/api/attendees/sponsor-scan/bulk', toSend.map(scan => new SponsorScanRequest(eventKey, scan.code, scan.notes, scan.leadStatus)), {
             headers: authorization(account.apiKey, account.username, account.password)
         }).subscribe(payload => {
             if (payload != null) {
@@ -194,5 +194,5 @@ export class SponsorScanService  {
 }
 
 class SponsorScanRequest {
-    constructor(private eventName: string, private ticketIdentifier: string, private notes: string) {}
+    constructor(private eventName: string, private ticketIdentifier: string, private notes: string, private leadStatus: string) {}
 }
