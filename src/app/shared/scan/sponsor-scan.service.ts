@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 
-import { SponsorScan, ScanStatus, ScanResult, checkInStatusToScanStatus } from "./sponsor-scan";
+import { SponsorScan, ScanStatus, ScanResult, checkInStatusToScanStatus, LeadStatus } from "./sponsor-scan";
 import { Ticket, isValidTicketCode, TicketAndCheckInResult } from "./scan-common";
 import { Account } from "../account/account";
 import { authorization } from "../../utils/network-util";
@@ -34,7 +34,7 @@ export class SponsorScanService  {
             return ScanResult.DUPLICATE;
         }
 
-        this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, null, null));
+        this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, null, LeadStatus.WARM));
         this.persistSponsorScans(eventKey, account);
         this.emitFor(eventKey);
         return ScanResult.OK;

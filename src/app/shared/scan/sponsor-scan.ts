@@ -16,7 +16,9 @@ export enum ScanStatus {
 }
 
 export enum LeadStatus {
-    COLD, WARM, HOT
+    COLD = 'COLD', 
+    WARM = 'WARM', 
+    HOT = 'HOT'
 }
 
 export function checkInStatusToScanStatus(checkInStatus: CheckInStatus): ScanStatus {
