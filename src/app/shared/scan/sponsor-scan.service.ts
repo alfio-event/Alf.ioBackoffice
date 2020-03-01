@@ -34,7 +34,7 @@ export class SponsorScanService  {
             return ScanResult.DUPLICATE;
         }
 
-        this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, null, LeadStatus.WARM));
+        this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, null, null, LeadStatus.WARM));
         this.persistSponsorScans(eventKey, account);
         this.emitFor(eventKey);
         return ScanResult.OK;
@@ -58,7 +58,7 @@ export class SponsorScanService  {
         let stringified = this.storage.getOrDefault('ALFIO_SPONSOR_SCANS_' + eventKey + account.getKey());
         if (stringified != null) {
             let found = <Array<SponsorScan>> JSON.parse(stringified);
-            return found.map(sponsorScan => new SponsorScan(sponsorScan.code, SponsorScanService.fixStatusOnLoad(sponsorScan.status), sponsorScan.ticket, sponsorScan.notes));
+            return found.map(sponsorScan => new SponsorScan(sponsorScan.code, SponsorScanService.fixStatusOnLoad(sponsorScan.status), sponsorScan.ticket, sponsorScan.notes, sponsorScan.leadStatus));
         } else {
             return undefined;
         }
@@ -104,14 +104,14 @@ export class SponsorScanService  {
                         uuid = toSend[i].code;
                     }
                     if (uuid != null) {
-                        this.changeStatusFor(eventKey, uuid, checkInStatusToScanStatus(scan.result.status), scan.ticket);
+                        this.changeStatusFor(eventKey, uuid, checkInStatusToScanStatus(scan.result.status), scan.ticket, null, LeadStatus.WARM);
                     }
                 }
                 this.publishResults(eventKey, account);
             }
         }, error => {
             console.log('error while bulk scanning:', JSON.stringify(error));
-            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null));
+            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null, null, LeadStatus.WARM));
             this.publishResults(eventKey, account);
         });
 
@@ -130,14 +130,14 @@ export class SponsorScanService  {
     private process(eventKey: string, account: Account, oneShot: boolean = false): void {
         let toSend = this.findAllStatusNew(eventKey);
         if (toSend.length > 0) {
-            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, null));
+            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, null, null, LeadStatus.WARM));
             this.bulkScanUpload(eventKey, account, toSend);
         } else if (!oneShot) {
             this.doSetTimeoutProcess(eventKey, account);
         }
     }
 
-    private changeStatusFor(eventKey: string, uuid: string, status: ScanStatus, ticket: Ticket, notes: string = null): void {
+    private changeStatusFor(eventKey: string, uuid: string, status: ScanStatus, ticket: Ticket, notes: string = null, leadStatus: LeadStatus): void {
         console.log('changing status for ', eventKey, uuid, status);
         this.sponsorScans[eventKey].filter(scan => scan.code === uuid).forEach(scan => {
             scan.status = status;
@@ -188,7 +188,7 @@ export class SponsorScanService  {
 
     public update(eventKey: string, scan: SponsorScan): void {
         const notes = scan.notes != null ? scan.notes : "";
-        this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null, notes);
+        this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null, notes, scan.leadStatus);
     }
 
 }
