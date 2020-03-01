@@ -4,8 +4,8 @@
 </ActionBar>
 
 <GridLayout rows="auto, 1, *, 16" columns="16, *, 16" [class.bg-danger]="!isLoading && status && isStatusError()" [class.bg-warning]="!isLoading && status && (isStatusMustPay() || isStatusWarning())">
-    <checkin-stats *ngIf="!status" row="0" col="0" colSpan="3" [account]="account" [event]="event" ></checkin-stats>
-    <StackLayout *ngIf="!status" row="1" col="0" colSpan="3" class="hr"></StackLayout>
+    <checkin-stats *ngIf="displayCheckInStats" row="0" col="0" colSpan="3" [account]="account" [event]="event" ></checkin-stats>
+    <StackLayout *ngIf="displayCheckInStats" row="1" col="0" colSpan="3" class="hr"></StackLayout>
     <GridLayout row="2" col="1" [rows]="resultRows" [ngClass]="notificationBoxClass" class="m-t-15">
         <StackLayout row="0" orientation="vertical" verticalAlignment="center" *ngIf="!isLoading">
             <ng-container *ngIf="!status" (tap)="scan()">

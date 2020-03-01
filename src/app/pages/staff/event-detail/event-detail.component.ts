@@ -9,7 +9,7 @@ import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedEr
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
-import { device } from "tns-core-modules/platform";
+import { device, screen } from "tns-core-modules/platform";
 import { VibrateService } from '../../../shared/notification/vibrate.service';
 
 @Component({
@@ -184,6 +184,14 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
 
     get resultRows(): string {
         return this.additionalServicesInfo.length > 0 ? "*, *, 70" : "*, auto, 70";
+    }
+
+    /**
+     * In order to have enough room on screen for the additional items,
+     * we have to hide the check-in stats on smaller screens
+     */
+    get displayCheckInStats(): boolean {
+        return this.status == null || screen.mainScreen.heightDIPs > 640;
     }
 
     private displayResult(res: TicketAndCheckInResult): void {
