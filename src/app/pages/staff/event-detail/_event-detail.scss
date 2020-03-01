@@ -7,22 +7,22 @@
 
 @mixin light-badge-color($name, $lightFinalColor, $textColor: $white, $buttonBackground: $white, $buttonText: $lightFinalColor, $iconColor: $textColor) {
 
-    :host-context(.ns-light) &-#{$name} {
+    &-#{$name}{
         background: $lightFinalColor;
         border-color: $background-dark;
         border-width: $border-width;
         border-radius: $border-radius-sm;
     }
 
-    :host-context(.ns-light) &-#{$name} Label {
+    &-#{$name} Label {
         color: $textColor;
     }
 
-    :host-context(.ns-light) &-#{$name} Label.icon {
+    &-#{$name} Label.icon {
         color: $iconColor;
     }
 
-    :host-context(.ns-light) &-#{$name} Button {
+    &-#{$name} Button {
         color: $buttonText;
         background-color: $buttonBackground;
     }

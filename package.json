@@ -7,11 +7,11 @@
   "repository": "https://github.com/alfio-event/Alf.ioBackoffice",
   "nativescript": {
     "id": "alfio.scan",
-    "tns-ios": {
-      "version": "6.4.2"
-    },
     "tns-android": {
       "version": "6.4.1"
+    },
+    "tns-ios": {
+      "version": "6.4.2"
     }
   },
   "dependencies": {
