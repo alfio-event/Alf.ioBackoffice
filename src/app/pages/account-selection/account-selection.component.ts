@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, NgZone, Inject } from "@angular/core";
+import { Component, OnInit, OnChanges, NgZone } from "@angular/core";
 import { RadListView, ListViewEventData } from "nativescript-ui-listview";
 import { RouterExtensions } from "nativescript-angular/router";
 import { Account, ScannedAccount } from "../../shared/account/account";
@@ -8,9 +8,8 @@ import { isUndefined, isDefined } from "tns-core-modules/utils/types";
 import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
 import { FeedbackService } from "../../shared/notification/feedback.service";
 import { ObservableArray } from "tns-core-modules/data/observable-array/observable-array";
-import { Device, platformNames } from "tns-core-modules/platform";
-import { DEVICE } from "nativescript-angular/platform-providers";
 import { View } from "tns-core-modules/ui/core/view/view";
+import { defaultScanOptions } from "~/app/utils/barcodescanner";
 
 @Component({
     selector: "account-selection",
@@ -27,8 +26,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         private routerExtensions: RouterExtensions,
         private barcodeScanner: BarcodeScanner,
         private ngZone: NgZone,
-        private feedbackService: FeedbackService,
-        @Inject(DEVICE) private device: Device) {
+        private feedbackService: FeedbackService) {
     }
 
     ngOnInit(): void {
