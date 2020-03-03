@@ -1,14 +1,16 @@
-import { Component, ElementRef, OnInit, OnChanges, ViewChild, NgZone } from "@angular/core";
+import { Component, OnInit, OnChanges, NgZone, Inject } from "@angular/core";
 import { RadListView, ListViewEventData } from "nativescript-ui-listview";
 import { RouterExtensions } from "nativescript-angular/router";
 import { Account, ScannedAccount } from "../../shared/account/account";
 import { AccountService } from "../../shared/account/account.service";
 import { AccountResponse, Maybe, Some, Nothing } from "../../shared/account/account";
-import { defaultScanOptions } from '../../utils/barcodescanner';
 import { isUndefined, isDefined } from "tns-core-modules/utils/types";
 import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
 import { FeedbackService } from "../../shared/notification/feedback.service";
 import { ObservableArray } from "tns-core-modules/data/observable-array/observable-array";
+import { Device, platformNames } from "tns-core-modules/platform";
+import { DEVICE } from "nativescript-angular/platform-providers";
+import { View } from "tns-core-modules/ui/core/view/view";
 
 @Component({
     selector: "account-selection",
@@ -25,7 +27,8 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         private routerExtensions: RouterExtensions,
         private barcodeScanner: BarcodeScanner,
         private ngZone: NgZone,
-        private feedbackService: FeedbackService) {
+        private feedbackService: FeedbackService,
+        @Inject(DEVICE) private device: Device) {
     }
 
     ngOnInit(): void {
@@ -106,9 +109,13 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     onSwipeCellStarted(args: ListViewEventData) {
         this.editModeEnabled = true;
         const swipeLimits = args.data.swipeLimits;
-        swipeLimits.left = 150;
+        const actionView = args['object'].getViewById<View>('deleteBtn');
+        const actualLabel = args['object'].getViewById<View>('deleteText');
+        const padding = Math.round(actualLabel.getLocationOnScreen().x) + 5; // add extra margin because iOS, meh...
+        const actionViewWidth = (padding * 2) + actionView.getMeasuredWidth();
+        swipeLimits.left = actionViewWidth;
         swipeLimits.right = 0;
-        swipeLimits.treshold = 70;
+        swipeLimits.treshold = actionViewWidth / 2;
     }
 
     onSwipeCellFinished(args: ListViewEventData) {

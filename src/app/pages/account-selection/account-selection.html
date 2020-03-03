@@ -24,12 +24,13 @@
 				<Label col="2" text="&#xf2fb;" class="icon icon-1-5x person-icon text-center"></Label>
 			</GridLayout>
 		</ng-template>
-		<ng-template tkListItemSwipeTemplate>
-			<GridLayout columns="50, *" (tap)="onDeleteButtonTap($event)" class="-separator text-center bg-danger">
-				<Label text="&#xf154;" col="0" class="icon icon-1-5x person-icon text-center"></Label>
-			</GridLayout>
-		</ng-template>
+		
+		<GridLayout *tkListItemSwipeTemplate columns="auto, *" (tap)="onDeleteButtonTap($event)" class="-separator bg-danger">
+			<StackLayout id="deleteBtn" col="0">
+				<Label id="deleteText" text="&#xf154;" class="icon icon-1-5x person-icon text-center"></Label>
+			</StackLayout>
+		</GridLayout>
 	</RadListView>
 	<ActivityIndicator row="1" [busy]="isLoading"  class="activity-indicator"></ActivityIndicator>
-	<Button row="2" (tap)="requestQrScan()" class="-primary -rounded-sm" text="Add new Configuration"></Button>
+	<Button row="2" (tap)="requestQrScan()" class="-primary -rounded-sm" text="Add new account"></Button>
 </GridLayout>
