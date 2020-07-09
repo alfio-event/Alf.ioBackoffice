@@ -1,4 +1,4 @@
-import { SponsorScan, ScanStatus } from "~/app/shared/scan/sponsor-scan";
+import { SponsorScan, ScanStatus, LeadStatus } from "~/app/shared/scan/sponsor-scan";
 import { Component, Input, OnInit } from "@angular/core";
 import { Ticket } from "~/app/shared/scan/scan-common";
 
@@ -56,6 +56,29 @@ export class SponsorScanBadgeComponent implements OnInit {
 
     get commentText(): string {
         return this.item.notes != null && this.item.notes.length > 0 ? String.fromCharCode(0xf260) : "";
+    }
+
+    get statusClass(): string {
+        switch (this.item.leadStatus) {
+            case LeadStatus.COLD:
+                return "text-primary";
+            case LeadStatus.WARM:
+                return "text-orange";
+            case LeadStatus.HOT:
+                return "text-danger";
+        }
+    }
+
+    get leadStatusIcon(): string {
+       // &#xf161;
+       switch (this.item.leadStatus) {
+        case LeadStatus.COLD:
+            return String.fromCharCode(0xf163);
+        case LeadStatus.WARM:
+            return String.fromCharCode(0xf1d6);
+        case LeadStatus.HOT:
+            return String.fromCharCode(0xf161);
+        }
     }
 
 }
