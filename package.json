@@ -8,10 +8,10 @@
   "nativescript": {
     "id": "alfio.scan",
     "tns-android": {
-      "version": "6.4.1"
+      "version": "6.5.0"
     },
     "tns-ios": {
-      "version": "6.4.2"
+      "version": "6.5.0"
     }
   },
   "dependencies": {
@@ -39,7 +39,7 @@
     "node-sass": "^4.13.1",
     "reflect-metadata": "~0.1.12",
     "rxjs": "^6.4.0",
-    "tns-core-modules": "~6.4.0",
+    "tns-core-modules": "~6.5.0",
     "zone.js": "0.9.1"
   },
   "devDependencies": {
