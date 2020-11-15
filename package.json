@@ -5,26 +5,16 @@
   "license": "Apache-2",
   "readme": "Alf.io",
   "repository": "https://github.com/alfio-event/Alf.ioBackoffice",
-  "nativescript": {
-    "id": "alfio.scan",
-    "tns-android": {
-      "version": "6.5.0"
-    },
-    "tns-ios": {
-      "version": "6.5.0"
-    }
-  },
   "dependencies": {
-    "@angular/animations": "~8.2.0",
-    "@angular/common": "~8.2.0",
-    "@angular/compiler": "~8.2.0",
-    "@angular/core": "~8.2.0",
-    "@angular/forms": "~8.2.0",
-    "@angular/platform-browser": "~8.2.0",
-    "@angular/platform-browser-dynamic": "~8.2.0",
-    "@angular/router": "~8.2.0",
+    "@angular/animations": "~10.0.0",
+    "@angular/common": "~10.0.0",
+    "@angular/compiler": "~10.0.0",
+    "@angular/core": "~10.0.0",
+    "@angular/forms": "~10.0.0",
+    "@angular/platform-browser": "~10.0.0",
+    "@angular/platform-browser-dynamic": "~10.0.0",
+    "@angular/router": "~10.0.0",
     "@nativescript/theme": "~2.3.0",
-    "nativescript-angular": "~8.21.0",
     "nativescript-barcodescanner": "^3.2.2",
     "nativescript-email": "~1.5.5",
     "nativescript-feedback": "^1.3.11",
@@ -39,14 +29,18 @@
     "node-sass": "^4.13.1",
     "reflect-metadata": "~0.1.12",
     "rxjs": "^6.4.0",
-    "tns-core-modules": "~6.5.0",
-    "zone.js": "0.9.1"
+    "zone.js": "0.11.1",
+    "@nativescript/core": "7.0.1",
+    "@nativescript/webpack": "3.0.0",
+    "@nativescript/angular": "10.0.0"
   },
   "devDependencies": {
     "@angular/compiler-cli": "~8.2.0",
     "@ngtools/webpack": "~8.2.0",
-    "nativescript-dev-webpack": "~1.5.0",
-    "typescript": "~3.5.3",
-    "tns-platform-declarations": "^6.4.0"
-  }
+    "@nativescript/android": "7.0.1",
+    "@nativescript/ios": "7.0.5",
+    "typescript": "3.9.7",
+    "@nativescript/types": "7.0.0"
+  },
+  "main": "main.js"
 }
