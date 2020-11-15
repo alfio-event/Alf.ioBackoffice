@@ -2,7 +2,7 @@ import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { SponsorScan, ScanResult, ScanStatus } from '../../../shared/scan/sponsor-scan';
 import { Component, ElementRef, Injectable, OnInit, OnDestroy, ViewChild, NgZone, OnChanges, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
-import { RouterExtensions } from "nativescript-angular/router";
+import { RouterExtensions } from "@nativescript/angular";
 import { AccountService } from "../../../shared/account/account.service";
 import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service";
 import { Account, EventConfiguration } from "../../../shared/account/account";
@@ -10,14 +10,14 @@ import * as Email from "nativescript-email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { encodeBase64 } from '../../../utils/network-util';
 import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
-import { device } from "tns-core-modules/platform";
+import { Device } from "@nativescript/core/platform";
 import { VibrateService } from '../../../shared/notification/vibrate.service';
 import { FeedbackService } from '../../../shared/notification/feedback.service';
 import { ListViewEventData, RadListView } from 'nativescript-ui-listview';
-import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 import { Subject, Observable } from 'rxjs';
 import { timeout } from 'rxjs/operators';
-import { android } from "tns-core-modules/application";
+import { android } from "@nativescript/core/application";
+import { ObservableArray } from '@nativescript/core';
 
 @Component({
     moduleId: module.id,
@@ -70,7 +70,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 }
             });
         });
-        if (device.deviceType === 'Phone') {
+        if (Device.deviceType === 'Phone') {
             forcePortraitOrientation();
         }
     }

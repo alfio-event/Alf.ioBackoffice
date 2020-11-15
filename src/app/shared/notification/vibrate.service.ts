@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Vibrate } from "nativescript-vibrate";
-import { android } from "tns-core-modules/application";
+import { android } from "@nativescript/core/application";
 import { TapticEngine, TapticEngineNotificationType } from "nativescript-taptic-engine";
 
 @Injectable()
@@ -9,7 +9,7 @@ export class VibrateService {
     private tapticEngine: TapticEngine; // this will work on iPhone 7+
 
     constructor() {
-        if(android) {
+        if (android) {
             this.vibrateAndroid = new Vibrate();
         } else {
             this.tapticEngine = new TapticEngine();
@@ -47,7 +47,7 @@ export class VibrateService {
     }
 
     public selection(): void {
-        if(android) {
+        if (android) {
             this.vibrateAndroid.vibrate(50);
         } else {
             this.tapticEngine.selection();

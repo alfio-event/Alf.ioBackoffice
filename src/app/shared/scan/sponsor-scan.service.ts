@@ -7,6 +7,7 @@ import { authorization } from "../../utils/network-util";
 import { Subject, Observable } from "rxjs";
 import { StorageService } from "../../shared/storage/storage.service";
 import { HttpClient } from "@angular/common/http";
+import { setTimeout, clearTimeout } from "@nativescript/core/timer";
 
 @Injectable()
 export class SponsorScanService  {

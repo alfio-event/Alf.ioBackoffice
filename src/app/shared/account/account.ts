@@ -1,4 +1,4 @@
-import { isDefined } from "tns-core-modules/utils/types";
+import { isDefined } from "@nativescript/core/utils/types";
 
 export class Account {
     url: string;

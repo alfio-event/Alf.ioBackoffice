@@ -1,8 +1,8 @@
-import { isDefined } from "tns-core-modules/utils/types";
+import { isDefined } from "@nativescript/core/utils/types";
 import { HttpHeaders } from "@angular/common/http";
 
 export function authorization(apiKey: string, username: string, password: string): HttpHeaders {
-    if(isDefined(apiKey)) {
+    if (isDefined(apiKey)) {
         return new HttpHeaders({"Authorization": `ApiKey ${apiKey}`});
     } else {
         return new HttpHeaders({"Authorization": "Basic " + encodeBase64(`${username}:${password}`)});
@@ -10,18 +10,18 @@ export function authorization(apiKey: string, username: string, password: string
 }
 
 export function encodeBase64(str: string) {
-    var padChar = '=';
-    var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-    var getByte = function (s, i) {
-        var cc = s.charCodeAt(i);
+    let padChar = '=';
+    let alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    let getByte = function (s, i) {
+        let cc = s.charCodeAt(i);
         if (cc > 255) {
             throw "INVALID_CHARACTER_ERR: DOM Exception 5";
         }
         return cc;
     };
-    var b10, i;
-    var b64Chars = [];
-    var iMax = str.length - str.length % 3;
+    let b10, i;
+    let b64Chars = [];
+    let iMax = str.length - str.length % 3;
     for (i = 0; i < iMax; i += 3) {
         b10 = (getByte(str, i) << 16) |
             (getByte(str, i + 1) << 8) |

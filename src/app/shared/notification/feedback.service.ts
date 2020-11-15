@@ -1,6 +1,6 @@
 import { Injectable, Inject } from "@angular/core";
 import { Feedback } from "nativescript-feedback";
-import { android as androidApplication } from "tns-core-modules/application";
+import { android as androidApplication } from "@nativescript/core/application";
 
 @Injectable()
 export class FeedbackService {

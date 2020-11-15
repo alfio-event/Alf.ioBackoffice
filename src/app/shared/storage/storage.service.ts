@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import * as application from "tns-core-modules/application";
+import * as application from "@nativescript/core/application";
 import { SecureStorage } from "nativescript-secure-storage";
 
 @Injectable()

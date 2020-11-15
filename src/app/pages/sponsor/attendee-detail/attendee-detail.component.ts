@@ -5,10 +5,10 @@ import { mergeMap, filter, map } from 'rxjs/operators';
 import { AccountService } from '~/app/shared/account/account.service';
 import { empty, of } from 'rxjs';
 import { SponsorScan } from '~/app/shared/scan/sponsor-scan';
-import { Page } from 'tns-core-modules/ui/page/page';
-import { RouterExtensions } from 'nativescript-angular/router';
+import { RouterExtensions } from '@nativescript/angular';
 import { sponsorScanMetadata } from './attendee-detail.model';
 import { RadDataForm } from 'nativescript-ui-dataform';
+import { Page } from '@nativescript/core';
 
 @Component({
     moduleId: module.id,

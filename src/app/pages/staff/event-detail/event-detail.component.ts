@@ -1,6 +1,6 @@
 import { Component, Injectable, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
-import { RouterExtensions } from "nativescript-angular/router";
+import { RouterExtensions } from "@nativescript/angular";
 import { AccountService } from "../../../shared/account/account.service";
 import { ScanService } from "../../../shared/scan/scan.service";
 import { Account, EventConfiguration } from "../../../shared/account/account";
@@ -9,7 +9,7 @@ import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedEr
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
-import { device, screen } from "tns-core-modules/platform";
+import { Device, Screen } from "@nativescript/core/platform";
 import { VibrateService } from '../../../shared/notification/vibrate.service';
 
 @Component({
@@ -60,7 +60,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             });
         });
         keepAwake().then(v => console.log("keeping the screen awake..."));
-        if (device.deviceType === 'Phone') {
+        if (Device.deviceType === 'Phone') {
             forcePortraitOrientation();
         }
     }
@@ -191,7 +191,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
      * we have to hide the check-in stats on smaller screens
      */
     get displayCheckInStats(): boolean {
-        return this.status == null || screen.mainScreen.heightDIPs > 640;
+        return this.status == null || Screen.mainScreen.heightDIPs > 640;
     }
 
     private displayResult(res: TicketAndCheckInResult): void {
