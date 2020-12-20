@@ -1,4 +1,4 @@
-import { NativeScriptConfig } from '@nativescript/core'
+import { NativeScriptConfig } from '@nativescript/core';
 
 export default {
   id: 'alfio.scan',
@@ -15,4 +15,4 @@ export default {
     suppressCallJSMethodExceptions: false,
   },
   appPath: 'src',
-} as NativeScriptConfig
+} as NativeScriptConfig;
