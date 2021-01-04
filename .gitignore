@@ -38,6 +38,7 @@ typings/
 .vscode/
 .DS_Store
 buildRelease*.sh
+run*.sh
 .cloud
 .migration_backup
 .update_backup
