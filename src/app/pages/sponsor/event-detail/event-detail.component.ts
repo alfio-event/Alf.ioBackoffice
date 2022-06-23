@@ -142,7 +142,9 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     }
 
     shuffle(): void {
-        this.shuffleArray(this.scans.slice());
+        const array = this.scans.slice();
+        this.shuffleArray(array);
+        this.scans = new ObservableArray<SponsorScan>(array);
     }
 
     sendByEmail(): void {
