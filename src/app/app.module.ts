@@ -1,8 +1,6 @@
 import { EventHeaderComponent } from './pages/event-header/event-header.component';
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
-import { NativeScriptFormsModule, NativeScriptAnimationsModule, NativeScriptHttpClientModule } from "@nativescript/angular";
-import { NativeScriptModule } from "@nativescript/angular";
-import { NativeScriptRouterModule } from "@nativescript/angular";
+import { NativeScriptFormsModule, NativeScriptAnimationsModule, NativeScriptHttpClientModule, NativeScriptModule, NativeScriptRouterModule } from "@nativescript/angular";
 import { AccountModule } from "./shared/account/account.module";
 import { AppComponent } from "./app.component";
 import { routes, navigatableComponents } from "./app.routing";
