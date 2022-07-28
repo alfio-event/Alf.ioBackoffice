@@ -18,33 +18,33 @@
     "@angular/platform-browser": "~13.2.0",
     "@angular/platform-browser-dynamic": "~13.2.0",
     "@angular/router": "~13.2.0",
+    "@nativescript/angular": "^13.0.0",
+    "@nativescript/core": "~8.3.1",
+    "@nativescript/email": "^2.0.5",
+    "@nativescript/iqkeyboardmanager": "^2.0.0",
+    "@nativescript/secure-storage": "~3.0.0",
     "@nativescript/theme": "~3.0.0",
     "nativescript-barcodescanner": "~4.1.2",
-    "nativescript-email": "~1.6.0",
     "nativescript-feedback": "~2.0.0",
     "nativescript-insomnia": "~2.0.0",
-    "@nativescript/iqkeyboardmanager": "^2.0.0",
-    "nativescript-screen-orientation": "^2.0.0",
-    "@nativescript/secure-storage": "~3.0.0",
     "nativescript-taptic-engine": "^2.1.0",
     "nativescript-ui-dataform": "~8.0.1",
-    "nativescript-ui-listview": "~10.2.7",
+    "nativescript-ui-listview": "10.1.1",
     "nativescript-vibrate": "~4.0.1",
     "reflect-metadata": "~0.1.12",
     "rxjs": "~7.5.0",
-    "zone.js": "~0.11.1",
-    "@nativescript/core": "~8.3.1",
-    "@nativescript/angular": "^13.0.0"
+    "zone.js": "~0.11.1"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "~13.2.0",
     "@angular/compiler-cli": "~13.2.0",
     "@nativescript/android": "~8.3.0",
     "@nativescript/ios": "~8.3.2",
     "@nativescript/types": "~8.3.0",
     "@nativescript/webpack": "~5.0.0-beta.0",
     "@ngtools/webpack": "~13.2.0",
-    "typescript": "~4.5.5",
-    "sass": "~1.49.9"
+    "sass": "~1.49.9",
+    "typescript": "~4.5.5"
   },
   "main": "./src/main.ts"
 }

@@ -1,11 +1,11 @@
 // source https://gist.github.com/vakrilov/522dbd30085142c515a5359658f06e54
 import { Directive, ViewContainerRef, TemplateRef, Inject } from '@angular/core';
 import { IDevice, platformNames } from "@nativescript/core/platform";
-import { DeviceToken } from "@nativescript/angular";
+import { DEVICE } from "@nativescript/angular";
 
 @Directive({ selector: "[ifAndroid]" })
 export class IfAndroidDirective {
-    constructor( @Inject(DeviceToken) device: IDevice, container: ViewContainerRef, templateRef: TemplateRef<Object>) {
+    constructor( @Inject(DEVICE) device: IDevice, container: ViewContainerRef, templateRef: TemplateRef<Object>) {
         if (device.os === platformNames.android) {
             container.createEmbeddedView(templateRef);
         }
@@ -14,7 +14,7 @@ export class IfAndroidDirective {
 
 @Directive({ selector: "[ifIos]" })
 export class IfIosDirective {
-    constructor( @Inject(DeviceToken) device: IDevice, container: ViewContainerRef, templateRef: TemplateRef<Object>) {
+    constructor( @Inject(DEVICE) device: IDevice, container: ViewContainerRef, templateRef: TemplateRef<Object>) {
         if (device.os === platformNames.ios) {
             container.createEmbeddedView(templateRef);
         }

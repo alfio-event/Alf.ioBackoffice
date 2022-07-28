@@ -2,7 +2,7 @@ import { NativeScriptConfig } from '@nativescript/core';
 
 export default {
   id: 'alfio.scan',
-  main: 'app/main.ts',
+  main: 'src/main.ts',
   appResourcesPath: 'App_Resources',
   webpackConfigPath: 'webpack.config.js',
   ios: {

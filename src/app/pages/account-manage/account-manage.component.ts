@@ -38,7 +38,7 @@ export class AccountManageComponent implements OnInit {
                     this.reloadEvents(account, () => this.account = account);
                 } else {
                     this.events.splice(0);
-                    this.events.push(this.account.configurations);
+                    this.events.push(...this.account.configurations);
                     this.isLoading = false;
                 }
             });
@@ -52,7 +52,7 @@ export class AccountManageComponent implements OnInit {
                 next: events => {
                     this.accountService.updateEventsForAccount(account.getKey(), events);
                     this.events.splice(0);
-                    this.events.push(events);
+                    this.events.push(...events);
                     this.isLoading = false;
                 },
                 error: () => {
@@ -63,7 +63,7 @@ export class AccountManageComponent implements OnInit {
                         this.ngZone.run(() => {
                             // remote server is not available. Let's initialize the list with the latest local version
                             this.events.splice(0);
-                            this.events.push(account.configurations);
+                            this.events.push(...account.configurations);
                             this.isLoading = false;
                         });
                     }

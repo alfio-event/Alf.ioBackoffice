@@ -19,7 +19,8 @@
             ]
         },
         "moduleResolution": "node",
-        "removeComments": false
+        "removeComments": false,
+        "skipLibCheck": true
     },
     "exclude": [
         "node_modules",

@@ -30,7 +30,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {
         console.log("ngOnInit AccountSelection");
-        this.accounts.push(this.accountService.getRegisteredAccounts());
+        this.accounts.push(...this.accountService.getRegisteredAccounts());
         console.log("accounts", this.accounts.length);
         this.isLoading = false;
     }

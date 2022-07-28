@@ -1,9 +1,11 @@
-import {setCurrentOrientation , orientationCleanup} from 'nativescript-screen-orientation';
+// import { setOrientation, enableRotation as _enableRotation } from 'nativescript-orientation';
 
 export function forcePortraitOrientation() {
-    setCurrentOrientation('portrait', () => console.log('set to portrait'));
+    // TODO restore
+    // setOrientation('portrait', true);
 }
 
 export function enableRotation() {
-    orientationCleanup();
+    // TODO restore
+    // _enableRotation();
 }
