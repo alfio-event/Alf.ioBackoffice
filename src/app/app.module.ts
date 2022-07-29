@@ -18,7 +18,12 @@ import { NativeScriptUIListViewModule } from "nativescript-ui-listview/angular";
 import { NativeScriptUIDataFormModule } from "nativescript-ui-dataform/angular";
 
 export function createBarcodeScanner() {
-    return new BarcodeScanner();
+    const scanner = new BarcodeScanner();
+    if (scanner['_observer']) {
+        scanner['_observer']['_owner'] = undefined;
+        scanner['_observer'] = undefined;
+    }
+    return scanner;
 }
 
 @NgModule({
