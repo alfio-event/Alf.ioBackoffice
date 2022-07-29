@@ -16,6 +16,7 @@ import { SponsorModule } from './shared/scan/sponsor.module';
 import { SponsorScanBadgeComponent } from './pages/sponsor-scan-badge/sponsor-scan-badge.component';
 import { NativeScriptUIListViewModule } from "nativescript-ui-listview/angular";
 import { NativeScriptUIDataFormModule } from "nativescript-ui-dataform/angular";
+import { OrientationService } from './shared/orientation.service';
 
 export function createBarcodeScanner() {
     const scanner = new BarcodeScanner();
@@ -55,7 +56,8 @@ export function createBarcodeScanner() {
         CurrencyPipe,
         { provide: BarcodeScanner, useFactory: (createBarcodeScanner) },
         VibrateService,
-        FeedbackService
+        FeedbackService,
+        OrientationService
     ],
     bootstrap: [AppComponent]
 })

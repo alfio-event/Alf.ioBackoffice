@@ -5,7 +5,7 @@
 
 <GridLayout rows="10, *, auto">
 
-  <RadListView id="list" *ngIf="account" [items]="events" row="1" 
+  <RadListView id="list" *ngIf="account && !isLoading" [items]="events" row="1" 
 		multipleSelection="false" selectionBehavior="None"
     swipeActions="false"
     pullToRefresh="true"

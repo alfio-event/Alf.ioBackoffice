@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from "@angular/core";
+import { Component, OnInit, NgZone, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { Account, EventConfiguration, AccountType } from "../../shared/account/account";
@@ -6,7 +6,9 @@ import { AccountService } from "../../shared/account/account.service";
 import { isDefined, isUndefined } from "@nativescript/core/utils/types";
 import { FeedbackService } from "../../shared/notification/feedback.service";
 import { ListViewEventData } from "nativescript-ui-listview";
-import { ObservableArray } from "@nativescript/core";
+import { ObservableArray, Page } from "@nativescript/core";
+import { OrientationService } from "~/app/shared/orientation.service";
+import { Subscription } from "rxjs";
 
 
 @Component({
@@ -19,12 +21,16 @@ export class AccountManageComponent implements OnInit {
     account: Account;
     events: ObservableArray<EventConfiguration> = new ObservableArray<EventConfiguration>();
     isLoading: boolean;
+    private orientationSubscription?: Subscription;
 
     constructor(private route: ActivatedRoute,
         private routerExtensions: RouterExtensions,
         private accountService: AccountService,
         private ngZone: NgZone,
-        private feedbackService: FeedbackService) {
+        private feedbackService: FeedbackService,
+        private orientationService: OrientationService,
+        private page: Page) {
+
         }
 
     ngOnInit(): void {
@@ -43,6 +49,16 @@ export class AccountManageComponent implements OnInit {
                 }
             });
         });
+        this.page.on('navigatingTo', () => {
+            this.orientationSubscription = this.orientationService.orientationChange().subscribe(data => {
+                console.log('Orientation changed', data);
+                // orientation changed. Force re-rendering to avoid stale objects
+                // on screen
+                this.isLoading = true;
+                setTimeout(() => this.isLoading = false);
+            });
+        });
+        this.page.on('navigatingFrom', () => this.orientationSubscription?.unsubscribe());
     }
 
     private reloadEvents(account: Account, onCompleteOrError?: () => void): void {

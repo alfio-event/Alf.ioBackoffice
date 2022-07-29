@@ -9,7 +9,6 @@ import { Account, EventConfiguration } from "../../../shared/account/account";
 import * as Email from "@nativescript/email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { encodeBase64 } from '../../../utils/network-util';
-import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
 import { Device } from "@nativescript/core/platform";
 import { VibrateService } from '../../../shared/notification/vibrate.service';
 import { FeedbackService } from '../../../shared/notification/feedback.service';
@@ -70,16 +69,12 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 }
             });
         });
-        if (Device.deviceType === 'Phone') {
-            forcePortraitOrientation();
-        }
     }
 
     ngOnDestroy(): void {
         if (this.event && this.event.key) {
             this.sponsorScanService.destroyForEvent(this.event.key);
         }
-        enableRotation();
     }
 
     requestQrScan(): void {

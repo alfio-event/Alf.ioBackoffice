@@ -8,8 +8,8 @@
 		<Label text="No accounts configured yet." class="missing-accounts text-center"></Label>
 		<Label text="Please add one" class="missing-accounts text-center"></Label>
 	</StackLayout>
-	<ng-container *ngIf="hasAccounts">
-		<RadListView id="list" [items]="accounts" row="1" *ngIf="hasAccounts" 
+	
+	<RadListView id="list" [items]="accounts" row="1" *ngIf="hasAccounts && !isLoading" 
 		multipleSelection="false" selectionBehavior="None" (itemSelected)="onItemSelected($event)"
 		swipeActions="true"
 		(itemSwipeProgressStarted)="onSwipeCellStarted($event)"
@@ -31,7 +31,6 @@
 			</StackLayout>
 		</GridLayout>
 	</RadListView>
-	</ng-container>
 	
 	<ActivityIndicator row="1" [busy]="isLoading"  class="activity-indicator"></ActivityIndicator>
 	<Button row="2" (tap)="requestQrScan()" class="-primary -rounded-sm" text="Add new account"></Button>
