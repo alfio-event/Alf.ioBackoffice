@@ -1,6 +1,6 @@
 {
   "name": "alf.io-app",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Alf.io Scan is the application used by event organizers to validate attendees tickets and also for letting sponsors collect contacts.",
   "license": "Apache-2",
   "readme": "Alf.io",
