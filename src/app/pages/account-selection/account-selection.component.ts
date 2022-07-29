@@ -30,8 +30,8 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {
         console.log("ngOnInit AccountSelection");
-        this.accounts.push(...this.accountService.getRegisteredAccounts());
-        console.log("accounts", this.accounts.length);
+        const newLength = this.accounts.push(...this.accountService.getRegisteredAccounts());
+        console.log("accounts", newLength);
         this.isLoading = false;
     }
 
@@ -39,7 +39,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         console.log("ngOnChanges");
     }
 
-    hasAccounts(): boolean {
+    get hasAccounts(): boolean {
         return this.accounts.length > 0;
     }
 

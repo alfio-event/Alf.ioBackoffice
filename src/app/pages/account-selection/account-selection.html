@@ -3,13 +3,13 @@
 </ActionBar>
 
 <GridLayout rows="auto, *, 70">
-	<StackLayout row="1" *ngIf="!hasAccounts() && !isLoading" orientation="vertical" class="missing-accounts" (tap)="requestQrScan()">
+	<StackLayout row="1" *ngIf="!hasAccounts && !isLoading" orientation="vertical" class="missing-accounts" (tap)="requestQrScan()">
 		<Label class="icon icon-3x text-center" text="&#xf1f0;"></Label>
 		<Label text="No accounts configured yet." class="missing-accounts text-center"></Label>
 		<Label text="Please add one" class="missing-accounts text-center"></Label>
 	</StackLayout>
-	
-	<RadListView id="list" [items]="accounts" row="1" *ngIf="hasAccounts()" 
+	<ng-container *ngIf="hasAccounts">
+		<RadListView id="list" [items]="accounts" row="1" *ngIf="hasAccounts" 
 		multipleSelection="false" selectionBehavior="None" (itemSelected)="onItemSelected($event)"
 		swipeActions="true"
 		(itemSwipeProgressStarted)="onSwipeCellStarted($event)"
@@ -18,8 +18,8 @@
 			<GridLayout columns="40, *, 35" class="-separator fill-bg" (tap)="select(item)">
 				<Label col="0" class="icon icon-1-5x person-icon text-center" text="&#xf207;"></Label>
 				<StackLayout col="1" orientation="vertical" class="list-item-padding">
-					<Label [text]="item.title" class="h3"></Label>
-					<Label [text]="item.url"></Label>
+					<Label [text]="item?.title" class="h3"></Label>
+					<Label [text]="item?.url"></Label>
 				</StackLayout>
 				<Label col="2" text="&#xf2fb;" class="icon icon-1-5x person-icon text-center"></Label>
 			</GridLayout>
@@ -31,6 +31,8 @@
 			</StackLayout>
 		</GridLayout>
 	</RadListView>
+	</ng-container>
+	
 	<ActivityIndicator row="1" [busy]="isLoading"  class="activity-indicator"></ActivityIndicator>
 	<Button row="2" (tap)="requestQrScan()" class="-primary -rounded-sm" text="Add new account"></Button>
 </GridLayout>
