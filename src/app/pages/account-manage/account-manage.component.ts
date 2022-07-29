@@ -50,15 +50,20 @@ export class AccountManageComponent implements OnInit {
             });
         });
         this.page.on('navigatingTo', () => {
-            this.orientationSubscription = this.orientationService.orientationChange().subscribe(data => {
-                console.log('Orientation changed', data);
-                // orientation changed. Force re-rendering to avoid stale objects
-                // on screen
-                this.isLoading = true;
-                setTimeout(() => this.isLoading = false);
-            });
+            if (this.orientationSubscription == null) {
+                this.orientationSubscription = this.orientationService.orientationChange().subscribe(data => {
+                    console.log('Orientation changed', data);
+                    // orientation changed. Force re-rendering to avoid stale objects
+                    // on screen
+                    this.isLoading = true;
+                    setTimeout(() => this.isLoading = false);
+                });
+            }
         });
-        this.page.on('navigatingFrom', () => this.orientationSubscription?.unsubscribe());
+        this.page.on('navigatingFrom', () => {
+            this.orientationSubscription?.unsubscribe();
+            this.orientationSubscription = null;
+        });
     }
 
     private reloadEvents(account: Account, onCompleteOrError?: () => void): void {

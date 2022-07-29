@@ -39,15 +39,20 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         console.log("accounts", newLength);
         this.isLoading = false;
         this.page.on('navigatingTo', () => {
-            this.orientationSubscription = this.orientationService.orientationChange().subscribe(data => {
-                console.log('Orientation changed', data);
-                // orientation changed. Force re-rendering to avoid stale objects
-                // on screen
-                this.isLoading = true;
-                setTimeout(() => this.isLoading = false);
-            });
+            if (this.orientationSubscription == null) {
+                this.orientationSubscription = this.orientationService.orientationChange().subscribe(data => {
+                    console.log('Orientation changed', data);
+                    // orientation changed. Force re-rendering to avoid stale objects
+                    // on screen
+                    this.isLoading = true;
+                    setTimeout(() => this.isLoading = false);
+                });
+            }
         });
-        this.page.on('navigatingFrom', () => this.orientationSubscription?.unsubscribe());
+        this.page.on('navigatingFrom', () => {
+            this.orientationSubscription?.unsubscribe();
+            this.orientationSubscription = null;
+        });
     }
 
     ngOnChanges(): void {
@@ -90,13 +95,16 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         try {
             this.isLoading = true;
             this.accountService.registerNewAccount(account.url, account.apiKey, account.username, account.password, account.sslCert)
-                .subscribe(resp => this.ngZone.run(() => {
+                .subscribe({
+                    next: resp => this.ngZone.run(() => {
                         this.processResponse(resp);
-                    }), (err) => this.ngZone.run(() => {
+                    }),
+                    error: (err: Error) => this.ngZone.run(() => {
                         console.log(err);
-                        this.feedbackService.error('Cannot register a new Account. Please check your internet connection and retry.');
+                        this.feedbackService.error(err.message);
                         this.isLoading = false;
-                    }));
+                    })
+                });
         } catch (e) {
             console.log("error", e);
             this.feedbackService.error('Cannot register a new Account. Please re-scan the QR-Code(s).');
