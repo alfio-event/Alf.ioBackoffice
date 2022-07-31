@@ -22,7 +22,6 @@ export class AccountService {
 
     public registerNewAccount(url: string, apiKey: string, username: string, password: string, sslCert: string): Observable<AccountResponse> {
         let baseUrl = url.endsWith("/") ? url.substring(0, url.length - 1) : url;
-        console.log('Registering account', 'apiKey', apiKey, 'username', username, 'password', password);
         if (apiKey == null || username != null || password != null) {
             return throwError(() => new Error("Unsupported configuration. Make sure you're scanning an API Key"));
         }
