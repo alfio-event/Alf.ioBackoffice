@@ -1,0 +1,14 @@
+<ActionBar class="nt-action-bar" title="Search">
+    <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Scan"></NavigationButton>
+    <NavigationButton *ifIos (tap)="onBackTap()" text="Scan"></NavigationButton>
+    <ActionItem icon="res://outline_search_white_24" ios.systemIcon="12" ios.position="right" text="Search" android.position="actionBarIfRoom"></ActionItem>
+</ActionBar>
+<StackLayout>
+    <SearchBar
+        hint="Enter search term here ..."
+        [text]="searchPhrase"
+        (textChange)="onTextChanged($event)"
+        (clear)="onClear($event)"
+        (submit)="onSubmit($event)"
+    ></SearchBar>
+</StackLayout>

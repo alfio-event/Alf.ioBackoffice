@@ -46,6 +46,10 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         this.routerExtensions.back();
     }
 
+    search(): void {
+        this.routerExtensions.navigate(['/event-detail/', this.account.getKey(), "STAFF", this.event.key, 'search']);
+    }
+
     ngOnInit(): void {
         this.route.params.forEach((params: Params) => {
             console.log("params", params['accountId'], params['eventId']);

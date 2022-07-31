@@ -9,6 +9,7 @@ import { Observable, throwError } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { StorageService } from "../storage/storage.service";
 import { authorization } from "../../utils/network-util";
+import { dataDeserialize } from "@nativescript/core/utils";
 
 @Injectable()
 export class AccountService {
@@ -36,7 +37,7 @@ export class AccountService {
                     account.username = username;
                     account.password = password;
                     account.description = data.description;
-                    account.accountType = data.userType === "SPONSOR" ? AccountType.SPONSOR : AccountType.STAFF;
+                    account.accountType = this.detectAccountType(data.userType);
                     account.configurations = [];
                     account.sslCert = sslCert;
                     let newAccountKey = account.getKey();
@@ -64,6 +65,15 @@ export class AccountService {
                     return throwError(() => new Error('Cannot register a new Account. Please check your internet connection and retry.'));
                 })
             );
+    }
+
+    private detectAccountType(userType: string): AccountType {
+        if (userType === "SPONSOR") {
+            return AccountType.SPONSOR;
+        } else if (userType === "CHECK_IN_SUPERVISOR") {
+            return AccountType.SUPERVISOR;
+        }
+        return AccountType.STAFF;
     }
 
     private safeParse(data: string): string {

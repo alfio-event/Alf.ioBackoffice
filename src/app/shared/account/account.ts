@@ -49,6 +49,7 @@ export class EventConfiguration {
 
 export enum AccountType {
     STAFF,
+    SUPERVISOR,
     SPONSOR
 }
 
