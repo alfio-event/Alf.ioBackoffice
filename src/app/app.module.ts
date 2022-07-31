@@ -1,8 +1,6 @@
 import { EventHeaderComponent } from './pages/event-header/event-header.component';
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
-import { NativeScriptFormsModule, NativeScriptAnimationsModule, NativeScriptHttpClientModule } from "@nativescript/angular";
-import { NativeScriptModule } from "@nativescript/angular";
-import { NativeScriptRouterModule } from "@nativescript/angular";
+import { NativeScriptFormsModule, NativeScriptAnimationsModule, NativeScriptHttpClientModule, NativeScriptModule, NativeScriptRouterModule } from "@nativescript/angular";
 import { AccountModule } from "./shared/account/account.module";
 import { AppComponent } from "./app.component";
 import { routes, navigatableComponents } from "./app.routing";
@@ -18,9 +16,15 @@ import { SponsorModule } from './shared/scan/sponsor.module';
 import { SponsorScanBadgeComponent } from './pages/sponsor-scan-badge/sponsor-scan-badge.component';
 import { NativeScriptUIListViewModule } from "nativescript-ui-listview/angular";
 import { NativeScriptUIDataFormModule } from "nativescript-ui-dataform/angular";
+import { OrientationService } from './shared/orientation.service';
 
 export function createBarcodeScanner() {
-    return new BarcodeScanner();
+    const scanner = new BarcodeScanner();
+    if (scanner['_observer']) {
+        scanner['_observer']['_owner'] = undefined;
+        scanner['_observer'] = undefined;
+    }
+    return scanner;
 }
 
 @NgModule({
@@ -52,7 +56,8 @@ export function createBarcodeScanner() {
         CurrencyPipe,
         { provide: BarcodeScanner, useFactory: (createBarcodeScanner) },
         VibrateService,
-        FeedbackService
+        FeedbackService,
+        OrientationService
     ],
     bootstrap: [AppComponent]
 })

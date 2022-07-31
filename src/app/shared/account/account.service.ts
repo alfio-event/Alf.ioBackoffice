@@ -21,7 +21,10 @@ export class AccountService {
     }
 
     public registerNewAccount(url: string, apiKey: string, username: string, password: string, sslCert: string): Observable<AccountResponse> {
-        let baseUrl = url.endsWith("/") ? url.substr(0, url.length - 1) : url;
+        let baseUrl = url.endsWith("/") ? url.substring(0, url.length - 1) : url;
+        if (apiKey == null || username != null || password != null) {
+            return throwError(() => new Error("Unsupported configuration. Make sure you're scanning an API Key"));
+        }
         return this.http.get<RemoteAccount>(`${baseUrl}/admin/api/user/details`, {
                 headers: authorization(apiKey, username, password)
             }).pipe(
@@ -58,7 +61,7 @@ export class AccountService {
                 catchError(error => {
                     console.log("got error! ");
                     console.log(JSON.stringify(error));
-                    return throwError(error);
+                    return throwError(() => new Error('Cannot register a new Account. Please check your internet connection and retry.'));
                 })
             );
     }

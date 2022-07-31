@@ -8,8 +8,7 @@ import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses, AdditionalServiceInfo } from '../../../shared/scan/scan-common';
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
-import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
-import { Device, Screen } from "@nativescript/core/platform";
+import { Screen } from "@nativescript/core/platform";
 import { VibrateService } from '../../../shared/notification/vibrate.service';
 
 @Component({
@@ -60,14 +59,10 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             });
         });
         keepAwake().then(v => console.log("keeping the screen awake..."));
-        if (Device.deviceType === 'Phone') {
-            forcePortraitOrientation();
-        }
     }
 
     ngOnDestroy(): void {
         allowSleepAgain().then(v => console.log("allowed to sleep"));
-        enableRotation();
     }
 
     onPrimaryButtonTap(): void {

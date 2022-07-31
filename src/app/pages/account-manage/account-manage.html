@@ -5,15 +5,15 @@
 
 <GridLayout rows="10, *, auto">
 
-  <RadListView id="list" *ngIf="account" [items]="events" row="1" 
+  <RadListView id="list" *ngIf="account && !isLoading" [items]="events" row="1" 
 		multipleSelection="false" selectionBehavior="None"
     swipeActions="false"
     pullToRefresh="true"
     (pullToRefreshInitiated)="onPullToRefreshInitiated($event)">
 		<ng-template tkListItemTemplate let-event="item">
       <GridLayout rows="50, 110" columns="*, 35" class="-separator" (tap)="select($event)">
-        <Image [src]="account.url + event.imageUrl" loadMode="async" stretch="aspectFit" row="0" col="0"></Image>
-        <StackLayout col="0" row="1" orientation="vertical">
+        <Image *ngIf="event" [src]="account.url + event.imageUrl" loadMode="async" stretch="aspectFit" row="0" col="0"></Image>
+        <StackLayout col="0" row="1" orientation="vertical" *ngIf="event">
             <Label [text]="event.name" class="h3" textWrap="true"></Label>
             <Label text="{{ event.begin | date:'short' }} - {{ event.end | date:'short' }}" *ngIf="!event.oneDay"></Label>
             <Label text="{{ event.begin | date:'shortDate' }} {{ event.begin | date:'shortTime' }} - {{ event.end | date:'shortTime' }}" *ngIf="event.oneDay"></Label>

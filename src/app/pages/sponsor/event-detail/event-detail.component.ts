@@ -6,10 +6,9 @@ import { RouterExtensions } from "@nativescript/angular";
 import { AccountService } from "../../../shared/account/account.service";
 import { SponsorScanService } from "../../../shared/scan/sponsor-scan.service";
 import { Account, EventConfiguration } from "../../../shared/account/account";
-import * as Email from "nativescript-email";
+import * as Email from "@nativescript/email";
 import { BarcodeScanner } from 'nativescript-barcodescanner';
 import { encodeBase64 } from '../../../utils/network-util';
-import { forcePortraitOrientation, enableRotation } from '../../../utils/orientation-util';
 import { Device } from "@nativescript/core/platform";
 import { VibrateService } from '../../../shared/notification/vibrate.service';
 import { FeedbackService } from '../../../shared/notification/feedback.service';
@@ -61,25 +60,21 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                 this.sponsorScanService.getForEvent(this.event.key, this.account).subscribe(list => {
                     console.log("received ", list.length);
                     this.scans.splice(0);
-                    this.scans.push(list);
+                    this.scans.push(...list);
                     this.dataReceived.next(new Date());
                 });
                 let list = this.sponsorScanService.loadInitial(this.event.key);
                 if (list) {
-                    this.scans.push(list);
+                    this.scans.push(...list);
                 }
             });
         });
-        if (Device.deviceType === 'Phone') {
-            forcePortraitOrientation();
-        }
     }
 
     ngOnDestroy(): void {
         if (this.event && this.event.key) {
             this.sponsorScanService.destroyForEvent(this.event.key);
         }
-        enableRotation();
     }
 
     requestQrScan(): void {
@@ -132,7 +127,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     }
 
     // from http://stackoverflow.com/a/12646864
-    shuffleArray<T>(array: Array<T>): void {
+    shuffleArray<T>(array: ObservableArray<T>): void {
         for (let i = array.length - 1; i > 0; i--) {
             let j = Math.floor(Math.random() * (i + 1));
             let temp = array[i];
@@ -142,9 +137,10 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     }
 
     shuffle(): void {
-        const array = this.scans.slice();
-        this.shuffleArray(array);
-        this.scans = new ObservableArray<SponsorScan>(array);
+        // FIXME restore
+        // const array = this.scans.slice();
+        this.shuffleArray(this.scans);
+        // this.scans = new ObservableArray<SponsorScan>(array);
     }
 
     sendByEmail(): void {

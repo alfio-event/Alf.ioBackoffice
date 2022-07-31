@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from "@angular/core";
+import { Component, OnInit, NgZone, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { Account, EventConfiguration, AccountType } from "../../shared/account/account";
@@ -6,7 +6,9 @@ import { AccountService } from "../../shared/account/account.service";
 import { isDefined, isUndefined } from "@nativescript/core/utils/types";
 import { FeedbackService } from "../../shared/notification/feedback.service";
 import { ListViewEventData } from "nativescript-ui-listview";
-import { ObservableArray } from "@nativescript/core";
+import { ObservableArray, Page } from "@nativescript/core";
+import { OrientationService } from "~/app/shared/orientation.service";
+import { Subscription } from "rxjs";
 
 
 @Component({
@@ -19,12 +21,16 @@ export class AccountManageComponent implements OnInit {
     account: Account;
     events: ObservableArray<EventConfiguration> = new ObservableArray<EventConfiguration>();
     isLoading: boolean;
+    private orientationSubscription?: Subscription;
 
     constructor(private route: ActivatedRoute,
         private routerExtensions: RouterExtensions,
         private accountService: AccountService,
         private ngZone: NgZone,
-        private feedbackService: FeedbackService) {
+        private feedbackService: FeedbackService,
+        private orientationService: OrientationService,
+        private page: Page) {
+
         }
 
     ngOnInit(): void {
@@ -38,10 +44,25 @@ export class AccountManageComponent implements OnInit {
                     this.reloadEvents(account, () => this.account = account);
                 } else {
                     this.events.splice(0);
-                    this.events.push(this.account.configurations);
+                    this.events.push(...this.account.configurations);
                     this.isLoading = false;
                 }
             });
+        });
+        this.page.on('navigatingTo', () => {
+            if (this.orientationSubscription == null) {
+                this.orientationSubscription = this.orientationService.orientationChange().subscribe(data => {
+                    console.log('Orientation changed', data);
+                    // orientation changed. Force re-rendering to avoid stale objects
+                    // on screen
+                    this.isLoading = true;
+                    setTimeout(() => this.isLoading = false);
+                });
+            }
+        });
+        this.page.on('navigatingFrom', () => {
+            this.orientationSubscription?.unsubscribe();
+            this.orientationSubscription = null;
         });
     }
 
@@ -52,7 +73,7 @@ export class AccountManageComponent implements OnInit {
                 next: events => {
                     this.accountService.updateEventsForAccount(account.getKey(), events);
                     this.events.splice(0);
-                    this.events.push(events);
+                    this.events.push(...events);
                     this.isLoading = false;
                 },
                 error: () => {
@@ -63,7 +84,7 @@ export class AccountManageComponent implements OnInit {
                         this.ngZone.run(() => {
                             // remote server is not available. Let's initialize the list with the latest local version
                             this.events.splice(0);
-                            this.events.push(account.configurations);
+                            this.events.push(...account.configurations);
                             this.isLoading = false;
                         });
                     }

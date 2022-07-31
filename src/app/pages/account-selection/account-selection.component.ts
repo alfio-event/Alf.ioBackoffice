@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, NgZone } from "@angular/core";
+import { Component, OnInit, OnChanges, NgZone, OnDestroy } from "@angular/core";
 import { RadListView, ListViewEventData } from "nativescript-ui-listview";
 import { RouterExtensions } from "@nativescript/angular";
 import { Account, ScannedAccount } from "../../shared/account/account";
@@ -8,7 +8,9 @@ import { isUndefined, isDefined } from "@nativescript/core/utils/types";
 import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
 import { FeedbackService } from "../../shared/notification/feedback.service";
 import { defaultScanOptions } from "~/app/utils/barcodescanner";
-import { ObservableArray, View } from "@nativescript/core";
+import { Application, ObservableArray, Page, View } from "@nativescript/core";
+import { OrientationService } from "~/app/shared/orientation.service";
+import { Observable, Subscription } from "rxjs";
 
 @Component({
     selector: "account-selection",
@@ -20,26 +22,44 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     isLoading: boolean;
     private editModeEnabled: boolean = false;
     private editedAccount: Account = null;
+    private orientationSubscription?: Subscription;
 
     constructor(private accountService: AccountService,
         private routerExtensions: RouterExtensions,
         private barcodeScanner: BarcodeScanner,
         private ngZone: NgZone,
-        private feedbackService: FeedbackService) {
+        private feedbackService: FeedbackService,
+        private orientationService: OrientationService,
+        private page: Page) {
     }
 
     ngOnInit(): void {
         console.log("ngOnInit AccountSelection");
-        this.accounts.push(this.accountService.getRegisteredAccounts());
-        console.log("accounts", this.accounts.length);
+        const newLength = this.accounts.push(...this.accountService.getRegisteredAccounts());
+        console.log("accounts", newLength);
         this.isLoading = false;
+        this.page.on('navigatingTo', () => {
+            if (this.orientationSubscription == null) {
+                this.orientationSubscription = this.orientationService.orientationChange().subscribe(data => {
+                    console.log('Orientation changed', data);
+                    // orientation changed. Force re-rendering to avoid stale objects
+                    // on screen
+                    this.isLoading = true;
+                    setTimeout(() => this.isLoading = false);
+                });
+            }
+        });
+        this.page.on('navigatingFrom', () => {
+            this.orientationSubscription?.unsubscribe();
+            this.orientationSubscription = null;
+        });
     }
 
     ngOnChanges(): void {
         console.log("ngOnChanges");
     }
 
-    hasAccounts(): boolean {
+    get hasAccounts(): boolean {
         return this.accounts.length > 0;
     }
 
@@ -75,13 +95,16 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         try {
             this.isLoading = true;
             this.accountService.registerNewAccount(account.url, account.apiKey, account.username, account.password, account.sslCert)
-                .subscribe(resp => this.ngZone.run(() => {
+                .subscribe({
+                    next: resp => this.ngZone.run(() => {
                         this.processResponse(resp);
-                    }), (err) => this.ngZone.run(() => {
+                    }),
+                    error: (err: Error) => this.ngZone.run(() => {
                         console.log(err);
-                        this.feedbackService.error('Cannot register a new Account. Please check your internet connection and retry.');
+                        this.feedbackService.error(err.message);
                         this.isLoading = false;
-                    }));
+                    })
+                });
         } catch (e) {
             console.log("error", e);
             this.feedbackService.error('Cannot register a new Account. Please re-scan the QR-Code(s).');

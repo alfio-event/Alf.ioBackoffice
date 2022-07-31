@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import * as application from "@nativescript/core/application";
-import { SecureStorage } from "nativescript-secure-storage";
+import { SecureStorage } from "@nativescript/secure-storage";
 
+declare const kSecAttrAccessibleWhenUnlockedThisDeviceOnly;
 @Injectable()
 export class StorageService {
     private secureStorage: SecureStorage;
