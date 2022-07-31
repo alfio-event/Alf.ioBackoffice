@@ -3,7 +3,7 @@ import { ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { AccountService } from "../../../shared/account/account.service";
 import { ScanService } from "../../../shared/scan/scan.service";
-import { Account, EventConfiguration } from "../../../shared/account/account";
+import { Account, AccountType, EventConfiguration } from "../../../shared/account/account";
 import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses, AdditionalServiceInfo } from '../../../shared/scan/scan-common';
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
@@ -44,6 +44,12 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
 
     onBackTap(): void {
         this.routerExtensions.back();
+    }
+
+    get supervisor(): boolean {
+        return true;
+        // FIXME check if the user really is a supervisor :)
+        // return this.account.accountType === AccountType.SUPERVISOR;
     }
 
     search(): void {

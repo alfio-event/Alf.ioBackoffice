@@ -1,7 +1,7 @@
 <ActionBar class="nt-action-bar" [title]="actionBarTitle">
     <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Events"></NavigationButton>
     <NavigationButton *ifIos (tap)="onBackTap()" text="Events"></NavigationButton>
-    <ActionItem icon="res://outline_search_white_24" (tap)="search()" ios.systemIcon="12" ios.position="right" text="Search" android.position="actionBarIfRoom"></ActionItem>
+    <ActionItem icon="res://outline_search_white_24" *ngIf="supervisor" (tap)="search()" ios.systemIcon="12" ios.position="right" text="Search" android.position="actionBarIfRoom"></ActionItem>
 </ActionBar>
 
 <GridLayout rows="auto, 1, *, 16" columns="16, *, 16" [class.bg-danger]="!isLoading && status && isStatusError()" [class.bg-warning]="!isLoading && status && (isStatusMustPay() || isStatusWarning())">
