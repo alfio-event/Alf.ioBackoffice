@@ -130,17 +130,14 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     shuffleArray<T>(array: ObservableArray<T>): void {
         for (let i = array.length - 1; i > 0; i--) {
             let j = Math.floor(Math.random() * (i + 1));
-            let temp = array[i];
-            array[i] = array[j];
-            array[j] = temp;
+            let temp = array.getItem(i);
+            array.setItem(i, array.getItem(j));
+            array.setItem(j, temp);
         }
     }
 
     shuffle(): void {
-        // FIXME restore
-        // const array = this.scans.slice();
         this.shuffleArray(this.scans);
-        // this.scans = new ObservableArray<SponsorScan>(array);
     }
 
     sendByEmail(): void {
