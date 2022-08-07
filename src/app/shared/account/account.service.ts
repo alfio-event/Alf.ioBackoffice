@@ -70,7 +70,7 @@ export class AccountService {
     private detectAccountType(userType: string): AccountType {
         if (userType === "SPONSOR") {
             return AccountType.SPONSOR;
-        } else if (userType === "CHECK_IN_SUPERVISOR") {
+        } else if (userType === "SUPERVISOR") {
             return AccountType.SUPERVISOR;
         }
         return AccountType.STAFF;

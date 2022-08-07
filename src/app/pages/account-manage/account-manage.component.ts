@@ -108,7 +108,7 @@ export class AccountManageComponent implements OnInit {
         let index = this.events.indexOf(args.object.bindingContext);
         let item = this.events.getItem(index);
         if (item.key != null) {
-            let accountType = this.account.accountType === AccountType.STAFF ? "STAFF" : "SPONSOR";
+            let accountType = this.account.accountType === AccountType.SPONSOR ? "SPONSOR" : "STAFF";
             this.routerExtensions.navigate(['/event-detail/', this.account.getKey(), accountType, item.key]);
         }
     }

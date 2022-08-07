@@ -167,3 +167,7 @@ export class Some<X> implements Maybe<X> {
         }
     }
 }
+
+export function supportsAttendeesSearch(event: EventConfiguration): boolean {
+    return event.apiVersion >= 204;
+}

@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
-import { TicketAndCheckInResult, InvalidQrCode, isValidTicketCode } from './scan-common';
+import { TicketAndCheckInResult, InvalidQrCode, isValidTicketCode, AttendeeSearchResult } from './scan-common';
 import { Account } from "../account/account";
 import { authorization } from "../../utils/network-util";
 import { Observable, throwError } from "rxjs";
 import { tap } from 'rxjs/operators';
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 
 
 @Injectable()
@@ -27,6 +27,15 @@ export class ScanService {
         } else {
             return throwError(new InvalidQrCode("Invalid QR-Code!"));
         }
+    }
+
+    public search(eventKey: string, account: Account, query: string): Observable<Array<AttendeeSearchResult>> {
+        console.log('sending query', query);
+        const httpParams = new HttpParams().set('query', query);
+        return this.http.get<Array<AttendeeSearchResult>>(`${account.url}/admin/api/check-in/${eventKey}/attendees`, {
+            headers: authorization(account.apiKey, account.username, account.password),
+            params: httpParams
+        });
     }
 
     public confirmPayment(eventKey: string, account: Account, scan: string): Observable<TicketAndCheckInResult> {
