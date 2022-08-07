@@ -73,6 +73,8 @@ export class SearchAttendeesComponent implements OnInit {
     attendeeStatusIcon(attendee: AttendeeSearchResult): string {
         if (attendee.ticketStatus === 'CHECKED_IN') {
             return String.fromCharCode(0xf26b);
+        } else if (attendee.ticketStatus === 'TO_BE_PAID') {
+            return String.fromCharCode(0xf19a);
         }
         return String.fromCharCode(0xf207);
     }

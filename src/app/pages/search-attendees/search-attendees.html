@@ -1,11 +1,11 @@
 <ActionBar class="nt-action-bar" title="Search">
     <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Scan"></NavigationButton>
     <NavigationButton *ifIos (tap)="onBackTap()" text="Scan"></NavigationButton>
-    <ActionItem icon="res://outline_search_white_24" ios.systemIcon="12" ios.position="right" text="Search" android.position="actionBarIfRoom"></ActionItem>
 </ActionBar>
 
 <GridLayout rows="50, *">
     <SearchBar
+        class="h3"
         hint="Search by First name, Last name, Category name, email"
         [text]="searchPhrase"
         (textChange)="onTextChanged($event)"
@@ -15,13 +15,16 @@
     ></SearchBar>
     <RadListView id="list" *ngIf="!isLoading" [items]="results" row="1" multipleSelection="false" selectionBehavior="None" swipeActions="false" pullToRefresh="false">
         <ng-template tkListItemTemplate let-attendee="item">
-            <GridLayout columns="35, *, 35" class="-separator" (tap)="select($event)">
-                <Label [text]="attendeeStatusIcon(attendee)" [class.text-success]="attendee.ticketStatus === 'CHECKED_IN'" col="0" class="icon icon-1-5x person-icon text-center" *ngIf="attendee"></Label>
-                <StackLayout orientation="vertical" col="1" *ngIf="attendee">
-                    <Label [text]="attendee.firstName + ' ' + attendee.lastName" class="h3" textWrap="true" col="1" row="0"></Label>
-                    <Label [text]="attendee.categoryName" col="1" row="1"></Label>
-                </StackLayout>
-                <Label text="&#xf2fb;" col="2" class="icon icon-1-5x person-icon text-center"></Label>
+            <GridLayout rows="30, 20" columns="35, *, 100, 35" class="-separator" (tap)="select($event)">
+                <Label [text]="attendeeStatusIcon(attendee)" rowSpan="2" 
+                       [class.text-success]="attendee.ticketStatus === 'CHECKED_IN'"
+                       [class.text-warning]="attendee.ticketStatus === 'TO_BE_PAID'"
+                       col="0" class="icon icon-1-5x person-icon text-center" *ngIf="attendee"></Label>
+                <Label [text]="attendee.firstName + ' ' + attendee.lastName" class="h3" textWrap="true" col="1" row="0" *ngIf="attendee"></Label>
+                <Label [text]="attendee.uuid | slice:0:8 | uppercase" class="text-muted text-right" row="0" col="2" *ngIf="attendee"></Label>
+                <Label [text]="attendee.categoryName" row="1" col="1" *ngIf="attendee"></Label>
+                <Label [text]="attendee.amountToPay" class="text-warning text-right" row="1" col="2" *ngIf="attendee && attendee.ticketStatus === 'TO_BE_PAID'"></Label>
+                <Label text="&#xf2fb;" col="3" rowSpan="2" class="icon icon-1-5x person-icon text-center"></Label>
             </GridLayout>
         </ng-template>
       </RadListView>

@@ -32,7 +32,7 @@ export class ScanService {
     public search(eventKey: string, account: Account, query: string): Observable<Array<AttendeeSearchResult>> {
         console.log('sending query', query);
         const httpParams = new HttpParams().set('query', query);
-        return this.http.get<Array<AttendeeSearchResult>>(`${account.url}/admin/api/check-in/${eventKey}/attendees`, {
+        return this.http.get<Array<AttendeeSearchResult>>(`${account.url}/admin/api/check-in/event/${eventKey}/attendees`, {
             headers: authorization(account.apiKey, account.username, account.password),
             params: httpParams
         });
