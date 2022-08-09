@@ -15,13 +15,13 @@
     ></SearchBar>
     <RadListView id="list" *ngIf="!isLoading" [items]="results" row="1" multipleSelection="false" selectionBehavior="None" swipeActions="false" pullToRefresh="false">
         <ng-template tkListItemTemplate let-attendee="item">
-            <GridLayout rows="30, 20" columns="35, *, 100, 35" class="-separator" (tap)="select($event)">
+            <GridLayout rows="30, 20" columns="35, *, 100, 35" class="-separator" (tap)="select(attendee)">
                 <Label [text]="attendeeStatusIcon(attendee)" rowSpan="2" 
                        [class.text-success]="attendee.ticketStatus === 'CHECKED_IN'"
                        [class.text-warning]="attendee.ticketStatus === 'TO_BE_PAID'"
                        col="0" class="icon icon-1-5x person-icon text-center" *ngIf="attendee"></Label>
                 <Label [text]="attendee.firstName + ' ' + attendee.lastName" class="h3" textWrap="true" col="1" row="0" *ngIf="attendee"></Label>
-                <Label [text]="attendee.uuid | slice:0:8 | uppercase" class="text-muted text-right" row="0" col="2" *ngIf="attendee"></Label>
+                <Label [text]="uppercaseUuid(attendee)" class="text-muted text-right" row="0" col="2" *ngIf="attendee"></Label>
                 <Label [text]="attendee.categoryName" row="1" col="1" *ngIf="attendee"></Label>
                 <Label [text]="attendee.amountToPay" class="text-warning text-right" row="1" col="2" *ngIf="attendee && attendee.ticketStatus === 'TO_BE_PAID'"></Label>
                 <Label text="&#xf2fb;" col="3" rowSpan="2" class="icon icon-1-5x person-icon text-center"></Label>

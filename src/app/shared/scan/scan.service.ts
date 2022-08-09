@@ -29,6 +29,13 @@ export class ScanService {
         }
     }
 
+    public manualCheckIn(eventKey: string, account: Account, uuid: string): Observable<Boolean> {
+        const url = `${account.url}/admin/api/check-in/event/${eventKey}/ticket/${uuid}/manual-check-in`
+        return this.http.post<Boolean>(url, {}, {
+            headers: authorization(account.apiKey, account.username, account.password)
+        });
+    }
+
     public search(eventKey: string, account: Account, query: string): Observable<Array<AttendeeSearchResult>> {
         console.log('sending query', query);
         const httpParams = new HttpParams().set('query', query);

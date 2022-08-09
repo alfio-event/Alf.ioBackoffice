@@ -57,7 +57,6 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.route.params.forEach((params: Params) => {
-            console.log("params", params['accountId'], params['eventId']);
             let id = params['accountId'];
             let eventId = params['eventId'];
             this.accountService.findAccountById(id).ifPresent(account => {
@@ -183,7 +182,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         if (this.result == null) {
             return [];
         }
-        return this.result.additionalServices || [];
+        return this.result.additionalServices || [];
     }
 
     get resultRows(): string {

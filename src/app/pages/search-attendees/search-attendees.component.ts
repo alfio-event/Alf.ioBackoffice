@@ -1,12 +1,14 @@
-import { Component, Input, OnInit, ViewContainerRef } from "@angular/core";
+import {Component, Input, NgZone, OnDestroy, OnInit, ViewContainerRef} from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
 import { ModalDialogOptions, ModalDialogService, RouterExtensions } from "@nativescript/angular";
-import { EventData, ObservableArray, SearchBar } from "@nativescript/core";
+import {EventData, ObservableArray, Page, SearchBar} from "@nativescript/core";
 import { Account, EventConfiguration } from "~/app/shared/account/account";
 import { AccountService } from "~/app/shared/account/account.service";
 import { AttendeeSearchResult } from "~/app/shared/scan/scan-common";
 import { ScanService } from "~/app/shared/scan/scan.service";
 import { SearchAttendeesResultComponent } from "./search-attendees-result.component";
+import {Subscription} from "rxjs";
+import {OrientationService} from "~/app/shared/orientation.service";
 
 @Component({
     moduleId: module.id,
@@ -14,7 +16,7 @@ import { SearchAttendeesResultComponent } from "./search-attendees-result.compon
     templateUrl: "./search-attendees.html",
     providers: [ScanService, AccountService, ModalDialogService]
 })
-export class SearchAttendeesComponent implements OnInit {
+export class SearchAttendeesComponent implements OnInit, OnDestroy {
 
     event: EventConfiguration;
     account: Account;
@@ -24,13 +26,17 @@ export class SearchAttendeesComponent implements OnInit {
 
     results = new ObservableArray<AttendeeSearchResult>();
 
+    private latestSearch?: string;
+    private orientationSubscription?: Subscription;
+
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
                 private scanService: ScanService,
                 private accountService: AccountService,
                 private modalService: ModalDialogService,
-                private vcRef: ViewContainerRef) {
-                }
+                private vcRef: ViewContainerRef,
+                private page: Page,
+                private orientationService: OrientationService) {}
 
     ngOnInit(): void {
         this.isLoading = true;
@@ -44,19 +50,27 @@ export class SearchAttendeesComponent implements OnInit {
                 this.isLoading = false;
             });
         });
+        this.page.on('navigatingTo', () => {
+            if (this.orientationSubscription == null) {
+                this.orientationSubscription = this.orientationService.orientationChange().subscribe(data => {
+                    console.log('Orientation changed', data);
+                    // orientation changed. Force re-rendering to avoid stale objects
+                    // on screen
+                    this.isLoading = true;
+                    setTimeout(() => this.isLoading = false);
+                });
+            }
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.orientationSubscription?.unsubscribe();
     }
 
     onSubmit(args: EventData): void {
         const searchBar = args.object as SearchBar;
         if (searchBar.text.length > 0) {
-            this.isLoading = true;
-            this.scanService.search(this.event.key, this.account, searchBar.text).subscribe(res => {
-                if (this.results.length > 0) {
-                    this.results.splice(0, this.results.length);
-                }
-                this.results.push(...res);
-                this.isLoading = false;
-            });
+            this.performSearch(searchBar.text);
         }
     }
 
@@ -88,12 +102,37 @@ export class SearchAttendeesComponent implements OnInit {
             viewContainerRef: this.vcRef,
             context: {
                 account: this.account,
-                attendee: attendee
+                attendee: attendee,
+                event: this.event
             },
             fullscreen: false,
             cancelable: true
         };
+        this.isLoading = true;
         this.modalService.showModal(SearchAttendeesResultComponent, options)
-            .then(() => console.log('modal closed'));
+            .then(() => {
+                this.performSearch(this.latestSearch);
+            });
+    }
+
+    uppercaseUuid(attendee: AttendeeSearchResult): string {
+        return attendee.uuid.substring(0, 8).toUpperCase();
+    }
+
+    private performSearch(query?: string): void {
+        if ((query?.length || 0) === 0) {
+            console.log('skipping search. Query is empty');
+            this.isLoading = false;
+            return;
+        }
+        this.isLoading = true;
+        this.scanService.search(this.event.key, this.account, query).subscribe(res => {
+            this.latestSearch = query;
+            if (this.results.length > 0) {
+                this.results.splice(0, this.results.length);
+            }
+            this.results.push(...res);
+            this.isLoading = false;
+        });
     }
 }

@@ -1,5 +1,7 @@
-<ScrollView>
-    <StackLayout>
-        <Label [text]="attendee.firstName"></Label>
+<GridLayout rows="16, 60, *, 250, 50, 16" class="search-attendees-result">
+    <Label [text]="attendee.firstName + ' ' + attendee.lastName" class="h3 text-center" row="1"></Label>
+    <image [src]="qrCodeUrl" class="qr-code" loadMode="async" stretch="aspectFill" row="3"></image>
+    <StackLayout row="4" orientation="vertical">
+        <Button (tap)="checkIn()" class="-primary -rounded-sm" text="Manual Check-in"></Button>
     </StackLayout>
-</ScrollView>
+</GridLayout>
