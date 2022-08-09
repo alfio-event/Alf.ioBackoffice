@@ -1,17 +1,18 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
-import { RouterExtensions } from "@nativescript/angular";
+import { ModalDialogOptions, ModalDialogService, RouterExtensions } from "@nativescript/angular";
 import { EventData, ObservableArray, SearchBar } from "@nativescript/core";
 import { Account, EventConfiguration } from "~/app/shared/account/account";
 import { AccountService } from "~/app/shared/account/account.service";
 import { AttendeeSearchResult } from "~/app/shared/scan/scan-common";
 import { ScanService } from "~/app/shared/scan/scan.service";
+import { SearchAttendeesResultComponent } from "./search-attendees-result.component";
 
 @Component({
     moduleId: module.id,
     selector: "search-attendees",
     templateUrl: "./search-attendees.html",
-    providers: [ScanService, AccountService]
+    providers: [ScanService, AccountService, ModalDialogService]
 })
 export class SearchAttendeesComponent implements OnInit {
 
@@ -26,7 +27,10 @@ export class SearchAttendeesComponent implements OnInit {
     constructor(private route: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
                 private scanService: ScanService,
-                private accountService: AccountService) {}
+                private accountService: AccountService,
+                private modalService: ModalDialogService,
+                private vcRef: ViewContainerRef) {
+                }
 
     ngOnInit(): void {
         this.isLoading = true;
@@ -77,5 +81,19 @@ export class SearchAttendeesComponent implements OnInit {
             return String.fromCharCode(0xf19a);
         }
         return String.fromCharCode(0xf207);
+    }
+
+    select(attendee: AttendeeSearchResult): void {
+        const options: ModalDialogOptions = {
+            viewContainerRef: this.vcRef,
+            context: {
+                account: this.account,
+                attendee: attendee
+            },
+            fullscreen: false,
+            cancelable: true
+        };
+        this.modalService.showModal(SearchAttendeesResultComponent, options)
+            .then(() => console.log('modal closed'));
     }
 }
