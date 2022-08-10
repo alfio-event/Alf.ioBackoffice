@@ -1,4 +1,4 @@
-import {Component, Input, NgZone, OnDestroy, OnInit, ViewContainerRef} from "@angular/core";
+import {Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef} from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
 import { ModalDialogOptions, ModalDialogService, RouterExtensions } from "@nativescript/angular";
 import {EventData, ObservableArray, Page, SearchBar} from "@nativescript/core";
@@ -25,6 +25,9 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
     isLoading = false;
 
     results = new ObservableArray<AttendeeSearchResult>();
+
+    @ViewChild("searchBar")
+    searchBar?: ElementRef<SearchBar>;
 
     private latestSearch?: string;
     private orientationSubscription?: Subscription;
@@ -60,6 +63,9 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
                     setTimeout(() => this.isLoading = false);
                 });
             }
+        });
+        setTimeout(() => {
+            this.searchBar?.nativeElement?.focus();
         });
     }
 

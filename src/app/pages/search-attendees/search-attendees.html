@@ -11,6 +11,7 @@
         (textChange)="onTextChanged($event)"
         (clear)="onClear($event)"
         (submit)="onSubmit($event)"
+        #searchBar
         row="0"
     ></SearchBar>
     <RadListView id="list" *ngIf="!isLoading" [items]="results" row="1" multipleSelection="false" selectionBehavior="None" swipeActions="false" pullToRefresh="false">
