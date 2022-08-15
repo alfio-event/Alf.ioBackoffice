@@ -5,10 +5,6 @@
   "license": "Apache-2",
   "readme": "Alf.io",
   "repository": "https://github.com/alfio-event/Alf.ioBackoffice",
-  "scripts": {
-    "ngcc": "ngcc --properties es2015 module main --first-only",
-    "postinstall": "npm run ngcc"
-  },
   "dependencies": {
     "@angular/animations": "~14.1.0",
     "@angular/common": "~14.1.0",
