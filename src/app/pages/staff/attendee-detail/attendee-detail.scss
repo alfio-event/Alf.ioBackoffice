@@ -1,0 +1,19 @@
+@import "src/variables";
+
+.search-attendees-result {
+  color: $primary;
+  background-color: $background;
+  padding: 8;
+  Label {
+    color: $primary;
+  }
+}
+
+.qr-code {
+  height: 250;
+  width: 250;
+}
+
+Button.-warning {
+  background-color: $warning;
+}

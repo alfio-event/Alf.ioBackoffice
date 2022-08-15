@@ -3,7 +3,7 @@ import { AccountManageComponent } from "./pages/account-manage/account-manage.co
 import { SponsorEventDetailComponent } from "./pages/sponsor/event-detail/event-detail.component";
 import { StaffEventDetailComponent } from "./pages/staff/event-detail/event-detail.component";
 import { AttendeeDetailComponent } from "./pages/sponsor/attendee-detail/attendee-detail.component";
-import { SearchAttendeesComponent } from "./pages/search-attendees/search-attendees.component";
+import { SearchAttendeesComponent } from "./pages/staff/search-attendees/search-attendees.component";
 
 
 export const routes = [

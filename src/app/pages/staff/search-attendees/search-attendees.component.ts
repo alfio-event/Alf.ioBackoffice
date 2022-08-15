@@ -2,13 +2,13 @@ import {Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild, View
 import { ActivatedRoute, Params } from "@angular/router";
 import { ModalDialogOptions, ModalDialogService, RouterExtensions } from "@nativescript/angular";
 import {EventData, ObservableArray, Page, SearchBar} from "@nativescript/core";
-import { Account, EventConfiguration } from "~/app/shared/account/account";
-import { AccountService } from "~/app/shared/account/account.service";
-import { AttendeeSearchResult } from "~/app/shared/scan/scan-common";
-import { ScanService } from "~/app/shared/scan/scan.service";
+import { Account, EventConfiguration } from "../../../shared/account/account";
+import { AccountService } from "../../../shared/account/account.service";
+import { AttendeeSearchResult } from "../../../shared/scan/scan-common";
+import { ScanService } from "../../../shared/scan/scan.service";
 import { SearchAttendeesResultComponent } from "./search-attendees-result.component";
 import {Subscription} from "rxjs";
-import {OrientationService} from "~/app/shared/orientation.service";
+import {OrientationService} from "../../../shared/orientation.service";
 
 @Component({
     moduleId: module.id,

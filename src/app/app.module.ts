@@ -17,7 +17,8 @@ import { SponsorScanBadgeComponent } from './pages/sponsor-scan-badge/sponsor-sc
 import { NativeScriptUIListViewModule } from "nativescript-ui-listview/angular";
 import { NativeScriptUIDataFormModule } from "nativescript-ui-dataform/angular";
 import { OrientationService } from './shared/orientation.service';
-import { SearchAttendeesResultComponent } from './pages/search-attendees/search-attendees-result.component';
+import { SearchAttendeesResultComponent } from './pages/staff/search-attendees/search-attendees-result.component';
+import { AttendeeDetailComponent } from "~/app/pages/staff/attendee-detail/attendee-detail.component";
 
 export function createBarcodeScanner() {
     const scanner = new BarcodeScanner();
@@ -52,6 +53,7 @@ export function createBarcodeScanner() {
         IfIosDirective,
         SponsorScanBadgeComponent,
         SearchAttendeesResultComponent,
+        AttendeeDetailComponent,
         ...navigatableComponents
     ],
     providers: [
