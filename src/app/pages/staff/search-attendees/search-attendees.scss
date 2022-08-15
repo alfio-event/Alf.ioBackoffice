@@ -1,0 +1,14 @@
+@import "src/variables";
+
+.attendee-detail {
+  border-left-color: $charcoal;
+  border-left-width: 2;
+}
+
+.search-bar, .recap-bar {
+  background-color: lighten($grey-background, 25%);
+  &.ns-dark {
+    background-color: $background-dark;
+  }
+  font-size: 14;
+}

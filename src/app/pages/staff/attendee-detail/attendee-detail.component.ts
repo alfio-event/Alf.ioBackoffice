@@ -22,6 +22,9 @@ export class AttendeeDetailComponent implements OnInit {
   @Input()
   event: EventConfiguration;
 
+  @Input()
+  modal = false;
+
   @Output()
   updateComplete = new EventEmitter<boolean>();
 
@@ -52,7 +55,7 @@ export class AttendeeDetailComponent implements OnInit {
     if (this.checkedIn) {
       return "Revert Check-in";
     } else if(this.toBePaid) {
-      return "Confirm Payment + Check-in";
+      return "Set as PAID + Check-in";
     } else {
       return "Manual Check-in";
     }

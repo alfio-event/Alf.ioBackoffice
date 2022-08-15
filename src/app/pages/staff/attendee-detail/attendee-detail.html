@@ -6,6 +6,8 @@
     <image [src]="qrCodeUrl" class="qr-code" loadMode="async" stretch="aspectFill" row="3"></image>
     <StackLayout row="4" orientation="vertical">
         <Button (tap)="confirm()" [ngClass]="confirmButtonClass" class="-rounded-sm" [text]="confirmButtonText"></Button>
-        <Button *ifAndroid (tap)="back()" class="-outline -rounded-sm" text="Close"></Button>
+        <ng-container *ngIf="modal">
+            <Button *ifAndroid (tap)="back()" class="-outline -rounded-sm" text="Close"></Button>
+        </ng-container>
     </StackLayout>
 </GridLayout>
