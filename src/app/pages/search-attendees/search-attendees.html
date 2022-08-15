@@ -14,9 +14,21 @@
         #searchBar
         row="0"
     ></SearchBar>
-    <RadListView id="list" *ngIf="!isLoading" [items]="results" row="1" multipleSelection="false" selectionBehavior="None" swipeActions="false" pullToRefresh="false">
+    <StackLayout row="1" orientation="vertical" verticalAlignment="center" *ngIf="!isLoading && results.length === 0">
+        <ng-container *ngIf="!searchComplete">
+            <Image [src]="account.url + event.imageUrl" class="m-10 m-b-0" loadMode="async" stretch="aspectFit" height="100"></Image>
+            <Label text="Search Attendees" class="text-center label font-weight-bold h2"></Label>
+            <Label textWrap="true" text="Search attendees by first name, last name, email, ticket ID, reservation contact" class="body text-center"></Label>
+        </ng-container>
+        <ng-container *ngIf="searchComplete">
+            <Label class="icon icon-3x text-center text-warning" text="&#xf1f0;"></Label>
+            <Label text="Nothing found" class="text-center label font-weight-bold h2"></Label>
+            <Label textWrap="true" text="Unable to find attendees for the given search criteria" class="body text-center"></Label>
+        </ng-container>
+    </StackLayout>
+    <RadListView id="list" *ngIf="!isLoading && results.length > 0" [items]="results" row="1" multipleSelection="false" selectionBehavior="None" swipeActions="false" pullToRefresh="false">
         <ng-template tkListItemTemplate let-attendee="item">
-            <GridLayout rows="30, 20" columns="35, *, 100, 35" class="-separator" (tap)="select(attendee)">
+            <GridLayout rows="30, 30" columns="40, *, 100, 40" class="-separator" (tap)="select(attendee)">
                 <Label [text]="attendeeStatusIcon(attendee)" rowSpan="2" 
                        [class.text-success]="attendee.ticketStatus === 'CHECKED_IN'"
                        [class.text-warning]="attendee.ticketStatus === 'TO_BE_PAID'"

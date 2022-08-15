@@ -29,9 +29,17 @@ export class ScanService {
         }
     }
 
-    public manualCheckIn(eventKey: string, account: Account, uuid: string): Observable<Boolean> {
-        const url = `${account.url}/admin/api/check-in/event/${eventKey}/ticket/${uuid}/manual-check-in`
-        return this.http.post<Boolean>(url, {}, {
+    public manualCheckIn(eventKey: string, account: Account, uuid: string): Observable<boolean> {
+        const url = `${account.url}/admin/api/check-in/event/${eventKey}/ticket/${uuid}/manual-check-in`;
+        return this.http.post<boolean>(url, {}, {
+            headers: authorization(account.apiKey, account.username, account.password)
+        });
+    }
+    
+    public revertCheckIn(eventKey: string, account: Account, uuid: string): Observable<boolean> {
+        // /check-in/event/{eventName}/ticket/{ticketIdentifier}/revert-check-in
+        const url = `${account.url}/admin/api/check-in/event/${eventKey}/ticket/${uuid}/revert-check-in`;
+        return this.http.post<boolean>(url, {}, {
             headers: authorization(account.apiKey, account.username, account.password)
         });
     }

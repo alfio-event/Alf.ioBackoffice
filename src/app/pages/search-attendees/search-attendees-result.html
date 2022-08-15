@@ -1,7 +1,11 @@
-<GridLayout rows="16, 60, *, 250, 50, 16" class="search-attendees-result">
-    <Label [text]="attendee.firstName + ' ' + attendee.lastName" class="h3 text-center" row="1"></Label>
+<GridLayout rows="16, 60, *, 250, 120, 16" class="search-attendees-result">
+    <Label [text]="attendeeFullName" class="h2 text-center" row="1"></Label>
+    <StackLayout row="2">
+        <Label [text]="attendee.categoryName" class="h3 text-center"></Label>
+    </StackLayout>
     <image [src]="qrCodeUrl" class="qr-code" loadMode="async" stretch="aspectFill" row="3"></image>
     <StackLayout row="4" orientation="vertical">
-        <Button (tap)="checkIn()" class="-primary -rounded-sm" text="Manual Check-in"></Button>
+        <Button (tap)="confirm()" [ngClass]="confirmButtonClass" class="-rounded-sm" [text]="confirmButtonText"></Button>
+        <Button *ifAndroid (tap)="back()" class="-outline -rounded-sm" text="Close"></Button>
     </StackLayout>
 </GridLayout>

@@ -96,7 +96,7 @@ export interface AttendeeSearchResult {
     amountToPay?: string;
 }
 
-const validator = new RegExp("^[^\\{\\}]+$");
+const validator = new RegExp("^[^{}]+$");
 export function isValidTicketCode(scan: string): boolean {
     return validator.test(scan);
 }

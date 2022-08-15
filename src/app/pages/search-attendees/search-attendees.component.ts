@@ -23,6 +23,7 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
 
     searchPhrase: string = '';
     isLoading = false;
+    searchComplete = false;
 
     results = new ObservableArray<AttendeeSearchResult>();
 
@@ -138,6 +139,7 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
                 this.results.splice(0, this.results.length);
             }
             this.results.push(...res);
+            this.searchComplete = true;
             this.isLoading = false;
         });
     }
