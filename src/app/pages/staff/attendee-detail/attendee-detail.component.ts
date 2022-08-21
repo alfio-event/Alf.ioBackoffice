@@ -4,7 +4,7 @@ import {FeedbackService} from "~/app/shared/notification/feedback.service";
 import {Account, EventConfiguration} from "~/app/shared/account/account";
 import {AttendeeSearchResult} from "~/app/shared/scan/scan-common";
 import {HttpErrorResponse} from "@angular/common/http";
-import {IDevice, platformNames, Screen} from "@nativescript/core/platform";
+import {IDevice, Screen} from "@nativescript/core/platform";
 import {DEVICE} from "@nativescript/angular";
 
 @Component({

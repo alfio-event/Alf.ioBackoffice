@@ -11,7 +11,7 @@ import {Subscription} from "rxjs";
 import {OrientationService} from "~/app/shared/orientation.service";
 import {IDevice, Screen} from "@nativescript/core/platform";
 import {FeedbackService} from "~/app/shared/notification/feedback.service";
-import {ListViewLoadOnDemandMode, LoadOnDemandListViewEventData} from "nativescript-ui-listview";
+import {ListViewLoadOnDemandMode, LoadOnDemandListViewEventData, RadListView} from "nativescript-ui-listview";
 
 @Component({
   moduleId: module.id,
@@ -37,6 +37,9 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
   @ViewChild("searchBar")
   searchBar?: ElementRef<SearchBar>;
 
+  @ViewChild("resultsList")
+  resultsList?: ElementRef<RadListView>;
+
   searchStats?: {
     totalResults: number,
     checkedIn: number,
@@ -48,6 +51,7 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
   private currentPage: number = 0;
   private currentOffset: number = 0;
   private totalPages: number = 0;
+  private pageSize = 20;
 
   constructor(private route: ActivatedRoute,
               private routerExtensions: RouterExtensions,
@@ -92,7 +96,8 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
   loadNextPage(args: LoadOnDemandListViewEventData): void {
     console.log('loading next page...');
     const listView = args.object;
-    this.performSearch(this.latestSearch, this.currentPage + 1, this.currentOffset, false,
+    this.currentOffset = this.results.length;
+    this.performSearch(this.latestSearch, this.currentPage + 1, this.results.length, false,
       (res) => {
         const disableLoading = res.totalPages <= (res.numPage + 1);
         console.log('load complete. Notifying listView. Disable loading: ', disableLoading);
@@ -107,8 +112,11 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
   onSubmit(args: EventData): void {
     const searchBar = args.object as SearchBar;
     if (searchBar.text.length > 0) {
-      this.performSearch(searchBar.text);
-      searchBar.dismissSoftInput();
+      this.performSearch(searchBar.text, 0, 0, true,
+        () => {
+          this.currentOffset = 0;
+          searchBar.dismissSoftInput()
+        });
     }
   }
 
@@ -152,8 +160,23 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
       && Screen.mainScreen.widthPixels > Screen.mainScreen.heightPixels;
   }
 
-  reloadSearch(): void {
-    this.performSearch(this.latestSearch, this.currentPage, this.currentOffset, false);
+  reloadSearch(uuid?: string): void {
+    let page = this.currentPage;
+    let offset = this.currentOffset;
+    if (this.currentPage > 0) {
+      let elementPosition = -1;
+      if (uuid != null) {
+        // find the element position in the result array
+        elementPosition = this.results.findIndex(el => el.uuid === uuid);
+      }
+      if (elementPosition === -1) {
+        elementPosition = this.resultsList?.nativeElement?.getFirstVisiblePosition() || 0;
+      }
+      page = Math.ceil(elementPosition / this.pageSize);
+      offset = this.pageSize * (page - 1);
+    }
+
+    this.performSearch(this.latestSearch, page, offset, false);
   }
 
   private openDetailModal(attendee: AttendeeSearchResult): void {
@@ -169,7 +192,7 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
     };
     this.modalService.showModal(SearchAttendeesResultComponent, options)
       .then(() => {
-        console.log('modal closed');
+        this.reloadSearch(attendee.uuid);
       });
   }
 
@@ -188,12 +211,13 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
       this.latestSearch = query;
       const attendees = res.attendees;
       if (this.results.length > 0) {
+        console.log('offset is', offset, 'results are', this.results.length, 'attendees to add', attendees.length);
         this.results.splice(offset, this.results.length, ...attendees);
       } else {
         this.results.push(...attendees);
       }
+      this.results._notifyLengthChange();
       this.currentPage = res.numPage;
-      this.currentOffset += res.attendees.length;
       this.loadOnDemandMode = res.totalPages > 1 ? ListViewLoadOnDemandMode.Auto : ListViewLoadOnDemandMode.None;
       this.totalPages = res.totalPages;
       if (this.selectedAttendee != null) {
