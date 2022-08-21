@@ -1,12 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Inject,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-  ViewContainerRef
-} from "@angular/core";
+import {Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild, ViewContainerRef} from "@angular/core";
 import {ActivatedRoute, Params} from "@angular/router";
 import {DEVICE, ModalDialogOptions, ModalDialogService, RouterExtensions} from "@nativescript/angular";
 import {EventData, ObservableArray, Page, SearchBar} from "@nativescript/core";
@@ -17,14 +9,15 @@ import {ScanService} from "~/app/shared/scan/scan.service";
 import {SearchAttendeesResultComponent} from "./search-attendees-result.component";
 import {Subscription} from "rxjs";
 import {OrientationService} from "~/app/shared/orientation.service";
-import {Screen, IDevice} from "@nativescript/core/platform";
+import {IDevice, Screen} from "@nativescript/core/platform";
+import {FeedbackService} from "~/app/shared/notification/feedback.service";
 
 @Component({
   moduleId: module.id,
   selector: "search-attendees",
   templateUrl: "./search-attendees.html",
   styleUrls: ["./search-attendees.scss"],
-  providers: [ScanService, AccountService, ModalDialogService]
+  providers: [ScanService, AccountService, ModalDialogService, FeedbackService]
 })
 export class SearchAttendeesComponent implements OnInit, OnDestroy {
 
@@ -59,6 +52,7 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
               private vcRef: ViewContainerRef,
               private page: Page,
               private orientationService: OrientationService,
+              private feedbackService: FeedbackService,
               @Inject(DEVICE) private device: IDevice) {
   }
 
@@ -164,32 +158,40 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
       });
   }
 
-  private performSearch(query?: string): void {
+  private performSearch(query?: string, page: number = 0): void {
     if ((query?.length || 0) === 0) {
       console.log('skipping search. Query is empty');
       this.isLoading = false;
       return;
     }
     this.isLoading = true;
-    this.scanService.search(this.event.key, this.account, query).subscribe(res => {
+    this.scanService.search(this.event.key, this.account, query, page).subscribe(res => {
       this.latestSearch = query;
+      const attendees = res.attendees;
       if (this.results.length > 0) {
         this.results.splice(0, this.results.length);
       }
-      this.results.push(...res);
+      this.results.push(...attendees);
       if (this.selectedAttendee != null) {
         const selectedId = this.selectedAttendee.uuid;
-        const matches = res.filter(a => a.uuid === selectedId);
+        const matches = attendees.filter(a => a.uuid === selectedId);
         this.selectedAttendee = matches.length > 0 ? matches[0] : null;
       }
-      const checkedIn = res.filter(a => a.ticketStatus === 'CHECKED_IN').length;
+
       this.searchStats = {
-        totalResults: res.length,
-        checkedIn,
-        pending: res.length - checkedIn
+        totalResults: res.totalResults,
+        checkedIn: res.checkedIn,
+        pending: res.totalResults - res.checkedIn
       };
       this.searchComplete = true;
       this.isLoading = false;
+      if (res.totalPages > 1) {
+        setTimeout(() => {
+          this.feedbackService.warning(
+            `Search query produced ${res.totalResults} results. Currently displaying first ${res.attendees.length}`);
+        }, 100);
+
+      }
     });
   }
 }

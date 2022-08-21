@@ -86,6 +86,14 @@ export const statusDescriptions: {[status: string]: string} = {
     "BADGE_SCAN_SUCCESS": "Badge Scan successful"
 };
 
+export interface AttendeeSearchResults {
+  totalResults: number;
+  checkedIn: number;
+  totalPages: number;
+  numPage: number;
+  attendees: Array<AttendeeSearchResult>
+}
+
 export interface AttendeeSearchResult {
     uuid: string;
     firstName: string;

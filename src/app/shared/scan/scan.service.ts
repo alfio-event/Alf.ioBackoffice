@@ -1,5 +1,11 @@
 import { Injectable } from "@angular/core";
-import { TicketAndCheckInResult, InvalidQrCode, isValidTicketCode, AttendeeSearchResult } from './scan-common';
+import {
+  TicketAndCheckInResult,
+  InvalidQrCode,
+  isValidTicketCode,
+  AttendeeSearchResult,
+  AttendeeSearchResults
+} from './scan-common';
 import { Account } from "../account/account";
 import { authorization } from "../../utils/network-util";
 import { Observable, throwError } from "rxjs";
@@ -35,7 +41,7 @@ export class ScanService {
             headers: authorization(account.apiKey, account.username, account.password)
         });
     }
-    
+
     public revertCheckIn(eventKey: string, account: Account, uuid: string): Observable<boolean> {
         // /check-in/event/{eventName}/ticket/{ticketIdentifier}/revert-check-in
         const url = `${account.url}/admin/api/check-in/event/${eventKey}/ticket/${uuid}/revert-check-in`;
@@ -44,10 +50,10 @@ export class ScanService {
         });
     }
 
-    public search(eventKey: string, account: Account, query: string): Observable<Array<AttendeeSearchResult>> {
+    public search(eventKey: string, account: Account, query: string, page: number): Observable<AttendeeSearchResults> {
         console.log('sending query', query);
-        const httpParams = new HttpParams().set('query', query);
-        return this.http.get<Array<AttendeeSearchResult>>(`${account.url}/admin/api/check-in/event/${eventKey}/attendees`, {
+        const httpParams = new HttpParams().set('query', query).set('page', page);
+        return this.http.get<AttendeeSearchResults>(`${account.url}/admin/api/check-in/event/${eventKey}/attendees`, {
             headers: authorization(account.apiKey, account.username, account.password),
             params: httpParams
         });

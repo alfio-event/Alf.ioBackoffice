@@ -30,12 +30,16 @@ export class AttendeeDetailComponent implements OnInit {
 
   qrCodeUrl: string;
 
+  additionalInfoAsList: Array<{key: string, values: string}> = [];
+
   constructor(private scanService: ScanService,
               private feedbackService: FeedbackService) {
   }
 
   ngOnInit(): void {
     this.qrCodeUrl = `${this.account.url}/api/v2/public/event/${this.event.key}/ticket/${this.attendee.uuid}/code.png`;
+    this.additionalInfoAsList = Object.keys(this.attendee.additionalInfo)
+      .map(key => ({key, values: this.attendee.additionalInfo[key].join(', ')}));
   }
 
   back(): void {
@@ -49,6 +53,10 @@ export class AttendeeDetailComponent implements OnInit {
     } else {
       this.performManualCheckIn();
     }
+  }
+
+  templateSelector(attendee: AttendeeSearchResult, index: number, items: any): string {
+    return index % 2 === 0 ? 'even' : 'odd';
   }
 
   get confirmButtonText(): string {

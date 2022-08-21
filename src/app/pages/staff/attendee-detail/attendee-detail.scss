@@ -9,6 +9,10 @@
   }
 }
 
+.odd {
+  background-color: lighten($grey-background, 25%);
+}
+
 .qr-code {
   height: 250;
   width: 250;

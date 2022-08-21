@@ -29,7 +29,8 @@
                  [items]="results" row="1" col="0" multipleSelection="false"
                  selectionBehavior="None" swipeActions="false" pullToRefresh="false">
         <ng-template tkListItemTemplate let-attendee="item">
-            <GridLayout rows="35, 35" columns="40, *, 100, 40" class="-separator" (tap)="select(attendee)">
+            <GridLayout rows="35, 35" columns="40, *, 100, 40" class="-separator" (tap)="select(attendee)"
+                        [class.bg-success]="attendee === selectedAttendee">
                 <ng-container *ngIf="attendee">
                     <Label [text]="attendeeStatusIcon(attendee)" rowSpan="2"
                            [class.text-success]="attendee.ticketStatus === 'CHECKED_IN'"
