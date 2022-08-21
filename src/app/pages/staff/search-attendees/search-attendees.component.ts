@@ -167,10 +167,9 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
       fullscreen: false,
       cancelable: true
     };
-    this.isLoading = true;
     this.modalService.showModal(SearchAttendeesResultComponent, options)
       .then(() => {
-        this.performSearch(this.latestSearch);
+        console.log('modal closed');
       });
   }
 

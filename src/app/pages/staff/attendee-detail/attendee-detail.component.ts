@@ -1,9 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
+import {Component, EventEmitter, Inject, Input, OnInit, Output} from "@angular/core";
 import {ScanService} from "~/app/shared/scan/scan.service";
 import {FeedbackService} from "~/app/shared/notification/feedback.service";
 import {Account, EventConfiguration} from "~/app/shared/account/account";
 import {AttendeeSearchResult} from "~/app/shared/scan/scan-common";
 import {HttpErrorResponse} from "@angular/common/http";
+import {IDevice, platformNames, Screen} from "@nativescript/core/platform";
+import {DEVICE} from "@nativescript/angular";
 
 @Component({
   moduleId: module.id,
@@ -31,15 +33,22 @@ export class AttendeeDetailComponent implements OnInit {
   qrCodeUrl: string;
 
   additionalInfoAsList: Array<{key: string, values: string}> = [];
+  additionalInfoColumns = "*, 3*, *";
+  mainLayoutRows = "16, 80, *, 250, 100, 16";
 
   constructor(private scanService: ScanService,
-              private feedbackService: FeedbackService) {
+              private feedbackService: FeedbackService,
+              @Inject(DEVICE) private device: IDevice) {
   }
 
   ngOnInit(): void {
     this.qrCodeUrl = `${this.account.url}/api/v2/public/event/${this.event.key}/ticket/${this.attendee.uuid}/code.png`;
     this.additionalInfoAsList = Object.keys(this.attendee.additionalInfo)
       .map(key => ({key, values: this.attendee.additionalInfo[key].join(', ')}));
+    if (Screen.mainScreen.widthPixels <= 640) {
+      this.additionalInfoColumns = "16, *, 16";
+      this.mainLayoutRows = "16, 80, *, 250, 40, 16";
+    }
   }
 
   back(): void {

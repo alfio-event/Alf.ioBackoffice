@@ -1,9 +1,9 @@
-<GridLayout rows="16, 80, *, 250, 120, 16" class="search-attendees-result">
+<GridLayout [rows]="mainLayoutRows" class="search-attendees-result">
     <StackLayout row="1">
         <Label [text]="attendeeFullName" class="h2 text-center"></Label>
         <Label [text]="attendee.categoryName" class="h3 text-center"></Label>
     </StackLayout>
-    <GridLayout row="2" columns="*, 3*, *">
+    <GridLayout row="2" [columns]="additionalInfoColumns">
         <ScrollView col="1">
             <ListView [items]="additionalInfoAsList" class="list-group"
                       [itemTemplateSelector]="templateSelector" row="1" col="1">
