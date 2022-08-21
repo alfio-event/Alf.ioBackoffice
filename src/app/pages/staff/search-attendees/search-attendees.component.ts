@@ -4,13 +4,14 @@ import {DEVICE, ModalDialogOptions, ModalDialogService, RouterExtensions} from "
 import {EventData, ObservableArray, Page, SearchBar} from "@nativescript/core";
 import {Account, EventConfiguration} from "~/app/shared/account/account";
 import {AccountService} from "~/app/shared/account/account.service";
-import {AttendeeSearchResult} from "~/app/shared/scan/scan-common";
+import {AttendeeSearchResult, AttendeeSearchResults} from "~/app/shared/scan/scan-common";
 import {ScanService} from "~/app/shared/scan/scan.service";
 import {SearchAttendeesResultComponent} from "./search-attendees-result.component";
 import {Subscription} from "rxjs";
 import {OrientationService} from "~/app/shared/orientation.service";
 import {IDevice, Screen} from "@nativescript/core/platform";
 import {FeedbackService} from "~/app/shared/notification/feedback.service";
+import {ListViewLoadOnDemandMode, LoadOnDemandListViewEventData} from "nativescript-ui-listview";
 
 @Component({
   moduleId: module.id,
@@ -29,6 +30,7 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
   searchComplete = false;
 
   results = new ObservableArray<AttendeeSearchResult>();
+  loadOnDemandMode: ListViewLoadOnDemandMode = ListViewLoadOnDemandMode.None;
 
   selectedAttendee?: AttendeeSearchResult;
 
@@ -43,6 +45,9 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
 
   private latestSearch?: string;
   private orientationSubscription?: Subscription;
+  private currentPage: number = 0;
+  private currentOffset: number = 0;
+  private totalPages: number = 0;
 
   constructor(private route: ActivatedRoute,
               private routerExtensions: RouterExtensions,
@@ -82,6 +87,17 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.searchBar?.nativeElement?.focus();
     });
+  }
+
+  loadNextPage(args: LoadOnDemandListViewEventData): void {
+    console.log('loading next page...');
+    const listView = args.object;
+    this.performSearch(this.latestSearch, this.currentPage + 1, this.currentOffset, false,
+      (res) => {
+        const disableLoading = res.totalPages <= (res.numPage + 1);
+        console.log('load complete. Notifying listView. Disable loading: ', disableLoading);
+        listView.notifyLoadOnDemandFinished(disableLoading);
+      });
   }
 
   ngOnDestroy(): void {
@@ -137,7 +153,7 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
   }
 
   reloadSearch(): void {
-    this.performSearch(this.latestSearch);
+    this.performSearch(this.latestSearch, this.currentPage, this.currentOffset, false);
   }
 
   private openDetailModal(attendee: AttendeeSearchResult): void {
@@ -158,20 +174,29 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
       });
   }
 
-  private performSearch(query?: string, page: number = 0): void {
+  private performSearch(query?: string,
+                        page: number = 0,
+                        offset: number = 0,
+                        hideListDuringSearch: boolean = true,
+                        completeCallback: (x: AttendeeSearchResults) => void = () => {}): void {
     if ((query?.length || 0) === 0) {
       console.log('skipping search. Query is empty');
       this.isLoading = false;
       return;
     }
-    this.isLoading = true;
+    this.isLoading = hideListDuringSearch;
     this.scanService.search(this.event.key, this.account, query, page).subscribe(res => {
       this.latestSearch = query;
       const attendees = res.attendees;
       if (this.results.length > 0) {
-        this.results.splice(0, this.results.length);
+        this.results.splice(offset, this.results.length, ...attendees);
+      } else {
+        this.results.push(...attendees);
       }
-      this.results.push(...attendees);
+      this.currentPage = res.numPage;
+      this.currentOffset += res.attendees.length;
+      this.loadOnDemandMode = res.totalPages > 1 ? ListViewLoadOnDemandMode.Auto : ListViewLoadOnDemandMode.None;
+      this.totalPages = res.totalPages;
       if (this.selectedAttendee != null) {
         const selectedId = this.selectedAttendee.uuid;
         const matches = attendees.filter(a => a.uuid === selectedId);
@@ -184,14 +209,8 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
         pending: res.totalResults - res.checkedIn
       };
       this.searchComplete = true;
+      completeCallback(res);
       this.isLoading = false;
-      if (res.totalPages > 1) {
-        setTimeout(() => {
-          this.feedbackService.warning(
-            `Search query produced ${res.totalResults} results. Currently displaying first ${res.attendees.length}`);
-        }, 100);
-
-      }
     });
   }
 }

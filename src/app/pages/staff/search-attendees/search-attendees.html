@@ -27,7 +27,8 @@
     </StackLayout>
     <RadListView id="list" *ngIf="!isLoading && results.length > 0"
                  [items]="results" row="1" col="0" multipleSelection="false"
-                 selectionBehavior="None" swipeActions="false" pullToRefresh="false">
+                 selectionBehavior="None" swipeActions="false" pullToRefresh="false"
+                 [loadOnDemandMode]="loadOnDemandMode" (loadMoreDataRequested)="loadNextPage($event)">
         <ng-template tkListItemTemplate let-attendee="item">
             <GridLayout rows="35, 35" columns="40, *, 100, 40" class="-separator" (tap)="select(attendee)"
                         [class.selected]="attendee === selectedAttendee">
