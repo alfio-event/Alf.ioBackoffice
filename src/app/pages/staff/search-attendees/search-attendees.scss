@@ -12,3 +12,11 @@
   }
   font-size: 14;
 }
+
+.selected {
+  border-left-width: 6;
+  border-left-color: $success;
+  &.ns-dark {
+    border-left-color: $success-dark;
+  }
+}
