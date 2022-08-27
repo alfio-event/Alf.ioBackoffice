@@ -1,0 +1,32 @@
+<GridLayout [rows]="mainLayoutRows" class="search-attendees-result">
+    <StackLayout row="1">
+        <Label [text]="attendeeFullName" class="h2 text-center"></Label>
+        <Label [text]="attendee.categoryName" class="h3 text-center"></Label>
+    </StackLayout>
+    <GridLayout row="2" [columns]="additionalInfoColumns">
+        <ScrollView col="1">
+            <ListView [items]="additionalInfoAsList" class="list-group"
+                      [itemTemplateSelector]="templateSelector" row="1" col="1">
+                <ng-template nsTemplateKey="even" let-item="item">
+                    <GridLayout columns="*, 2*" class="list-group-item">
+                        <Label col="0" [text]="item.key"></Label>
+                        <Label col="1" [text]="item.values"></Label>
+                    </GridLayout>
+                </ng-template>
+                <ng-template nsTemplateKey="odd" let-item="item">
+                    <GridLayout columns="*, 2*" class="list-group-item odd">
+                        <Label col="0" [text]="item.key"></Label>
+                        <Label col="1" [text]="item.values"></Label>
+                    </GridLayout>
+                </ng-template>
+            </ListView>
+        </ScrollView>
+    </GridLayout>
+    <image [src]="qrCodeUrl" class="qr-code" loadMode="async" stretch="aspectFill" row="3"></image>
+    <StackLayout row="4" orientation="vertical">
+        <Button (tap)="confirm()" [ngClass]="confirmButtonClass" class="-rounded-sm" [text]="confirmButtonText"></Button>
+        <ng-container *ngIf="modal">
+            <Button *ifAndroid (tap)="back()" class="-outline -rounded-sm" text="Close"></Button>
+        </ng-container>
+    </StackLayout>
+</GridLayout>

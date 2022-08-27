@@ -1,0 +1,22 @@
+@import "src/variables";
+
+.attendee-detail {
+  border-left-color: $background-dark;
+  border-left-width: 1;
+}
+
+.search-bar, .recap-bar {
+  background-color: lighten($grey-background, 25%);
+  &.ns-dark {
+    background-color: $background-dark;
+  }
+  font-size: 14;
+}
+
+.selected {
+  border-left-width: 6;
+  border-left-color: $success;
+  &.ns-dark {
+    border-left-color: $success-dark;
+  }
+}

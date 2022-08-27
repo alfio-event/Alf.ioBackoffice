@@ -3,7 +3,7 @@ import { ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { AccountService } from "../../../shared/account/account.service";
 import { ScanService } from "../../../shared/scan/scan.service";
-import { Account, EventConfiguration } from "../../../shared/account/account";
+import { Account, AccountType, EventConfiguration, supportsAttendeesSearch } from "../../../shared/account/account";
 import { defaultScanOptions } from '../../../utils/barcodescanner';
 import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses, AdditionalServiceInfo } from '../../../shared/scan/scan-common';
 import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
@@ -46,9 +46,17 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         this.routerExtensions.back();
     }
 
+    get supervisor(): boolean {
+        return supportsAttendeesSearch(this.event)
+            && this.account.accountType === AccountType.SUPERVISOR;
+    }
+
+    search(): void {
+        this.routerExtensions.navigate(['/event-detail/', this.account.getKey(), "STAFF", this.event.key, 'search']);
+    }
+
     ngOnInit(): void {
         this.route.params.forEach((params: Params) => {
-            console.log("params", params['accountId'], params['eventId']);
             let id = params['accountId'];
             let eventId = params['eventId'];
             this.accountService.findAccountById(id).ifPresent(account => {
@@ -174,7 +182,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
         if (this.result == null) {
             return [];
         }
-        return this.result.additionalServices || [];
+        return this.result.additionalServices || [];
     }
 
     get resultRows(): string {

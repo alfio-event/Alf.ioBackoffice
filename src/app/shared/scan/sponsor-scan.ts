@@ -40,3 +40,25 @@ export enum ScanResult {
     DUPLICATE = 'DUPLICATE',
     INVALID = 'INVALID'
 }
+
+export interface LabelLayout {
+  qrCode?: QRCode;
+  content?: Content;
+  general?: General;
+  mediaName?: string;
+}
+
+export interface QRCode {
+  additionalInfo?: Array<string>;
+  infoSeparator?: string;
+}
+
+export interface Content {
+  firstRow?: string;
+  secondRow?: string;
+  additionalRows: Array<string>;
+  checkbox?: boolean;
+}
+export interface General {
+  printPartialID?: boolean;
+}

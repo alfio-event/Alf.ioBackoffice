@@ -86,7 +86,25 @@ export const statusDescriptions: {[status: string]: string} = {
     "BADGE_SCAN_SUCCESS": "Badge Scan successful"
 };
 
-const validator = new RegExp("^[^\\{\\}]+$");
+export interface AttendeeSearchResults {
+  totalResults: number;
+  checkedIn: number;
+  totalPages: number;
+  numPage: number;
+  attendees: Array<AttendeeSearchResult>
+}
+
+export interface AttendeeSearchResult {
+    uuid: string;
+    firstName: string;
+    lastName: string;
+    categoryName: string;
+    additionalInfo?: {[key: string]: string[]};
+    ticketStatus: string;
+    amountToPay?: string;
+}
+
+const validator = new RegExp("^[^{}]+$");
 export function isValidTicketCode(scan: string): boolean {
     return validator.test(scan);
 }

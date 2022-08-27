@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 
-import { SponsorScan, ScanStatus, ScanResult, checkInStatusToScanStatus, LeadStatus } from "./sponsor-scan";
+import {SponsorScan, ScanStatus, ScanResult, checkInStatusToScanStatus, LeadStatus, LabelLayout} from "./sponsor-scan";
 import { Ticket, isValidTicketCode, TicketAndCheckInResult } from "./scan-common";
 import { Account } from "../account/account";
 import { authorization } from "../../utils/network-util";
@@ -8,6 +8,7 @@ import { Subject, Observable } from "rxjs";
 import { StorageService } from "../../shared/storage/storage.service";
 import { HttpClient } from "@angular/common/http";
 import { setTimeout, clearTimeout } from "@nativescript/core/timer";
+import {map} from "rxjs/operators";
 
 @Injectable()
 export class SponsorScanService  {
@@ -17,6 +18,18 @@ export class SponsorScanService  {
     private timeoutIds: {[eventKey: string]: number} = {};
 
     constructor(private http: HttpClient, private storage: StorageService) {
+    }
+
+    public loadLabelLayout(eventKey: string, account: Account): Observable<LabelLayout> {
+      return this.http.get<LabelLayout>(`${account.url}/admin/api/check-in/${eventKey}/label-layout`, {
+        headers: authorization(account.apiKey, account.username, account.password),
+        observe: "response"
+      }).pipe(map(r => {
+        if (r.status === 200) {
+          return r.body;
+        }
+        return null;
+      }));
     }
 
     public scan(eventKey: string, account: Account, uuid: string): ScanResult {

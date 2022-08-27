@@ -14,11 +14,11 @@ export class SponsorScanBadgeComponent implements OnInit {
     item: SponsorScan;
     @Input()
     showArrow: boolean = true;
-    ticket: Ticket;
+    ticket?: Ticket;
 
 
     ngOnInit(): void {
-        this.ticket = this.item.ticket;
+        this.ticket = this.item?.ticket;
     }
 
     get iconForItem(): string {

@@ -1,0 +1,73 @@
+<ActionBar class="nt-action-bar" title="Search Attendees">
+    <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Scan"></NavigationButton>
+    <NavigationButton *ifIos (tap)="onBackTap()" text="Scan"></NavigationButton>
+</ActionBar>
+
+<GridLayout rows="50, *, 30" [columns]="resultsColumns">
+    <SearchBar
+        class="search-bar"
+        hint="Search by First name, Last name, Category name, email"
+        [text]="searchPhrase"
+        (submit)="onSubmit($event)"
+        #searchBar
+        row="0"
+        col="0"
+    ></SearchBar>
+    <StackLayout row="1" orientation="vertical" verticalAlignment="center" *ngIf="!isLoading && results.length === 0" col="0">
+        <ng-container *ngIf="!searchComplete && !landscapeTablet">
+            <Image [src]="account.url + event.imageUrl" class="m-10 m-b-0" loadMode="async" stretch="aspectFit" height="100"></Image>
+            <Label text="Search Attendees" class="text-center label font-weight-bold h2"></Label>
+            <Label textWrap="true" text="Search attendees by first name, last name, email, ticket ID, reservation contact" class="body text-center"></Label>
+        </ng-container>
+        <ng-container *ngIf="searchComplete">
+            <Label class="icon icon-3x text-center text-warning" text="&#xf1f0;"></Label>
+            <Label text="Nothing found" class="text-center label font-weight-bold h2"></Label>
+            <Label textWrap="true" text="Unable to find attendees for the given search criteria" class="body text-center"></Label>
+        </ng-container>
+    </StackLayout>
+    <RadListView id="list" *ngIf="!isLoading && results.length > 0"
+                 [items]="results" row="1" col="0" multipleSelection="false"
+                 selectionBehavior="None" swipeActions="false" pullToRefresh="false"
+                 [loadOnDemandMode]="loadOnDemandMode" (loadMoreDataRequested)="loadNextPage($event)" #resultsList>
+        <ng-template tkListItemTemplate let-attendee="item">
+            <GridLayout rows="35, 35" columns="40, *, 100, 40" class="-separator" (tap)="select(attendee)"
+                        [class.selected]="attendee === selectedAttendee">
+                <ng-container *ngIf="attendee">
+                    <Label [text]="attendeeStatusIcon(attendee)" rowSpan="2"
+                           [class.text-success]="attendee.ticketStatus === 'CHECKED_IN'"
+                           [class.text-warning]="attendee.ticketStatus === 'TO_BE_PAID'"
+                           col="0" class="icon icon-1-5x person-icon text-center"></Label>
+                    <Label [text]="attendee.firstName + ' ' + attendee.lastName" class="h3" textWrap="false" col="1" row="0"></Label>
+                    <Label [text]="uppercaseUuid(attendee)" class="text-muted text-right" row="0" col="2"></Label>
+                    <Label [text]="attendee.categoryName" row="1" col="1" *ngIf="attendee"></Label>
+                    <Label [text]="attendee.amountToPay" class="text-warning text-right" row="1" col="2" *ngIf="attendee.ticketStatus === 'TO_BE_PAID'"></Label>
+                    <Label text="&#xf2fb;" col="3" rowSpan="2" class="icon icon-1-5x person-icon text-center"></Label>
+                </ng-container>
+            </GridLayout>
+        </ng-template>
+    </RadListView>
+    <ActivityIndicator class="activity-indicator" [busy]="isLoading"
+                       [visibility]="isLoading ? 'visible' : 'collapse'"
+                       row="1" horizontalAlignment="center"
+                       verticalAlignment="center" col="0"></ActivityIndicator>
+    <FlexboxLayout row="2" col="0" class="recap-bar" flexDirection="row" justifyContent="space-around">
+        <Label text="Submit a search query to see the results" class="text-center" *ngIf="!searchStats"></Label>
+        <ng-container *ngIf="searchStats">
+            <Label [text]="'Total results: ' + searchStats.totalResults"></Label>
+            <Label class="text-success" [text]="'Checked in: ' + searchStats.checkedIn"></Label>
+            <Label *ngIf="landscapeTablet" [text]="'Pending: ' + searchStats.pending"></Label>
+        </ng-container>
+    </FlexboxLayout>
+    <!-- extended view for landscape tablet -->
+    <ng-container *ngIf="landscapeTablet">
+        <FlexboxLayout col="1" row="0" rowSpan="3" class="attendee-detail">
+            <StackLayout flexGrow="1" *ngIf="selectedAttendee == null" verticalAlignment="center">
+                <Image [src]="account.url + event.imageUrl" class="m-10 m-b-0" loadMode="async" stretch="aspectFit" height="100"></Image>
+                <Label text="Search Attendees" class="text-center label font-weight-bold h2"></Label>
+                <Label textWrap="true" text="Search attendees by first name, last name, email, ticket ID, reservation contact" class="body text-center"></Label>
+            </StackLayout>
+            <attendee-detail *ngIf="selectedAttendee != null" [event]="event" [account]="account" [attendee]="selectedAttendee" (updateComplete)="reloadSearch(selectedAttendee.uuid)"></attendee-detail>
+        </FlexboxLayout>
+    </ng-container>
+
+</GridLayout>
