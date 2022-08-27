@@ -9,7 +9,6 @@ import { Observable, throwError } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { StorageService } from "../storage/storage.service";
 import { authorization } from "../../utils/network-util";
-import { dataDeserialize } from "@nativescript/core/utils";
 
 @Injectable()
 export class AccountService {

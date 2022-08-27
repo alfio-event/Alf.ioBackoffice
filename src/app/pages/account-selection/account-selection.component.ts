@@ -1,16 +1,15 @@
-import { Component, OnInit, OnChanges, NgZone, OnDestroy } from "@angular/core";
-import { RadListView, ListViewEventData } from "nativescript-ui-listview";
-import { RouterExtensions } from "@nativescript/angular";
-import { Account, ScannedAccount } from "../../shared/account/account";
-import { AccountService } from "../../shared/account/account.service";
-import { AccountResponse, Maybe, Some, Nothing } from "../../shared/account/account";
-import { isUndefined, isDefined } from "@nativescript/core/utils/types";
-import { BarcodeScanner, ScanResult } from "nativescript-barcodescanner";
-import { FeedbackService } from "../../shared/notification/feedback.service";
-import { defaultScanOptions } from "~/app/utils/barcodescanner";
-import { Application, ObservableArray, Page, View } from "@nativescript/core";
-import { OrientationService } from "~/app/shared/orientation.service";
-import { Observable, Subscription } from "rxjs";
+import {Component, NgZone, OnChanges, OnInit} from "@angular/core";
+import {ListViewEventData, RadListView} from "nativescript-ui-listview";
+import {RouterExtensions} from "@nativescript/angular";
+import {Account, AccountResponse, Maybe, Nothing, ScannedAccount, Some} from "../../shared/account/account";
+import {AccountService} from "../../shared/account/account.service";
+import {isDefined, isUndefined} from "@nativescript/core/utils/types";
+import {BarcodeScanner, ScanResult} from "nativescript-barcodescanner";
+import {FeedbackService} from "../../shared/notification/feedback.service";
+import {defaultScanOptions} from "~/app/utils/barcodescanner";
+import {ObservableArray, Page, View} from "@nativescript/core";
+import {OrientationService} from "~/app/shared/orientation.service";
+import {Subscription} from "rxjs";
 
 @Component({
     selector: "account-selection",
