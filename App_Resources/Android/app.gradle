@@ -1,59 +1,19 @@
 // Add your native dependencies here:
 
 // Uncomment to add recyclerview-v7 dependency
-//dependencies {
-//	compile 'com.android.support:recyclerview-v7:+'
-//}
+dependencies {
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
+}
 
-android {  
-  defaultConfig {  
+android {
+  defaultConfig {
     generatedDensities = []
-    applicationId = "alfio.app" 
-    ndk {
-    abiFilters.clear()
-    }
-    splits {
-      abi {
-        enable true //enables the ABIs split mechanism
-        reset() //reset the list of ABIs to be included to an empty string
-        include 'arm64-v8a', 'armeabi-v7a', 'x86'
-        universalApk true
-      }
-    }
-    sourceSets {
-      main {
-          jniLibs.srcDirs = ["$projectDir/libs/jni", "$projectDir/snapshot-build/build/ndk-build/libs"]
-      }
-    }
-  }  
-  aaptOptions {  
-    additionalParameters "--no-version-vectors"  
+    applicationId = "alfio.scan"
+    versionCode = 42208282
+    versionName = "1.5.0"
   }
-} 
-
-def settingsGradlePath
-
-if(project.hasProperty("appResourcesPath")){
-    settingsGradlePath = "$project.appResourcesPath/Android/settings.gradle";
-} else {
-    settingsGradlePath = "$rootDir/../../app/App_Resources/Android/settings.gradle";
+  aaptOptions {
+    additionalParameters "--no-version-vectors"
+  }
 }
 
-def settingsGradleFile = new File(settingsGradlePath);
-
-if(settingsGradleFile.exists())
-{
-    apply from: settingsGradleFile;
-}
-
-project.ext.abiCodes = ['armeabi-v7a': 1, 'arm64-v8a': 2, 'x86': 3]
-
-// android.applicationVariants.all { variant ->
-//     variant.outputs.each { output ->
-//         def baseAbiVersionCode = project.ext.abiCodes.get(output.getFilter("ABI"), 0)
-//         if (baseAbiVersionCode != null) {
-//             def variantVersionCode = Integer.parseInt(variant.versionCode.toString().substring(1))
-//             output.versionCodeOverride = baseAbiVersionCode * 10000000 + variantVersionCode
-//         }
-//     }
-// }
