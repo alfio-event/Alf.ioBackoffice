@@ -34,7 +34,7 @@ export class AttendeeDetailComponent implements OnInit {
 
   additionalInfoAsList: Array<{key: string, values: string}> = [];
   additionalInfoColumns = "*, 3*, *";
-  mainLayoutRows = "16, 80, *, 250, 100, 16";
+  mainLayoutRows = "16, 80, *, 250, 50, 16";
 
   constructor(private scanService: ScanService,
               private feedbackService: FeedbackService,
@@ -45,8 +45,11 @@ export class AttendeeDetailComponent implements OnInit {
     this.qrCodeUrl = `${this.account.url}/api/v2/public/event/${this.event.key}/ticket/${this.attendee.uuid}/code.png`;
     this.additionalInfoAsList = Object.keys(this.attendee.additionalInfo)
       .map(key => ({key, values: this.attendee.additionalInfo[key].join(', ')}));
-    if (Screen.mainScreen.widthPixels <= 640) {
+    const widthPixels = Screen.mainScreen.widthPixels;
+    if (this.device.deviceType == "Phone" || widthPixels < Screen.mainScreen.heightPixels) {
       this.additionalInfoColumns = "16, *, 16";
+    }
+    if (widthPixels <= 640) {
       this.mainLayoutRows = "16, 80, *, 250, 40, 16";
     }
   }

@@ -9,7 +9,7 @@ import {ScanService} from "~/app/shared/scan/scan.service";
 import {SearchAttendeesResultComponent} from "./search-attendees-result.component";
 import {Subscription} from "rxjs";
 import {OrientationService} from "~/app/shared/orientation.service";
-import {IDevice, Screen} from "@nativescript/core/platform";
+import {IDevice, platformNames, Screen} from "@nativescript/core/platform";
 import {FeedbackService} from "~/app/shared/notification/feedback.service";
 import {ListViewLoadOnDemandMode, LoadOnDemandListViewEventData, RadListView} from "nativescript-ui-listview";
 
