@@ -14,9 +14,8 @@
 }
 
 .selected {
-  border-left-width: 6;
-  border-left-color: $success;
+  background-color: $success;
   &.ns-dark {
-    border-left-color: $success-dark;
+    background-color: $success-dark;
   }
 }

@@ -30,18 +30,18 @@
                  selectionBehavior="None" swipeActions="false" pullToRefresh="false"
                  [loadOnDemandMode]="loadOnDemandMode" (loadMoreDataRequested)="loadNextPage($event)" #resultsList>
         <ng-template tkListItemTemplate let-attendee="item">
-            <GridLayout rows="35, 35" columns="40, *, 100, 40" class="-separator" (tap)="select(attendee)"
-                        [class.selected]="attendee === selectedAttendee">
+            <GridLayout rows="35, 35" columns="5, 40, *, 100, 40" class="-separator" (tap)="select(attendee)">
+                <StackLayout row="0" rowSpan="2" col="0" [class.selected]="attendee === selectedAttendee"></StackLayout>
                 <ng-container *ngIf="attendee">
                     <Label [text]="attendeeStatusIcon(attendee)" rowSpan="2"
                            [class.text-success]="attendee.ticketStatus === 'CHECKED_IN'"
                            [class.text-warning]="attendee.ticketStatus === 'TO_BE_PAID'"
-                           col="0" class="icon icon-1-5x person-icon text-center"></Label>
-                    <Label [text]="attendee.firstName + ' ' + attendee.lastName" class="h3" textWrap="false" col="1" row="0"></Label>
-                    <Label [text]="uppercaseUuid(attendee)" class="text-muted text-right" row="0" col="2"></Label>
-                    <Label [text]="attendee.categoryName" row="1" col="1" *ngIf="attendee"></Label>
-                    <Label [text]="attendee.amountToPay" class="text-warning text-right" row="1" col="2" *ngIf="attendee.ticketStatus === 'TO_BE_PAID'"></Label>
-                    <Label text="&#xf2fb;" col="3" rowSpan="2" class="icon icon-1-5x person-icon text-center"></Label>
+                           col="1" class="icon icon-1-5x person-icon text-center"></Label>
+                    <Label [text]="attendee.firstName + ' ' + attendee.lastName" class="h3" textWrap="false" col="2" row="0"></Label>
+                    <Label [text]="uppercaseUuid(attendee)" class="text-muted text-right" row="0" col="3"></Label>
+                    <Label [text]="attendee.categoryName" row="1" col="2" *ngIf="attendee"></Label>
+                    <Label [text]="attendee.amountToPay" class="text-warning text-right" row="1" col="3" *ngIf="attendee.ticketStatus === 'TO_BE_PAID'"></Label>
+                    <Label text="&#xf2fb;" col="4" rowSpan="2" class="icon icon-1-5x person-icon text-center"></Label>
                 </ng-container>
             </GridLayout>
         </ng-template>
