@@ -22,7 +22,7 @@
             </ListView>
         </ScrollView>
     </GridLayout>
-    <image [src]="qrCodeUrl" class="qr-code" loadMode="async" stretch="aspectFill" row="3"></image>
+    <Image [src]="qrCodeUrl" class="qr-code" loadMode="async" stretch="aspectFill" row="3"></Image>
     <StackLayout row="4" orientation="vertical">
         <Button (tap)="confirm()" [ngClass]="confirmButtonClass" class="-rounded-sm" [text]="confirmButtonText"></Button>
     </StackLayout>

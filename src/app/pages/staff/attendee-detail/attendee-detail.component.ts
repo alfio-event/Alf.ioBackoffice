@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Inject, Input, OnInit, Output} from "@angular/core";
+import {Component, EventEmitter, Inject, Input, OnChanges, OnInit, Output, SimpleChanges} from "@angular/core";
 import {ScanService} from "~/app/shared/scan/scan.service";
 import {FeedbackService} from "~/app/shared/notification/feedback.service";
 import {Account, EventConfiguration} from "~/app/shared/account/account";
@@ -13,7 +13,7 @@ import {DEVICE} from "@nativescript/angular";
   templateUrl: "./attendee-detail.html",
   styleUrls: ["./attendee-detail.scss"]
 })
-export class AttendeeDetailComponent implements OnInit {
+export class AttendeeDetailComponent implements OnInit, OnChanges {
 
   @Input()
   account: Account;
@@ -42,7 +42,7 @@ export class AttendeeDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.qrCodeUrl = `${this.account.url}/api/v2/public/event/${this.event.key}/ticket/${this.attendee.uuid}/code.png`;
+    this.initQrCodeURL();
     this.additionalInfoAsList = Object.keys(this.attendee.additionalInfo)
       .map(key => ({key, values: this.attendee.additionalInfo[key].join(', ')}));
     const widthPixels = Screen.mainScreen.widthPixels;
@@ -57,7 +57,6 @@ export class AttendeeDetailComponent implements OnInit {
   back(): void {
     this.updateComplete.next(true);
   }
-
 
   confirm(): void {
     if (this.checkedIn) {
@@ -91,6 +90,10 @@ export class AttendeeDetailComponent implements OnInit {
 
   private get toBePaid(): boolean {
     return this.attendee.ticketStatus === 'TO_BE_PAID';
+  }
+
+  private initQrCodeURL(): void {
+    this.qrCodeUrl = `${this.account.url}/api/v2/public/event/${this.event.key}/ticket/${this.attendee.uuid}/code.png`;
   }
 
   private revertCheckIn(): void {
@@ -133,6 +136,10 @@ export class AttendeeDetailComponent implements OnInit {
 
   get attendeeFullName(): string {
     return this.attendee.firstName + " " + this.attendee.lastName;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.initQrCodeURL();
   }
 
 

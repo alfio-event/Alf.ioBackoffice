@@ -9,8 +9,8 @@ android {
   defaultConfig {
     generatedDensities = []
     applicationId = "alfio.scan"
-    versionCode = 42208283
-    versionName = "1.5.0"
+    versionCode = 42209301
+    versionName = "1.5.1"
   }
   aaptOptions {
     additionalParameters "--no-version-vectors"
