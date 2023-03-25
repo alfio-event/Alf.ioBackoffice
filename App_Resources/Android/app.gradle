@@ -10,7 +10,8 @@ android {
     generatedDensities = []
     applicationId = "alfio.scan"
     versionCode = 42209301
-    versionName = "1.5.1"
+    versionName = "1.6.0"
+    multiDexEnabled true
   }
   aaptOptions {
     additionalParameters "--no-version-vectors"
