@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, OnDestroy } from "@angular/core";
+import { Component, OnInit, NgZone } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { Account, EventConfiguration, AccountType } from "../../shared/account/account";
@@ -68,35 +68,39 @@ export class AccountManageComponent implements OnInit {
 
     private reloadEvents(account: Account, onCompleteOrError?: () => void): void {
         this.isLoading = true;
-        this.accountService.loadEventsForAccount(account)
-            .subscribe({
-                next: events => {
-                    this.accountService.updateEventsForAccount(account.getKey(), events);
-                    this.events.splice(0);
-                    this.events.push(...events);
-                    this.isLoading = false;
-                },
-                error: () => {
-                    console.log("error while loading events");
-                    this.feedbackService.error('Error while refreshing events');
-                    if (account != null && account.configurations != null) {
-                        console.log("setting events from account");
-                        this.ngZone.run(() => {
-                            // remote server is not available. Let's initialize the list with the latest local version
-                            this.events.splice(0);
-                            this.events.push(...account.configurations);
-                            this.isLoading = false;
-                        });
-                    }
-                    if (isDefined(onCompleteOrError)) {
-                        onCompleteOrError();
-                    }
-                },
-                complete: onCompleteOrError
-            });
+        this.loadEventsForAccount(account, onCompleteOrError);
     }
 
-    hasEvents(): boolean {
+  private loadEventsForAccount(account: Account, onCompleteOrError: () => void) {
+    this.accountService.loadEventsForAccount(account)
+      .subscribe({
+        next: events => {
+          this.accountService.updateEventsForAccount(account.getKey(), events);
+          this.events.splice(0);
+          this.events.push(...events);
+          this.isLoading = false;
+        },
+        error: () => {
+          console.log("error while loading events");
+          this.feedbackService.error('Error while refreshing events');
+          if (account != null && account.configurations != null) {
+            console.log("setting events from account");
+            this.ngZone.run(() => {
+              // remote server is not available. Let's initialize the list with the latest local version
+              this.events.splice(0);
+              this.events.push(...account.configurations);
+              this.isLoading = false;
+            });
+          }
+          if (isDefined(onCompleteOrError)) {
+            onCompleteOrError();
+          }
+        },
+        complete: onCompleteOrError
+      });
+  }
+
+  hasEvents(): boolean {
         return this.events.length > 0;
     }
 
@@ -113,8 +117,8 @@ export class AccountManageComponent implements OnInit {
         }
     }
 
-    onPullToRefreshInitiated(args: ListViewEventData) {
-        this.reloadEvents(this.account, () => args.object.notifyPullToRefreshFinished());
+    onPullToRefreshInitiated(args: ListViewEventData): void {
+      this.loadEventsForAccount(this.account, () => args.object.notifyPullToRefreshFinished());
     }
 
 }
