@@ -1,4 +1,12 @@
-import { Ticket, CheckInStatus } from './scan-common';
+import {CheckInStatus, Ticket} from './scan-common';
+import {Account, AccountType} from "~/app/shared/account/account";
+import {StorageService} from "~/app/shared/storage/storage.service";
+
+const PENDING_SCANS_TO_PROCESS_KEY = "Alfio_Pending_Scans";
+
+export function pendingScanKeyForAccount(accountKey: string): string {
+  return `${PENDING_SCANS_TO_PROCESS_KEY}__${accountKey}`;
+}
 
 export class SponsorScan {
     constructor(public code: string,
@@ -61,4 +69,17 @@ export interface Content {
 }
 export interface General {
   printPartialID?: boolean;
+}
+
+export function getPendingEventDataForSponsor(account: Account, storageService: StorageService): Array<string> {
+  console.log("account pending data...");
+  try {
+    if (account.accountType === AccountType.SPONSOR) {
+      const pendingEvents = storageService.getOrDefault(pendingScanKeyForAccount(account.getKey()), "[]");
+      return JSON.parse(pendingEvents);
+    }
+  } catch (e) {
+    console.error("got error while trying to deserialize pending event data", e);
+  }
+  return [];
 }

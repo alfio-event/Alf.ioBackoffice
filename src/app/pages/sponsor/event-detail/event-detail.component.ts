@@ -77,6 +77,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         if (this.event && this.event.key) {
             this.sponsorScanService.destroyForEvent(this.event.key);
+            this.sponsorScanService.persistPendingScans(this.event.key, this.account);
         }
     }
 
