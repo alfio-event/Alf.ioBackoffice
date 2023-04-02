@@ -110,10 +110,9 @@ export class AccountManageComponent implements OnInit {
   }
 
   private detectPendingScans(account: Account, events: { find(p): EventConfiguration }): void {
-    // this.accountHasPendingDataForPastEvents = getPendingEventDataForSponsor(account, this.storageService)
-    //   .filter(k => events.find(ec => ec.key === k) == null)
-    //   .length > 0;
-    this.accountHasPendingDataForPastEvents = true;
+    this.accountHasPendingDataForPastEvents = getPendingEventDataForSponsor(account, this.storageService)
+      .filter(k => events.find(ec => ec.key === k) == null)
+      .length > 0;
   }
 
   hasEvents(): boolean {

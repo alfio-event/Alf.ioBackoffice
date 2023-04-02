@@ -6,8 +6,8 @@
 <GridLayout [rows]="rowsLayout">
   <GridLayout columns="16, 50, 16, *" rows="16, auto, auto" class="bg-warning" *ngIf="accountHasPendingDataForPastEvents && !isLoading" row="0" (tap)="forcePushPendingScans()">
       <Label class="icon icon-2x text-center" text="&#xf30c;" col="1" row="1" rowSpan="2"></Label>
-      <Label text="You have pending data from past events" class="h2" col="3" row="1"></Label>
-      <Label text="Tap here to force upload." class="h2" col="3" row="2"></Label>
+      <Label text="You have pending scans" class="h3" col="3" row="1"></Label>
+      <Label text="Tap here to force upload." class="h3" col="3" row="2"></Label>
   </GridLayout>
   <RadListView id="list" *ngIf="account && !isLoading" [items]="events" row="2"
 		multipleSelection="false" selectionBehavior="None"

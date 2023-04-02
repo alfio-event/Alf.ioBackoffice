@@ -19,6 +19,7 @@ import {HttpClient} from "@angular/common/http";
 import {clearTimeout, setTimeout} from "@nativescript/core/timer";
 import {map, tap} from "rxjs/operators";
 import {loadOperatorName} from "~/app/utils/operatorNameUtils";
+import {logIfDevMode} from "~/app/utils/systemUtils";
 
 @Injectable()
 export class SponsorScanService  {
@@ -196,7 +197,7 @@ export class SponsorScanService  {
 
     private process(eventKey: string, account: Account, oneShot: boolean = false): void {
         let toSend = this.findAllStatusNew(eventKey);
-        console.log("toSend is", toSend.length);
+        logIfDevMode("toSend is", toSend.length);
         if (toSend.length > 0) {
             toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, null, null, LeadStatus.WARM));
             this.bulkScanUpload(eventKey, account, toSend, oneShot);
