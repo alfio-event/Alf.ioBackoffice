@@ -184,6 +184,7 @@ export class SponsorScanService  {
 
     private publishResults(eventKey: string, account: Account, oneShot: boolean): void {
         this.persistSponsorScans(eventKey, account);
+        this.persistPendingScans(eventKey, account);
         this.emitFor(eventKey);
         if (!oneShot) {
           // set timeout only if process is not "one shot"
@@ -203,6 +204,9 @@ export class SponsorScanService  {
             this.bulkScanUpload(eventKey, account, toSend, oneShot);
         } else if (!oneShot) {
             this.doSetTimeoutProcess(eventKey, account);
+        } else {
+            this.persistPendingScans(eventKey, account);
+            this.emitFor(eventKey);
         }
     }
 

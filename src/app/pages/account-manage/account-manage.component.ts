@@ -6,7 +6,7 @@ import {AccountService} from "../../shared/account/account.service";
 import {isDefined, isUndefined} from "@nativescript/core/utils/types";
 import {FeedbackService} from "../../shared/notification/feedback.service";
 import {ListViewEventData} from "nativescript-ui-listview";
-import {ObservableArray, Page} from "@nativescript/core";
+import {isAndroid, ObservableArray, Page} from "@nativescript/core";
 import {OrientationService} from "~/app/shared/orientation.service";
 import {Subscription, zip} from "rxjs";
 import {StorageService} from "~/app/shared/storage/storage.service";
@@ -145,7 +145,7 @@ export class AccountManageComponent implements OnInit {
   }
 
   forcePushPendingScans(): void {
-    this.isLoading = true;
+    this.isLoading = isAndroid;
     const observables = getPendingEventDataForSponsor(this.account, this.storageService)
       .map(key => this.sponsorScanService.forceProcessForPastEvent(key, this.account));
 

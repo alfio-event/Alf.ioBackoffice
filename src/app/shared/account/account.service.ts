@@ -1,14 +1,23 @@
-import { Injectable } from "@angular/core";
+import {Injectable} from "@angular/core";
+import {
+  Account,
+  AccountResponse,
+  AccountsArray,
+  AccountType,
+  EventConfiguration,
+  Maybe,
+  RemoteAccount,
+  ScannedAccount
+} from "./account";
+import {AccountSelectionNotifier} from "./account-selection-notifier";
+import {catchError, map, switchMap} from 'rxjs/operators';
+import {Observable, throwError} from "rxjs";
+
+import {HttpClient} from "@angular/common/http";
+import {StorageService} from "../storage/storage.service";
+import {authorization} from "../../utils/network-util";
+
 const ACCOUNTS_KEY = "ALFIO_ACCOUNTS";
-
-import { Account, AccountType, EventConfiguration, AccountsArray, AccountResponse, Maybe, ScannedAccount, RemoteAccount } from "./account";
-import { AccountSelectionNotifier } from "./account-selection-notifier";
-import { map, switchMap, catchError } from 'rxjs/operators';
-import { Observable, throwError } from "rxjs";
-
-import { HttpClient } from "@angular/common/http";
-import { StorageService } from "../storage/storage.service";
-import { authorization } from "../../utils/network-util";
 
 @Injectable()
 export class AccountService {
@@ -92,6 +101,11 @@ export class AccountService {
     public deleteAccount(account: Account): Array<Account> {
         let newArray = this.accounts.getAllAccounts().filter(it => it.getKey() !== account.getKey());
         this.accounts = new AccountsArray(newArray);
+        if (account.accountType === AccountType.SPONSOR) {
+          account.configurations.forEach(e => {
+            this.storage.removeValue('ALFIO_SPONSOR_SCANS_' + e.key + account.getKey());
+          });
+        }
         this.persistAccounts();
         return this.getRegisteredAccounts();
     }
