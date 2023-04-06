@@ -1,14 +1,25 @@
-import { Injectable } from "@angular/core";
+import {Injectable} from "@angular/core";
 
-import {SponsorScan, ScanStatus, ScanResult, checkInStatusToScanStatus, LeadStatus, LabelLayout} from "./sponsor-scan";
-import { Ticket, isValidTicketCode, TicketAndCheckInResult } from "./scan-common";
-import { Account } from "../account/account";
-import { authorization } from "../../utils/network-util";
-import { Subject, Observable } from "rxjs";
-import { StorageService } from "../../shared/storage/storage.service";
-import { HttpClient } from "@angular/common/http";
-import { setTimeout, clearTimeout } from "@nativescript/core/timer";
-import {map} from "rxjs/operators";
+import {
+  checkInStatusToScanStatus,
+  getPendingEventDataForSponsor,
+  LabelLayout,
+  LeadStatus,
+  pendingScanKeyForAccount,
+  ScanResult,
+  ScanStatus,
+  SponsorScan
+} from "./sponsor-scan";
+import {isValidTicketCode, Ticket, TicketAndCheckInResult} from "./scan-common";
+import {Account} from "../account/account";
+import {authorization} from "../../utils/network-util";
+import {Observable, Subject} from "rxjs";
+import {StorageService} from "../../shared/storage/storage.service";
+import {HttpClient} from "@angular/common/http";
+import {clearTimeout, setTimeout} from "@nativescript/core/timer";
+import {map, tap} from "rxjs/operators";
+import {loadOperatorName} from "~/app/utils/operatorNameUtils";
+import {logIfDevMode} from "~/app/utils/systemUtils";
 
 @Injectable()
 export class SponsorScanService  {
@@ -93,48 +104,92 @@ export class SponsorScanService  {
         }
     }
 
+    public persistPendingScans(eventKey: string, account: Account): void {
+      const pending = (this.sponsorScans[eventKey] || []).filter(s => s.status !== ScanStatus.DONE);
+      const pendingData = getPendingEventDataForSponsor(account, this.storage);
+      if (pending.length > 0) {
+        console.log("persisting sponsors scan pending count for event", eventKey, ":", pending.length);
+        if (!pendingData.includes(eventKey)) {
+          pendingData.push(eventKey);
+          this.storage.saveValue(pendingScanKeyForAccount(account.getKey()), JSON.stringify(pendingData));
+        }
+      } else if (pendingData.includes(eventKey)) {
+        const newData = pendingData.filter(k => k !== eventKey);
+        this.storage.saveValue(pendingScanKeyForAccount(account.getKey()), JSON.stringify(newData));
+      }
+    }
+
     public forceProcess(eventKey: string, account: Account): void {
         this.process(eventKey, account, true);
     }
 
-    private bulkScanUpload(eventKey: string, account: Account, toSend: Array<SponsorScan>): void {
+    public forceProcessForPastEvent(eventKey: string, account: Account): Observable<boolean> {
+      console.log("force process for past event", eventKey);
+      const existing = this.loadIfExists(eventKey, account);
+      console.log("loaded existing", existing.length, existing.filter(s => s.isPending()).length);
+      this.sponsorScans[eventKey] = existing;
+      const subj = new Subject<Array<SponsorScan>>();
+      this.sources[eventKey] = subj;
+      this.forceProcess(eventKey, account);
+      return subj.asObservable()
+        .pipe(
+          tap(() => console.log("result received!")),
+          map((scans: Array<SponsorScan>) => scans.every(scan => scan.status === ScanStatus.DONE)),
+          tap(result => {
+            if (result) {
+              this.persistPendingScans(eventKey, account);
+            }
+          })
+        );
+    }
+
+    private bulkScanUpload(eventKey: string, account: Account, toSend: Array<SponsorScan>, oneShot: boolean): void {
+        const operatorName = loadOperatorName(this.storage, eventKey, account);
+        console.log("calling bulk scan upload for operator", operatorName);
         if (toSend == null || toSend.length === 0) {
             return;
         }
         this.http.post<Array<TicketAndCheckInResult>>(account.url + '/api/attendees/sponsor-scan/bulk', toSend.map(scan => new SponsorScanRequest(eventKey, scan.code, scan.notes, scan.leadStatus)), {
             headers: authorization(account.apiKey, account.username, account.password)
-        }).subscribe(payload => {
+              .set("Alfio-Operator", operatorName)
+        }).subscribe({
+          next: payload => {
             if (payload != null) {
-                const requestResponseSameSize = payload.length === toSend.length;
-                // if there is a result, we assume that it would contain the elements in the same order as we sent them.
-                // If the size of the result is not equal to the size of the request, we skip the error.
-                // this will be improved in a future release, by adding the scanned code as correlation ID.
-                for (let i = 0; i < payload.length; i++) {
-                    let scan = payload[i];
-                    let uuid: string;
-                    if (scan.ticket) {
-                        uuid = scan.ticket.uuid;
-                    } else if (requestResponseSameSize) {
-                        uuid = toSend[i].code;
-                    }
-                    if (uuid != null) {
-                        this.changeStatusFor(eventKey, uuid, checkInStatusToScanStatus(scan.result.status), scan.ticket, null, LeadStatus.WARM);
-                    }
+              const requestResponseSameSize = payload.length === toSend.length;
+              // if there is a result, we assume that it would contain the elements in the same order as we sent them.
+              // If the size of the result is not equal to the size of the request, we skip the error.
+              // this will be improved in a future release, by adding the scanned code as correlation ID.
+              for (let i = 0; i < payload.length; i++) {
+                let scan = payload[i];
+                let uuid: string;
+                if (scan.ticket) {
+                  uuid = scan.ticket.uuid;
+                } else if (requestResponseSameSize) {
+                  uuid = toSend[i].code;
                 }
-                this.publishResults(eventKey, account);
+                if (uuid != null) {
+                  this.changeStatusFor(eventKey, uuid, checkInStatusToScanStatus(scan.result.status), scan.ticket, null, LeadStatus.WARM);
+                }
+              }
+              this.publishResults(eventKey, account, oneShot);
             }
-        }, error => {
-            console.log('error while bulk scanning:', JSON.stringify(error));
+          },
+          error: err => {
+            console.log('error while bulk scanning:', JSON.stringify(err));
             toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null, null, LeadStatus.WARM));
-            this.publishResults(eventKey, account);
+            this.publishResults(eventKey, account, oneShot);
+          }
         });
-
     }
 
-    private publishResults(eventKey: string, account: Account): void {
+    private publishResults(eventKey: string, account: Account, oneShot: boolean): void {
         this.persistSponsorScans(eventKey, account);
+        this.persistPendingScans(eventKey, account);
         this.emitFor(eventKey);
-        this.doSetTimeoutProcess(eventKey, account);
+        if (!oneShot) {
+          // set timeout only if process is not "one shot"
+          this.doSetTimeoutProcess(eventKey, account);
+        }
     }
 
     private emitFor(eventKey: string): void {
@@ -143,11 +198,15 @@ export class SponsorScanService  {
 
     private process(eventKey: string, account: Account, oneShot: boolean = false): void {
         let toSend = this.findAllStatusNew(eventKey);
+        logIfDevMode("toSend is", toSend.length);
         if (toSend.length > 0) {
             toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, null, null, LeadStatus.WARM));
-            this.bulkScanUpload(eventKey, account, toSend);
+            this.bulkScanUpload(eventKey, account, toSend, oneShot);
         } else if (!oneShot) {
             this.doSetTimeoutProcess(eventKey, account);
+        } else {
+            this.persistPendingScans(eventKey, account);
+            this.emitFor(eventKey);
         }
     }
 
@@ -197,7 +256,7 @@ export class SponsorScanService  {
     }
 
     public loadInitial(eventKey: string): Array<SponsorScan> {
-        return this.sponsorScans[eventKey] || [];
+        return this.sponsorScans[eventKey] || [];
     }
 
     public update(eventKey: string, scan: SponsorScan): void {

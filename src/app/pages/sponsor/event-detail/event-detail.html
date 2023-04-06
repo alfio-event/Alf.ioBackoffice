@@ -5,9 +5,9 @@
     <!-- ActionItem (tap)="sendByEmail()" icon="res://ic_mail_outline_white" ios.systemIcon="7" *ngIf="scans.length > 0" ios.position="right" text="Send By Email" android.position="actionBarIfRoom"></ActionItem-->
 </ActionBar>
 
-<GridLayout [rows]="rowLayout">
+<GridLayout [rows]="rowLayout" *ngIf="event">
     <Image [src]="account.url + event.imageUrl" class="m-10 m-b-0" loadMode="async" stretch="aspectFit" row="0"></Image>
-    <RadListView #scanList id="list" [items]="scans" row="1" 
+    <RadListView #scanList id="list" [items]="scans" row="1"
 		multipleSelection="false" selectionBehavior="None"
         swipeActions="false"
         pullToRefresh="true"

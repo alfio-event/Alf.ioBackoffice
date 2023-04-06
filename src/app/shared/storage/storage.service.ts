@@ -17,4 +17,8 @@ export class StorageService {
     public saveValue(key: string, value: string): void {
         this.secureStorage.setSync({key: key, value: value});
     }
+
+    public removeValue(key: string): void {
+        this.secureStorage.remove({ key });
+    }
 }

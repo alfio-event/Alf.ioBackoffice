@@ -1,3 +1,4 @@
+@import "../../../variables";
 .event {
   height: 100;
 }
@@ -16,3 +17,19 @@
     animation-fill-mode: backwards;
 }
 
+.bg-warning {
+    :host-context(.ns-dark) & {
+        background-color: $warning-dark;
+        Button {
+            background-color: $white;
+            color: $background-dark !important;
+        }
+        Label {
+            color: $background-dark !important;
+        }
+    }
+
+    :host-context(.ns-light) & {
+        background-color: $warning;
+    }
+}
