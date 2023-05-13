@@ -28,7 +28,7 @@
     "nativescript-ui-listview": "15.2.0",
     "nativescript-vibrate": "~4.0.1",
     "reflect-metadata": "~0.1.12",
-    "rxjs": "~7.6.0",
+    "rxjs": "~7.8.0",
     "zone.js": "~0.12.0"
   },
   "devDependencies": {
