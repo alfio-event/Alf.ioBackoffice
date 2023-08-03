@@ -4,7 +4,7 @@ import {RouterExtensions} from "@nativescript/angular";
 import {Account, AccountResponse, Maybe, Nothing, ScannedAccount, Some} from "../../shared/account/account";
 import {AccountService} from "../../shared/account/account.service";
 import {isDefined, isUndefined} from "@nativescript/core/utils/types";
-import {BarcodeScanner, ScanResult} from "nativescript-barcodescanner";
+import {BarcodeScanner, ScanResult} from "@nstudio/nativescript-barcodescanner";
 import {FeedbackService} from "../../shared/notification/feedback.service";
 import {defaultScanOptions} from "~/app/utils/barcodescanner";
 import {ObservableArray, Page, View} from "@nativescript/core";

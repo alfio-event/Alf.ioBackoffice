@@ -1,5 +1,5 @@
-import { ScanOptions } from "nativescript-barcodescanner";
-import { android } from "@nativescript/core/application";
+import {ScanOptions} from "@nstudio/nativescript-barcodescanner";
+import { Application } from "@nativescript/core";
 
 export function defaultScanOptions(): ScanOptions {
     return <ScanOptions> {
@@ -12,6 +12,6 @@ export function defaultScanOptions(): ScanOptions {
         orientation: "portrait",     // Android only, optionally lock the orientation to either "portrait" or "landscape"
         openSettingsIfPermissionWasPreviouslyDenied: true, // On iOS you can send the user to the settings app if access was previously denied,
         resultDisplayDuration: 0,
-        beepOnScan: android != null
+        beepOnScan: Application.android != null
     }
 }

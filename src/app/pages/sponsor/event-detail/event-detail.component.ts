@@ -7,7 +7,7 @@ import {AccountService} from "~/app/shared/account/account.service";
 import {SponsorScanService} from "~/app/shared/scan/sponsor-scan.service";
 import {Account, EventConfiguration, supportsAttendeesSearch} from "~/app/shared/account/account";
 import * as Email from "@nativescript/email";
-import {BarcodeScanner} from 'nativescript-barcodescanner';
+import {BarcodeScanner} from "@nstudio/nativescript-barcodescanner";
 import {encodeBase64} from '~/app/utils/network-util';
 import {VibrateService} from '~/app/shared/notification/vibrate.service';
 import {FeedbackService} from '~/app/shared/notification/feedback.service';
