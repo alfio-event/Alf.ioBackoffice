@@ -3,7 +3,7 @@ import { SponsorScanService } from '~/app/shared/scan/sponsor-scan.service';
 import { ActivatedRoute } from '@angular/router';
 import { mergeMap, filter, map } from 'rxjs/operators';
 import { AccountService } from '~/app/shared/account/account.service';
-import { empty, of } from 'rxjs';
+import {EMPTY, empty, of} from 'rxjs';
 import { SponsorScan } from '~/app/shared/scan/sponsor-scan';
 import { RouterExtensions } from '@nativescript/angular';
 import { sponsorScanMetadata } from './attendee-detail.model';
@@ -39,7 +39,7 @@ export class AttendeeDetailComponent implements OnInit, AfterViewInit {
             if (maybeAccount.isPresent()) {
                 return of(this.sponsorScanService.loadInitial(this.eventId).find(s => s.code === params['code']));
             }
-            return empty();
+            return EMPTY;
         })).subscribe({
             next: scan => {
                 this.scan = scan;
@@ -58,7 +58,7 @@ export class AttendeeDetailComponent implements OnInit, AfterViewInit {
     }
 
     get charCount(): Number {
-        if (this.scan == null || this.scan.notes == null) {
+        if (this.scan == null || this.scan.notes == null) {
             return 0;
         }
         return this.scan.notes.length;

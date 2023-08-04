@@ -10,7 +10,7 @@
         <Image [src]="account.url + event.imageUrl" class="m-10 m-b-0" loadMode="async" stretch="aspectFit" col="0"></Image>
         <GridLayout columns="*, 5, 25, 16" col="1" *ngIf="additionalButton" (tap)="additionalButtonTap($event)">
             <Label [text]="additionalButton.text" class="text-right font-weight-bold" col="0"></Label>
-            <Label class="icon text-center" text="&#xf1a2;" col="2"></Label>
+            <Label class="icon text-center icon-additional-button" text="&#xf1a3;" col="2"></Label>
         </GridLayout>
     </GridLayout>
     <RadListView #scanList id="list" [items]="scans" row="1"

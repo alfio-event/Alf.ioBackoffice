@@ -17,6 +17,7 @@ import {timeout} from 'rxjs/operators';
 import {Application} from "@nativescript/core/application";
 import {ObservableArray, TapGestureEventData} from '@nativescript/core';
 import {openUrl} from "@nativescript/core/utils";
+import {logIfDevMode} from "~/app/utils/systemUtils";
 
 @Component({
     moduleId: module.id,
@@ -51,7 +52,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.route.params.subscribe((params: Params) => {
-            console.log("params", params['accountId'], params['eventId']);
+            logIfDevMode("params", params['accountId'], params['eventId']);
             let id = params['accountId'];
             let eventId = params['eventId'];
             this.accountService.findAccountById(id).ifPresent(account => {
@@ -87,7 +88,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         scanOptions.continuousScanCallback = (res) => setTimeout(() => {
             const cleanCode = SponsorEventDetailComponent.cleanScan(res.text, this.labelLayout);
             console.log("scanned", res.text, 'clean', cleanCode);
-            let result = this.sponsorScanService.scan(this.event.key, this.account, cleanCode);
+            let result = this.sponsorScanService.scan(this.event.key, this.account, cleanCode, res.text, this.labelLayout);
             console.log('scan result is OK:', result === ScanResult.OK);
             switch (result) {
                 case ScanResult.OK: {

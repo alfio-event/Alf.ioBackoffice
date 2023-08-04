@@ -16,6 +16,10 @@ export const sponsorScanMetadata = {
             ignore: true
         },
         {
+            name: "timestamp",
+            ignore: true
+        },
+        {
             name: "leadStatus",
             displayName: "Lead Status",
             editor: "Picker",

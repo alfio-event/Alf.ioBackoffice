@@ -13,38 +13,46 @@ import {
 import {isValidTicketCode, Ticket, TicketAndCheckInResult} from "./scan-common";
 import {Account, AdditionalButton} from "../account/account";
 import {authorization, basicAuth} from "../../utils/network-util";
-import {EMPTY, empty, Observable, Subject} from "rxjs";
+import {EMPTY, Observable, of, Subject} from "rxjs";
 import {StorageService} from "../../shared/storage/storage.service";
 import {HttpClient} from "@angular/common/http";
 import {clearTimeout, setTimeout} from "@nativescript/core/timer";
-import {map, tap} from "rxjs/operators";
+import {catchError, map, tap} from "rxjs/operators";
 import {loadOperatorName} from "~/app/utils/operatorNameUtils";
 import {logIfDevMode} from "~/app/utils/systemUtils";
-import {openUrl} from "@nativescript/core/utils";
 
 @Injectable()
 export class SponsorScanService  {
 
-    private sponsorScans: {[eventKey: string]: Array<SponsorScan>} = {};
-    private sources: {[eventKey: string]: Subject<Array<SponsorScan>>} = {};
-    private timeoutIds: {[eventKey: string]: number} = {};
+  private sponsorScans: {[eventKey: string]: Array<SponsorScan>} = {};
+  private sources: {[eventKey: string]: Subject<Array<SponsorScan>>} = {};
+  private timeoutIds: {[eventKey: string]: number} = {};
 
-    constructor(private http: HttpClient, private storage: StorageService) {
-    }
+  constructor(private http: HttpClient, private storage: StorageService) {
+  }
 
-    public loadLabelLayout(eventKey: string, account: Account): Observable<LabelLayout> {
+  public loadLabelLayout(eventKey: string, account: Account): Observable<LabelLayout> {
       return this.http.get<LabelLayout>(`${account.url}/admin/api/check-in/${eventKey}/label-layout`, {
         headers: authorization(account.apiKey),
         observe: "response"
-      }).pipe(map(r => {
-        if (r.status === 200) {
-          return r.body;
-        }
-        return null;
-      }));
+      }).pipe(
+        map(r => {
+          if (r.status === 200) {
+            this.storage.saveValue('ALFIO_LABEL_LAYOUT_' + eventKey + account.getKey(), JSON.stringify(r.body));
+            return r.body;
+          }
+          return null;
+        }),
+        catchError(() => {
+          const json = this.storage.getOrDefault('ALFIO_LABEL_LAYOUT_' + eventKey + account.getKey());
+          if (json != null) {
+              return of(JSON.parse(json) as LabelLayout);
+          }
+          return of(null);
+        }));
     }
 
-    public scan(eventKey: string, account: Account, uuid: string): ScanResult {
+    public scan(eventKey: string, account: Account, uuid: string, completeScan: string, labelLayout?: LabelLayout): ScanResult {
 
         if (!isValidTicketCode(uuid) || !/^[A-Za-z0-9\-]+$/.test(uuid)) {
             console.log(`invalid ticket code received: ${uuid}`);
@@ -60,7 +68,7 @@ export class SponsorScanService  {
             return ScanResult.DUPLICATE;
         }
 
-        this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, null, null, LeadStatus.WARM));
+        this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, SponsorScanService.getTemporaryTicket(completeScan, labelLayout), null, LeadStatus.WARM));
         this.persistSponsorScans(eventKey, account);
         this.emitFor(eventKey);
         return ScanResult.OK;
@@ -168,7 +176,7 @@ export class SponsorScanService  {
                   uuid = toSend[i].code;
                 }
                 if (uuid != null) {
-                  this.changeStatusFor(eventKey, uuid, checkInStatusToScanStatus(scan.result.status), scan.ticket, null, LeadStatus.WARM);
+                  this.changeStatusFor(eventKey, uuid, checkInStatusToScanStatus(scan.result.status), scan.ticket, null, null);
                 }
               }
               this.publishResults(eventKey, account, oneShot);
@@ -176,7 +184,7 @@ export class SponsorScanService  {
           },
           error: err => {
             console.log('error while bulk scanning:', JSON.stringify(err));
-            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null, null, LeadStatus.WARM));
+            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null, null, null));
             this.publishResults(eventKey, account, oneShot);
           }
         });
@@ -200,7 +208,7 @@ export class SponsorScanService  {
         let toSend = this.findAllStatusNew(eventKey);
         logIfDevMode("toSend is", toSend.length);
         if (toSend.length > 0) {
-            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, null, null, LeadStatus.WARM));
+            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, scan.ticket, scan.notes, scan.leadStatus));
             this.bulkScanUpload(eventKey, account, toSend, oneShot);
         } else if (!oneShot) {
             this.doSetTimeoutProcess(eventKey, account);
@@ -214,7 +222,7 @@ export class SponsorScanService  {
         console.log('changing status for ', eventKey, uuid, status);
         this.sponsorScans[eventKey].filter(scan => scan.code === uuid).forEach(scan => {
             scan.status = status;
-            if (ticket) {
+            if (SponsorScanService.isNotTemporary(ticket)) {
                 scan.ticket = ticket;
             }
             if (notes != null) {
@@ -274,6 +282,33 @@ export class SponsorScanService  {
       }
       return EMPTY;
     }
+
+    private static TEMPORARY_TICKET_ID = Number.MIN_VALUE;
+    private static getTemporaryTicket(code: string, labelLayout?: LabelLayout): Ticket | null {
+      if (labelLayout?.qrCode?.additionalInfo != null) {
+        let additionalInfo = labelLayout.qrCode.additionalInfo;
+        const firstNameIndex = additionalInfo.findIndex(s => s === 'firstName') + 1;
+        const lastNameIndex = additionalInfo.findIndex(s => s === 'lastName') + 1;
+        const parts = code.split(labelLayout.qrCode.infoSeparator);
+        if (firstNameIndex > 0 && lastNameIndex > 0 && parts.length > 1) {
+          return {
+            id: SponsorScanService.TEMPORARY_TICKET_ID,
+            uuid: '',
+            status: '',
+            categoryName: '',
+            firstName: parts[firstNameIndex],
+            lastName: parts[lastNameIndex],
+            fullName: parts[firstNameIndex] + ' ' + parts[lastNameIndex]
+          };
+        }
+      }
+      return null;
+    }
+
+    public static isNotTemporary(ticket?: Ticket) {
+        return ticket != null && ticket.id !== SponsorScanService.TEMPORARY_TICKET_ID;
+    }
+
 
 }
 
