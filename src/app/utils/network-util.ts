@@ -1,4 +1,3 @@
-import { isDefined } from "@nativescript/core/utils/types";
 import { HttpHeaders } from "@angular/common/http";
 
 export function authorization(apiKey: string): HttpHeaders {

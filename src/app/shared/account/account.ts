@@ -1,4 +1,3 @@
-import { isDefined } from "@nativescript/core/utils/types";
 
 export class Account {
     url: string;

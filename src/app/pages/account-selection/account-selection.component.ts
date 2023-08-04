@@ -19,7 +19,7 @@ import {Subscription} from "rxjs";
 export class AccountSelectionComponent implements OnInit, OnChanges {
     accounts: ObservableArray<Account> = new ObservableArray<Account>();
     isLoading: boolean;
-    private editModeEnabled: boolean = false;
+    editModeEnabled: boolean = false;
     private editedAccount: Account = null;
     private orientationSubscription?: Subscription;
 

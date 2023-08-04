@@ -3,14 +3,16 @@ import {
   Account,
   AccountResponse,
   AccountsArray,
-  AccountType, EMPTY_USER_CONFIGURATION,
+  AccountType,
+  EMPTY_USER_CONFIGURATION,
   EventConfiguration,
   Maybe,
   RemoteAccount,
-  ScannedAccount, UserConfiguration
+  ScannedAccount,
+  UserConfiguration
 } from "./account";
 import {AccountSelectionNotifier} from "./account-selection-notifier";
-import {catchError, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {Observable, of, throwError, zip} from "rxjs";
 
 import {HttpClient} from "@angular/common/http";
