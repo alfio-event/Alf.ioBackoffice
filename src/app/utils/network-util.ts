@@ -1,12 +1,12 @@
 import { isDefined } from "@nativescript/core/utils/types";
 import { HttpHeaders } from "@angular/common/http";
 
-export function authorization(apiKey: string, username: string, password: string): HttpHeaders {
-    if (isDefined(apiKey)) {
-        return new HttpHeaders({"Authorization": `ApiKey ${apiKey}`});
-    } else {
-        return new HttpHeaders({"Authorization": "Basic " + encodeBase64(`${username}:${password}`)});
-    }
+export function authorization(apiKey: string): HttpHeaders {
+    return new HttpHeaders({"Authorization": `ApiKey ${apiKey}`});
+}
+
+export function basicAuth(username: string, password: string): HttpHeaders {
+    return new HttpHeaders({"Authorization": "Basic " + encodeBase64(`${username}:${password}`)});
 }
 
 export function encodeBase64(str: string) {

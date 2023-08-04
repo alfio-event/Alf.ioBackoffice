@@ -8,13 +8,21 @@ const OPERATOR_NAME_PREFIX = "ALFIO_OPERATOR";
 export function loadOperatorName(storage: StorageService, eventKey: string, account: Account): string {
   const key = `${OPERATOR_NAME_PREFIX}_${eventKey}_${account.getKey()}`;
   const savedId = storage.getOrDefault(key, "--");
+  let operatorId;
   if (savedId !== "--") {
     logIfDevMode("returning existing operator", savedId);
-    return savedId;
+    operatorId = savedId;
   } else {
     const generatedId = generateRandomOperatorName();
     storage.saveValue(key, generatedId);
     logIfDevMode("returning newly generated operator", generatedId);
-    return generatedId;
+    operatorId = generatedId;
   }
+  // if the account has a nickname defined, we use it
+  if (account.userConfiguration.operatorNickname != null) {
+    logIfDevMode("operator nickname found: ", account.userConfiguration.operatorNickname);
+    return account.userConfiguration.operatorNickname + '@' + operatorId;
+  }
+  // otherwise we return the generated ID
+  return operatorId;
 }

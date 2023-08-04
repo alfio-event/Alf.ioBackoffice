@@ -1,11 +1,11 @@
-export class Ticket {
-    constructor(public id: number,
-                public uuid: string,
-                public status: string,
-                public firstName: string,
-                public lastName: string,
-                public fullName: string,
-                public categoryName: string) {}
+export interface Ticket {
+    id: number;
+    uuid: string;
+    status: string;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    categoryName: string;
 }
 
 export class AdditionalServiceInfo {

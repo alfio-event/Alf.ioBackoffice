@@ -93,7 +93,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     private registerNewAccount(account: ScannedAccount): void {
         try {
             this.isLoading = true;
-            this.accountService.registerNewAccount(account.url, account.apiKey, account.username, account.password, account.sslCert)
+            this.accountService.registerNewAccount(account)
                 .subscribe({
                     next: resp => this.ngZone.run(() => {
                         this.processResponse(resp);
@@ -118,7 +118,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                 if (isUndefined(scanResult.baseUrl) || [scanResult.username, scanResult.apiKey].every(isUndefined) || (isDefined(scanResult.username) && !isDefined(scanResult.password))) {
                     return new Nothing<ScannedAccount>();
                 }
-                return new Some<ScannedAccount>(new ScannedAccount(scanResult.baseUrl, scanResult.username, scanResult.apiKey, scanResult.password, scanResult.sslCert));
+                return new Some<ScannedAccount>(new ScannedAccount(scanResult.baseUrl, scanResult.username, scanResult.password, scanResult.apiKey, scanResult.eventName, scanResult.configurationUrl));
             } catch (e) {
                 return new Nothing<ScannedAccount>();
             }

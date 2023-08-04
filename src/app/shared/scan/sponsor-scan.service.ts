@@ -11,15 +11,16 @@ import {
   SponsorScan
 } from "./sponsor-scan";
 import {isValidTicketCode, Ticket, TicketAndCheckInResult} from "./scan-common";
-import {Account} from "../account/account";
-import {authorization} from "../../utils/network-util";
-import {Observable, Subject} from "rxjs";
+import {Account, AdditionalButton} from "../account/account";
+import {authorization, basicAuth} from "../../utils/network-util";
+import {EMPTY, empty, Observable, Subject} from "rxjs";
 import {StorageService} from "../../shared/storage/storage.service";
 import {HttpClient} from "@angular/common/http";
 import {clearTimeout, setTimeout} from "@nativescript/core/timer";
 import {map, tap} from "rxjs/operators";
 import {loadOperatorName} from "~/app/utils/operatorNameUtils";
 import {logIfDevMode} from "~/app/utils/systemUtils";
+import {openUrl} from "@nativescript/core/utils";
 
 @Injectable()
 export class SponsorScanService  {
@@ -33,7 +34,7 @@ export class SponsorScanService  {
 
     public loadLabelLayout(eventKey: string, account: Account): Observable<LabelLayout> {
       return this.http.get<LabelLayout>(`${account.url}/admin/api/check-in/${eventKey}/label-layout`, {
-        headers: authorization(account.apiKey, account.username, account.password),
+        headers: authorization(account.apiKey),
         observe: "response"
       }).pipe(map(r => {
         if (r.status === 200) {
@@ -83,7 +84,7 @@ export class SponsorScanService  {
         let stringified = this.storage.getOrDefault('ALFIO_SPONSOR_SCANS_' + eventKey + account.getKey());
         if (stringified != null) {
             let found = <Array<SponsorScan>> JSON.parse(stringified);
-            return found.map(sponsorScan => new SponsorScan(sponsorScan.code, SponsorScanService.fixStatusOnLoad(sponsorScan.status), sponsorScan.ticket, sponsorScan.notes, sponsorScan.leadStatus));
+            return found.map(sponsorScan => new SponsorScan(sponsorScan.code, SponsorScanService.fixStatusOnLoad(sponsorScan.status), sponsorScan.ticket, sponsorScan.notes, sponsorScan.leadStatus, sponsorScan.timestamp));
         } else {
             return undefined;
         }
@@ -149,9 +150,8 @@ export class SponsorScanService  {
         if (toSend == null || toSend.length === 0) {
             return;
         }
-        this.http.post<Array<TicketAndCheckInResult>>(account.url + '/api/attendees/sponsor-scan/bulk', toSend.map(scan => new SponsorScanRequest(eventKey, scan.code, scan.notes, scan.leadStatus)), {
-            headers: authorization(account.apiKey, account.username, account.password)
-              .set("Alfio-Operator", operatorName)
+        this.http.post<Array<TicketAndCheckInResult>>(account.url + '/api/attendees/sponsor-scan/bulk', toSend.map(scan => new SponsorScanRequest(eventKey, scan.code, scan.notes, scan.leadStatus, scan.timestamp)), {
+            headers: authorization(account.apiKey).set("Alfio-Operator", operatorName)
         }).subscribe({
           next: payload => {
             if (payload != null) {
@@ -264,8 +264,19 @@ export class SponsorScanService  {
         this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null, notes, scan.leadStatus);
     }
 
+    public retrieveCustomLink(spec: AdditionalButton): Observable<{authenticatedLink: string}> {
+      logIfDevMode('loading link', spec.linkGenerationEndpoint, spec.basicAuthUsername, spec.basicAuthPassword);
+      if (spec.linkGenerationEndpoint != null && spec.basicAuthPassword != null && spec.basicAuthUsername != null) {
+        logIfDevMode('parameters exist');
+        return this.http.post<{authenticatedLink: string}>(spec.linkGenerationEndpoint, null, {
+          headers: basicAuth(spec.basicAuthUsername, spec.basicAuthPassword)
+        });
+      }
+      return EMPTY;
+    }
+
 }
 
 class SponsorScanRequest {
-    constructor(private eventName: string, private ticketIdentifier: string, private notes: string, private leadStatus: string) {}
+    constructor(private eventName: string, private ticketIdentifier: string, private notes: string, private leadStatus: string, timestamp: number) {}
 }

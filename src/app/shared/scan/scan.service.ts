@@ -3,7 +3,6 @@ import {
   TicketAndCheckInResult,
   InvalidQrCode,
   isValidTicketCode,
-  AttendeeSearchResult,
   AttendeeSearchResults
 } from './scan-common';
 import { Account } from "../account/account";
@@ -38,7 +37,7 @@ export class ScanService {
     public manualCheckIn(eventKey: string, account: Account, uuid: string): Observable<boolean> {
         const url = `${account.url}/admin/api/check-in/event/${eventKey}/ticket/${uuid}/manual-check-in`;
         return this.http.post<boolean>(url, {}, {
-            headers: authorization(account.apiKey, account.username, account.password)
+            headers: authorization(account.apiKey)
         });
     }
 
@@ -46,7 +45,7 @@ export class ScanService {
         // /check-in/event/{eventName}/ticket/{ticketIdentifier}/revert-check-in
         const url = `${account.url}/admin/api/check-in/event/${eventKey}/ticket/${uuid}/revert-check-in`;
         return this.http.post<boolean>(url, {}, {
-            headers: authorization(account.apiKey, account.username, account.password)
+            headers: authorization(account.apiKey)
         });
     }
 
@@ -54,7 +53,7 @@ export class ScanService {
         console.log('sending query', query);
         const httpParams = new HttpParams().set('query', query).set('page', page);
         return this.http.get<AttendeeSearchResults>(`${account.url}/admin/api/check-in/event/${eventKey}/attendees`, {
-            headers: authorization(account.apiKey, account.username, account.password),
+            headers: authorization(account.apiKey),
             params: httpParams
         });
     }
@@ -67,7 +66,7 @@ export class ScanService {
     private performCheckIn(account: Account, url: string, scan: string): Observable<TicketAndCheckInResult> {
         let start = new Date().getTime();
         return this.http.post<TicketAndCheckInResult>(url, {"code": scan}, {
-            headers: authorization(account.apiKey, account.username, account.password)
+            headers: authorization(account.apiKey)
         }).pipe(tap(() => {
             console.log("1st stop, elapsed", new Date().getTime() - start);
         }));
