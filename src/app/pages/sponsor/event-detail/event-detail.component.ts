@@ -92,9 +92,9 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             console.log('scan result is OK:', result === ScanResult.OK);
             switch (result) {
                 case ScanResult.OK: {
-                  console.log('OK, vibrate');
+                    logIfDevMode('OK, vibrate');
                     this.vibrateService.success();
-                  console.log('OK, show feedback');
+                    logIfDevMode('OK, show feedback');
                     this.feedbackService.success('Scan enqueued!');
                     break;
                 }

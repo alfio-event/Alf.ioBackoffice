@@ -287,10 +287,11 @@ export class SponsorScanService  {
     private static getTemporaryTicket(code: string, labelLayout?: LabelLayout): Ticket | null {
       if (labelLayout?.qrCode?.additionalInfo != null) {
         let additionalInfo = labelLayout.qrCode.additionalInfo;
+        // additional info always come AFTER UUID, so we add a +1 because UUID is not included in the array
         const firstNameIndex = additionalInfo.findIndex(s => s === 'firstName') + 1;
         const lastNameIndex = additionalInfo.findIndex(s => s === 'lastName') + 1;
         const parts = code.split(labelLayout.qrCode.infoSeparator);
-        if (firstNameIndex > 0 && lastNameIndex > 0 && parts.length > 1) {
+        if (firstNameIndex > 0 && lastNameIndex > 0 && parts.length > Math.max(firstNameIndex, lastNameIndex)) {
           return {
             id: SponsorScanService.TEMPORARY_TICKET_ID,
             uuid: '',
