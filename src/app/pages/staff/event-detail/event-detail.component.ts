@@ -194,7 +194,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
      * we have to hide the check-in stats on smaller screens
      */
     get displayCheckInStats(): boolean {
-        return this.status == null || Screen.mainScreen.heightDIPs > 640;
+        return this.status == null || Screen.mainScreen.heightDIPs > 640;
     }
 
     private displayResult(res: TicketAndCheckInResult): void {
