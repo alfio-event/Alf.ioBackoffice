@@ -14,7 +14,7 @@ export class SponsorScan {
                 public ticket: Ticket,
                 public notes: string,
                 public leadStatus: LeadStatus = LeadStatus.WARM,
-                public timestamp = new Date().getTime()) {}
+                public timestamp: number) {}
     isPending(): boolean {
         return [ScanStatus.IN_PROCESS, ScanStatus.NEW].some(s => s === this.status);
     }

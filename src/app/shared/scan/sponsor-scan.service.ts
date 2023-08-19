@@ -68,7 +68,7 @@ export class SponsorScanService  {
             return ScanResult.DUPLICATE;
         }
 
-        this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, SponsorScanService.getTemporaryTicket(completeScan, labelLayout), null, LeadStatus.WARM));
+        this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, SponsorScanService.getTemporaryTicket(completeScan, labelLayout), null, LeadStatus.WARM, new Date().getTime()));
         this.persistSponsorScans(eventKey, account);
         this.emitFor(eventKey);
         return ScanResult.OK;
@@ -92,6 +92,7 @@ export class SponsorScanService  {
         let stringified = this.storage.getOrDefault('ALFIO_SPONSOR_SCANS_' + eventKey + account.getKey());
         if (stringified != null) {
             let found = <Array<SponsorScan>> JSON.parse(stringified);
+            logIfDevMode('sponsorScans have status defined', found.length, found.every(v => v.timestamp != null));
             return found.map(sponsorScan => new SponsorScan(sponsorScan.code, SponsorScanService.fixStatusOnLoad(sponsorScan.status), sponsorScan.ticket, sponsorScan.notes, sponsorScan.leadStatus, sponsorScan.timestamp));
         } else {
             return undefined;
@@ -158,7 +159,8 @@ export class SponsorScanService  {
         if (toSend == null || toSend.length === 0) {
             return;
         }
-        this.http.post<Array<TicketAndCheckInResult>>(account.url + '/api/attendees/sponsor-scan/bulk', toSend.map(scan => new SponsorScanRequest(eventKey, scan.code, scan.notes, scan.leadStatus, scan.timestamp)), {
+        const payload = toSend.map(scan => new SponsorScanRequest(eventKey, scan.code, scan.notes, scan.leadStatus, scan.timestamp));
+        this.http.post<Array<TicketAndCheckInResult>>(account.url + '/api/attendees/sponsor-scan/bulk', payload, {
             headers: authorization(account.apiKey).set("Alfio-Operator", operatorName)
         }).subscribe({
           next: payload => {
@@ -314,5 +316,5 @@ export class SponsorScanService  {
 }
 
 class SponsorScanRequest {
-    constructor(private eventName: string, private ticketIdentifier: string, private notes: string, private leadStatus: string, timestamp: number) {}
+    constructor(private eventName: string, private ticketIdentifier: string, private notes: string, private leadStatus: string, private timestamp: number) {}
 }
