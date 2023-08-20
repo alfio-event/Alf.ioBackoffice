@@ -4,7 +4,7 @@ import {RouterExtensions} from "@nativescript/angular";
 import {Account, AccountResponse, Maybe, Nothing, ScannedAccount, Some} from "../../shared/account/account";
 import {AccountService} from "../../shared/account/account.service";
 import {isDefined, isUndefined} from "@nativescript/core/utils/types";
-import {BarcodeScanner, ScanResult} from "nativescript-barcodescanner";
+import {BarcodeScanner, ScanResult} from "@nstudio/nativescript-barcodescanner";
 import {FeedbackService} from "../../shared/notification/feedback.service";
 import {defaultScanOptions} from "~/app/utils/barcodescanner";
 import {ObservableArray, Page, View} from "@nativescript/core";
@@ -19,7 +19,7 @@ import {Subscription} from "rxjs";
 export class AccountSelectionComponent implements OnInit, OnChanges {
     accounts: ObservableArray<Account> = new ObservableArray<Account>();
     isLoading: boolean;
-    private editModeEnabled: boolean = false;
+    editModeEnabled: boolean = false;
     private editedAccount: Account = null;
     private orientationSubscription?: Subscription;
 
@@ -93,7 +93,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
     private registerNewAccount(account: ScannedAccount): void {
         try {
             this.isLoading = true;
-            this.accountService.registerNewAccount(account.url, account.apiKey, account.username, account.password, account.sslCert)
+            this.accountService.registerNewAccount(account)
                 .subscribe({
                     next: resp => this.ngZone.run(() => {
                         this.processResponse(resp);
@@ -118,7 +118,7 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
                 if (isUndefined(scanResult.baseUrl) || [scanResult.username, scanResult.apiKey].every(isUndefined) || (isDefined(scanResult.username) && !isDefined(scanResult.password))) {
                     return new Nothing<ScannedAccount>();
                 }
-                return new Some<ScannedAccount>(new ScannedAccount(scanResult.baseUrl, scanResult.username, scanResult.apiKey, scanResult.password, scanResult.sslCert));
+                return new Some<ScannedAccount>(new ScannedAccount(scanResult.baseUrl, scanResult.username, scanResult.password, scanResult.apiKey, scanResult.eventName, scanResult.configurationUrl));
             } catch (e) {
                 return new Nothing<ScannedAccount>();
             }

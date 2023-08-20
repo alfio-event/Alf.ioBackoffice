@@ -1,18 +1,17 @@
-import { isDefined } from "@nativescript/core/utils/types";
 
 export class Account {
     url: string;
     apiKey: string;
-    username: string;
-    password: string;
     accountType: AccountType;
     configurations: Array<EventConfiguration>;
+    userConfiguration: UserConfiguration;
     lastUpdate: Date;
-    sslCert: string;
+    eventName?: string;
+    configurationUrl?: string;
     description: string;
 
     getKey(): string {
-        let prefix = isDefined(this.apiKey) ? this.apiKey : this.username;
+        let prefix = this.apiKey;
         return `${prefix}@${this.url}`;
     }
 
@@ -21,17 +20,32 @@ export class Account {
     }
 
     get title(): string {
-        return isDefined(this.apiKey) ? this.description : this.username;
+        return this.description;
     }
 
+}
+
+export interface UserConfiguration {
+  operatorNickname: string;
+  additionalButtons: Array<AdditionalButton>;
+}
+
+export const EMPTY_USER_CONFIGURATION: UserConfiguration = {operatorNickname: null, additionalButtons: []};
+
+export interface AdditionalButton {
+  text: string;
+  linkGenerationEndpoint: string;
+  basicAuthUsername: string;
+  basicAuthPassword: string;
 }
 
 export class ScannedAccount {
     constructor(public url: string,
                 public username: string,
-                public apiKey: string,
                 public password: string,
-                public sslCert: string) {
+                public apiKey: string,
+                public eventName?: string,
+                public configurationUrl?: string) {
     }
 }
 

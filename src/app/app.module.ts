@@ -5,7 +5,7 @@ import { AccountModule } from "./shared/account/account.module";
 import { AppComponent } from "./app.component";
 import { routes, navigatableComponents } from "./app.routing";
 import { CurrencyPipe } from "@angular/common";
-import { BarcodeScanner } from 'nativescript-barcodescanner';
+import { BarcodeScanner } from "@nstudio/nativescript-barcodescanner";
 import { StatisticsModule } from './shared/statistics/statistics.module';
 import { CheckInStatsComponent } from './pages/checkin-stats/checkin-stats.component';
 import { StorageModule } from './shared/storage/storage.module';
@@ -21,12 +21,12 @@ import { SearchAttendeesResultComponent } from './pages/staff/search-attendees/s
 import { AttendeeDetailComponent } from "~/app/pages/staff/attendee-detail/attendee-detail.component";
 
 export function createBarcodeScanner() {
-    const scanner = new BarcodeScanner();
-    if (scanner['_observer']) {
-        scanner['_observer']['_owner'] = undefined;
-        scanner['_observer'] = undefined;
-    }
-    return scanner;
+    // const scanner = new BarcodeScanner();
+    // if (scanner['_observer']) {
+    //     scanner['_observer']['_owner'] = undefined;
+    //     scanner['_observer'] = undefined;
+    // }
+    return new BarcodeScanner();
 }
 
 @NgModule({

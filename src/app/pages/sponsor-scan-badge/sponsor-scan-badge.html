@@ -1,12 +1,12 @@
-<GridLayout columns="36, 5, *, auto, auto, 50, 16" rows="16, 35, 25, 16" class="-separator">
+<GridLayout [columns]="rowLayout" rows="16, 35, 25, 16" class="-separator">
     <ng-container *ngIf="item">
         <Label col="0" row="1" rowSpan="2" class="icon person-icon text-center"
             [class.text-muted]="!successStatus"
             [class.text-success]="successStatus"
             [text]="iconForItem"></Label>
         <Label class="h3" col="2" row="1" [text]="ticketFullName"></Label>
-        <Label col="2" row="2" class="text-muted" [text]="ticketUuid | slice:0:8 | uppercase"></Label>
-        <StackLayout col="3" row="1" rowSpan="2" *ngIf="item.leadStatus !== 'WARM'">
+        <Label col="2" row="2" class="text-muted" [text]="ticketUuid"></Label>
+        <StackLayout col="3" row="1" rowSpan="2" *ngIf="item.leadStatus !== 'WARM'" horizontalAlignment="center">
             <Label [text]="leadStatusIcon" class="icon person-icon text-center" [ngClass]="statusClass"></Label>
             <Label class="footnote" [text]="item.leadStatus" [ngClass]="statusClass"></Label>
         </StackLayout>

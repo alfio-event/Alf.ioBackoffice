@@ -1,6 +1,7 @@
 import { SponsorScan, ScanStatus, LeadStatus } from "~/app/shared/scan/sponsor-scan";
 import { Component, Input, OnInit } from "@angular/core";
 import { Ticket } from "~/app/shared/scan/scan-common";
+import {SponsorScanService} from "~/app/shared/scan/sponsor-scan.service";
 
 @Component({
     moduleId: module.id,
@@ -50,12 +51,21 @@ export class SponsorScanBadgeComponent implements OnInit {
     get ticketUuid(): string {
         if (this.item.ticket == null) {
             return this.item.code;
+        } else if (SponsorScanService.isNotTemporary(this.item.ticket)) {
+            return this.item.ticket.uuid.slice(0, 8).toUpperCase();
         }
-        return this.item.ticket.uuid;
+        return "Synchronizing..."
     }
 
     get commentText(): string {
         return this.item.notes != null && this.item.notes.length > 0 ? String.fromCharCode(0xf260) : "";
+    }
+
+    get rowLayout(): string {
+        if (this.showArrow) {
+            return "36, 5, *, auto, auto, 50, 16";
+        }
+        return "36, 5, *, 40, 40, 16";
     }
 
     get statusClass(): string {

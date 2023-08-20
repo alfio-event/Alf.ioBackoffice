@@ -4,18 +4,21 @@ import {
   AccountResponse,
   AccountsArray,
   AccountType,
+  EMPTY_USER_CONFIGURATION,
   EventConfiguration,
   Maybe,
   RemoteAccount,
-  ScannedAccount
+  ScannedAccount,
+  UserConfiguration
 } from "./account";
 import {AccountSelectionNotifier} from "./account-selection-notifier";
-import {catchError, map, switchMap} from 'rxjs/operators';
-import {Observable, throwError} from "rxjs";
+import {catchError, map, mergeMap, tap} from 'rxjs/operators';
+import {Observable, of, throwError, zip} from "rxjs";
 
 import {HttpClient} from "@angular/common/http";
 import {StorageService} from "../storage/storage.service";
 import {authorization} from "../../utils/network-util";
+import {logIfDevMode} from "~/app/utils/systemUtils";
 
 const ACCOUNTS_KEY = "ALFIO_ACCOUNTS";
 
@@ -29,36 +32,38 @@ export class AccountService {
         this.accounts = this.loadSavedAccounts();
     }
 
-    public registerNewAccount(url: string, apiKey: string, username: string, password: string, sslCert: string): Observable<AccountResponse> {
+    public registerNewAccount(scannedAccount: ScannedAccount): Observable<AccountResponse> {
+        const {url, apiKey, username, password} = scannedAccount;
+
         let baseUrl = url.endsWith("/") ? url.substring(0, url.length - 1) : url;
         if (apiKey == null || username != null || password != null) {
             return throwError(() => new Error("Unsupported configuration. Make sure you're scanning an API Key"));
         }
         return this.http.get<RemoteAccount>(`${baseUrl}/admin/api/user/details`, {
-                headers: authorization(apiKey, username, password)
+                headers: authorization(apiKey)
             }).pipe(
                 map(data => {
                     console.log("got user type", data.userType);
                     let account = new Account();
                     account.url = baseUrl;
                     account.apiKey = apiKey;
-                    account.username = username;
-                    account.password = password;
+                    account.configurationUrl = scannedAccount.configurationUrl;
+                    account.eventName = scannedAccount.eventName;
                     account.description = data.description;
                     account.accountType = this.detectAccountType(data.userType);
                     account.configurations = [];
-                    account.sslCert = sslCert;
                     let newAccountKey = account.getKey();
                     let maybeExisting = this.accounts.get(newAccountKey);
                     return new AccountResponse(account, maybeExisting.isPresent());
                 }),
-                switchMap(data => {
-                    return this.loadEventsForAccount(data.getAccount())
-                        .pipe(map(configurations => {
-                            let account = data.getAccount();
-                            account.configurations = configurations;
-                            return new AccountResponse(account, data.isExisting());
-                        }));
+                mergeMap(data => {
+                    return zip(this.loadEventsForAccount(data.getAccount()), this.loadUserConfiguration(scannedAccount))
+                      .pipe(map(([accountConfigurations, userConfiguration]) => {
+                          let account = data.getAccount();
+                          account.configurations = accountConfigurations;
+                          account.userConfiguration = userConfiguration;
+                          return new AccountResponse(account, data.isExisting());
+                      }));
                 }),
                 map(accountResponse => {
                     let account = accountResponse.getAccount();
@@ -116,8 +121,16 @@ export class AccountService {
 
     public loadEventsForAccount(account: Account): Observable<Array<EventConfiguration>> {
         return this.http.get<Array<EventConfiguration>>(account.url + "/admin/api/events", {
-            headers: authorization(account.apiKey, account.username, account.password)
-        });
+            headers: authorization(account.apiKey)
+        }).pipe(
+          map((events) => {
+            if (account.eventName == null) {
+              console.log('eventName filter is null. Returning all events');
+              return events;
+            }
+            return events.filter(e => e.key === account.eventName);
+          })
+        );
     }
 
     public updateEventsForAccount(key: string, events: Array<EventConfiguration>) {
@@ -134,9 +147,8 @@ export class AccountService {
         let account = new Account();
         account.url = scannedAccount.url;
         account.apiKey = scannedAccount.apiKey;
-        account.username = scannedAccount.username;
-        account.password = scannedAccount.password;
-        account.sslCert = scannedAccount.sslCert;
+        account.eventName = scannedAccount.eventName;
+        account.configurationUrl = scannedAccount.configurationUrl;
         this.accountSelectionNotifier.notifyAccountScanned(account);
     }
 
@@ -147,17 +159,16 @@ export class AccountService {
                 let account = new Account();
                 account.url = obj.url;
                 account.apiKey = obj.apiKey;
-                account.username = obj.username;
-                account.password = obj.password;
                 account.description = obj.description;
                 account.accountType = <number>obj.accountType;
                 account.configurations = (<Array<any>>obj.configurations);
-                account.sslCert = obj.sslCert;
+                account.userConfiguration = obj.userConfiguration || EMPTY_USER_CONFIGURATION;
+                account.eventName = obj.eventName;
+                account.configurationUrl = obj.configurationUrl;
                 return account;
             }));
         }
-        let empty = new AccountsArray([]);
-        return empty;
+      return new AccountsArray([]);
     }
 
     private persistAccounts() {
@@ -167,4 +178,19 @@ export class AccountService {
         this.storage.saveValue(ACCOUNTS_KEY, serializedElements);
         console.log("done.");
     }
+
+  private loadUserConfiguration(scannedAccount: ScannedAccount): Observable<UserConfiguration> {
+    if (scannedAccount.configurationUrl != null) {
+      logIfDevMode('configurationUrl is not empty', scannedAccount.configurationUrl);
+      return this.http.get<UserConfiguration>(scannedAccount.configurationUrl)
+        .pipe(
+          tap(r => logIfDevMode('got', JSON.stringify(r))),
+          catchError(err => {
+          console.error('error while retrieving user configuration', err);
+          return of(EMPTY_USER_CONFIGURATION);
+          })
+        )
+    }
+    return of(EMPTY_USER_CONFIGURATION);
+  }
 }

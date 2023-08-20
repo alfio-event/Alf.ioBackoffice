@@ -25,7 +25,7 @@
 			</GridLayout>
 		</ng-template>
 
-		<GridLayout *tkListItemSwipeTemplate columns="auto, *" (tap)="onDeleteButtonTap($event)" class="-separator bg-danger">
+		<GridLayout *tkListItemSwipeTemplate columns="auto, *" (tap)="onDeleteButtonTap($event)" class="-separator" [class.bg-danger]="editModeEnabled" id="delete-container">
 			<StackLayout id="deleteBtn" col="0">
 				<Label id="deleteText" text="&#xf154;" class="icon icon-1-5x person-icon text-center"></Label>
 			</StackLayout>

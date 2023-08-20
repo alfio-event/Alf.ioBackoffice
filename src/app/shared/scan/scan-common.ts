@@ -1,11 +1,11 @@
-export class Ticket {
-    constructor(public id: number,
-                public uuid: string,
-                public status: string,
-                public firstName: string,
-                public lastName: string,
-                public fullName: string,
-                public categoryName: string) {}
+export interface Ticket {
+    id: number;
+    uuid: string;
+    status: string;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    categoryName: string;
 }
 
 export class AdditionalServiceInfo {
@@ -83,7 +83,8 @@ export const statusDescriptions: {[status: string]: string} = {
     "INVALID_TICKET_STATE": "This ticket cannot be checked in. Please report the issue to the organizers.",
     "OK_READY_TO_BE_CHECKED_IN": "OK_READY_TO_BE_CHECKED_IN",
     "BADGE_SCAN_ALREADY_DONE": "Badge Scan already performed today.",
-    "BADGE_SCAN_SUCCESS": "Badge Scan successful"
+    "BADGE_SCAN_SUCCESS": "Badge Scan successful",
+    "INVALID_TICKET_CATEGORY_CHECK_IN_DATE": "Ticket cannot be checked in. Check validity Date."
 };
 
 export interface AttendeeSearchResults {

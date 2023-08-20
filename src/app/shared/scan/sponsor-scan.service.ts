@@ -11,39 +11,48 @@ import {
   SponsorScan
 } from "./sponsor-scan";
 import {isValidTicketCode, Ticket, TicketAndCheckInResult} from "./scan-common";
-import {Account} from "../account/account";
-import {authorization} from "../../utils/network-util";
-import {Observable, Subject} from "rxjs";
+import {Account, AdditionalButton} from "../account/account";
+import {authorization, basicAuth} from "../../utils/network-util";
+import {EMPTY, Observable, of, Subject} from "rxjs";
 import {StorageService} from "../../shared/storage/storage.service";
 import {HttpClient} from "@angular/common/http";
 import {clearTimeout, setTimeout} from "@nativescript/core/timer";
-import {map, tap} from "rxjs/operators";
+import {catchError, map, tap} from "rxjs/operators";
 import {loadOperatorName} from "~/app/utils/operatorNameUtils";
 import {logIfDevMode} from "~/app/utils/systemUtils";
 
 @Injectable()
 export class SponsorScanService  {
 
-    private sponsorScans: {[eventKey: string]: Array<SponsorScan>} = {};
-    private sources: {[eventKey: string]: Subject<Array<SponsorScan>>} = {};
-    private timeoutIds: {[eventKey: string]: number} = {};
+  private sponsorScans: {[eventKey: string]: Array<SponsorScan>} = {};
+  private sources: {[eventKey: string]: Subject<Array<SponsorScan>>} = {};
+  private timeoutIds: {[eventKey: string]: number} = {};
 
-    constructor(private http: HttpClient, private storage: StorageService) {
-    }
+  constructor(private http: HttpClient, private storage: StorageService) {
+  }
 
-    public loadLabelLayout(eventKey: string, account: Account): Observable<LabelLayout> {
+  public loadLabelLayout(eventKey: string, account: Account): Observable<LabelLayout> {
       return this.http.get<LabelLayout>(`${account.url}/admin/api/check-in/${eventKey}/label-layout`, {
-        headers: authorization(account.apiKey, account.username, account.password),
+        headers: authorization(account.apiKey),
         observe: "response"
-      }).pipe(map(r => {
-        if (r.status === 200) {
-          return r.body;
-        }
-        return null;
-      }));
+      }).pipe(
+        map(r => {
+          if (r.status === 200) {
+            this.storage.saveValue('ALFIO_LABEL_LAYOUT_' + eventKey + account.getKey(), JSON.stringify(r.body));
+            return r.body;
+          }
+          return null;
+        }),
+        catchError(() => {
+          const json = this.storage.getOrDefault('ALFIO_LABEL_LAYOUT_' + eventKey + account.getKey());
+          if (json != null) {
+              return of(JSON.parse(json) as LabelLayout);
+          }
+          return of(null);
+        }));
     }
 
-    public scan(eventKey: string, account: Account, uuid: string): ScanResult {
+    public scan(eventKey: string, account: Account, uuid: string, completeScan: string, labelLayout?: LabelLayout): ScanResult {
 
         if (!isValidTicketCode(uuid) || !/^[A-Za-z0-9\-]+$/.test(uuid)) {
             console.log(`invalid ticket code received: ${uuid}`);
@@ -59,7 +68,7 @@ export class SponsorScanService  {
             return ScanResult.DUPLICATE;
         }
 
-        this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, null, null, LeadStatus.WARM));
+        this.sponsorScans[eventKey].push(new SponsorScan(uuid, ScanStatus.NEW, SponsorScanService.getTemporaryTicket(completeScan, labelLayout), null, LeadStatus.WARM, new Date().getTime()));
         this.persistSponsorScans(eventKey, account);
         this.emitFor(eventKey);
         return ScanResult.OK;
@@ -83,7 +92,8 @@ export class SponsorScanService  {
         let stringified = this.storage.getOrDefault('ALFIO_SPONSOR_SCANS_' + eventKey + account.getKey());
         if (stringified != null) {
             let found = <Array<SponsorScan>> JSON.parse(stringified);
-            return found.map(sponsorScan => new SponsorScan(sponsorScan.code, SponsorScanService.fixStatusOnLoad(sponsorScan.status), sponsorScan.ticket, sponsorScan.notes, sponsorScan.leadStatus));
+            logIfDevMode('sponsorScans have status defined', found.length, found.every(v => v.timestamp != null));
+            return found.map(sponsorScan => new SponsorScan(sponsorScan.code, SponsorScanService.fixStatusOnLoad(sponsorScan.status), sponsorScan.ticket, sponsorScan.notes, sponsorScan.leadStatus, sponsorScan.timestamp));
         } else {
             return undefined;
         }
@@ -149,9 +159,9 @@ export class SponsorScanService  {
         if (toSend == null || toSend.length === 0) {
             return;
         }
-        this.http.post<Array<TicketAndCheckInResult>>(account.url + '/api/attendees/sponsor-scan/bulk', toSend.map(scan => new SponsorScanRequest(eventKey, scan.code, scan.notes, scan.leadStatus)), {
-            headers: authorization(account.apiKey, account.username, account.password)
-              .set("Alfio-Operator", operatorName)
+        const payload = toSend.map(scan => new SponsorScanRequest(eventKey, scan.code, scan.notes, scan.leadStatus, scan.timestamp));
+        this.http.post<Array<TicketAndCheckInResult>>(account.url + '/api/attendees/sponsor-scan/bulk', payload, {
+            headers: authorization(account.apiKey).set("Alfio-Operator", operatorName)
         }).subscribe({
           next: payload => {
             if (payload != null) {
@@ -168,7 +178,7 @@ export class SponsorScanService  {
                   uuid = toSend[i].code;
                 }
                 if (uuid != null) {
-                  this.changeStatusFor(eventKey, uuid, checkInStatusToScanStatus(scan.result.status), scan.ticket, null, LeadStatus.WARM);
+                  this.changeStatusFor(eventKey, uuid, checkInStatusToScanStatus(scan.result.status), scan.ticket, null, null);
                 }
               }
               this.publishResults(eventKey, account, oneShot);
@@ -176,7 +186,7 @@ export class SponsorScanService  {
           },
           error: err => {
             console.log('error while bulk scanning:', JSON.stringify(err));
-            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null, null, LeadStatus.WARM));
+            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null, null, null));
             this.publishResults(eventKey, account, oneShot);
           }
         });
@@ -200,7 +210,7 @@ export class SponsorScanService  {
         let toSend = this.findAllStatusNew(eventKey);
         logIfDevMode("toSend is", toSend.length);
         if (toSend.length > 0) {
-            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, null, null, LeadStatus.WARM));
+            toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, scan.ticket, scan.notes, scan.leadStatus));
             this.bulkScanUpload(eventKey, account, toSend, oneShot);
         } else if (!oneShot) {
             this.doSetTimeoutProcess(eventKey, account);
@@ -214,7 +224,7 @@ export class SponsorScanService  {
         console.log('changing status for ', eventKey, uuid, status);
         this.sponsorScans[eventKey].filter(scan => scan.code === uuid).forEach(scan => {
             scan.status = status;
-            if (ticket) {
+            if (SponsorScanService.isNotTemporary(ticket)) {
                 scan.ticket = ticket;
             }
             if (notes != null) {
@@ -264,8 +274,47 @@ export class SponsorScanService  {
         this.changeStatusFor(eventKey, scan.code, ScanStatus.NEW, null, notes, scan.leadStatus);
     }
 
+    public retrieveCustomLink(spec: AdditionalButton): Observable<{authenticatedLink: string}> {
+      logIfDevMode('loading link', spec.linkGenerationEndpoint, spec.basicAuthUsername, spec.basicAuthPassword);
+      if (spec.linkGenerationEndpoint != null && spec.basicAuthPassword != null && spec.basicAuthUsername != null) {
+        logIfDevMode('parameters exist');
+        return this.http.post<{authenticatedLink: string}>(spec.linkGenerationEndpoint, null, {
+          headers: basicAuth(spec.basicAuthUsername, spec.basicAuthPassword)
+        });
+      }
+      return EMPTY;
+    }
+
+    private static TEMPORARY_TICKET_ID = Number.MIN_VALUE;
+    private static getTemporaryTicket(code: string, labelLayout?: LabelLayout): Ticket | null {
+      if (labelLayout?.qrCode?.additionalInfo != null) {
+        let additionalInfo = labelLayout.qrCode.additionalInfo;
+        // additional info always come AFTER UUID, so we add a +1 because UUID is not included in the array
+        const firstNameIndex = additionalInfo.findIndex(s => s === 'firstName') + 1;
+        const lastNameIndex = additionalInfo.findIndex(s => s === 'lastName') + 1;
+        const parts = code.split(labelLayout.qrCode.infoSeparator);
+        if (firstNameIndex > 0 && lastNameIndex > 0 && parts.length > Math.max(firstNameIndex, lastNameIndex)) {
+          return {
+            id: SponsorScanService.TEMPORARY_TICKET_ID,
+            uuid: '',
+            status: '',
+            categoryName: '',
+            firstName: parts[firstNameIndex],
+            lastName: parts[lastNameIndex],
+            fullName: parts[firstNameIndex] + ' ' + parts[lastNameIndex]
+          };
+        }
+      }
+      return null;
+    }
+
+    public static isNotTemporary(ticket?: Ticket) {
+        return ticket != null && ticket.id !== SponsorScanService.TEMPORARY_TICKET_ID;
+    }
+
+
 }
 
 class SponsorScanRequest {
-    constructor(private eventName: string, private ticketIdentifier: string, private notes: string, private leadStatus: string) {}
+    constructor(private eventName: string, private ticketIdentifier: string, private notes: string, private leadStatus: string, private timestamp: number) {}
 }

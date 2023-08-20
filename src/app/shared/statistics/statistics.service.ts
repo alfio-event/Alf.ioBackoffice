@@ -10,7 +10,7 @@ export class StatisticsService {
     constructor(private http: HttpClient) {}
 
     public retrieveForEvent(account: Account, eventName: string) : Observable<CheckInStatistics> {
-        return this.http.get<CheckInStatistics>(`${account.url}/admin/api/check-in/event/${eventName}/statistics`, { headers: authorization(account.apiKey, account.username, account.password)});
+        return this.http.get<CheckInStatistics>(`${account.url}/admin/api/check-in/event/${eventName}/statistics`, { headers: authorization(account.apiKey)});
     }
 }
 

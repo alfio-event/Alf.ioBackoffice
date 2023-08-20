@@ -1,15 +1,15 @@
 import { Component, Injectable, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-import { AccountService } from "../../../shared/account/account.service";
-import { ScanService } from "../../../shared/scan/scan.service";
-import { Account, AccountType, EventConfiguration, supportsAttendeesSearch } from "../../../shared/account/account";
-import { defaultScanOptions } from '../../../utils/barcodescanner';
+import { AccountService } from "~/app/shared/account/account.service";
+import { ScanService } from "~/app/shared/scan/scan.service";
+import { Account, AccountType, EventConfiguration, supportsAttendeesSearch } from "~/app/shared/account/account";
+import { defaultScanOptions } from '~/app/utils/barcodescanner';
 import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses, AdditionalServiceInfo } from '../../../shared/scan/scan-common';
-import { BarcodeScanner, ScanResult } from 'nativescript-barcodescanner';
+import { BarcodeScanner, ScanResult } from "@nstudio/nativescript-barcodescanner";
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { Screen } from "@nativescript/core/platform";
-import { VibrateService } from '../../../shared/notification/vibrate.service';
+import { VibrateService } from '~/app/shared/notification/vibrate.service';
 
 @Component({
     moduleId: module.id,
@@ -194,7 +194,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
      * we have to hide the check-in stats on smaller screens
      */
     get displayCheckInStats(): boolean {
-        return this.status == null || Screen.mainScreen.heightDIPs > 640;
+        return this.status == null || Screen.mainScreen.heightDIPs > 640;
     }
 
     private displayResult(res: TicketAndCheckInResult): void {

@@ -5,17 +5,19 @@ import {ActivatedRoute, Params} from "@angular/router";
 import {RouterExtensions} from "@nativescript/angular";
 import {AccountService} from "~/app/shared/account/account.service";
 import {SponsorScanService} from "~/app/shared/scan/sponsor-scan.service";
-import {Account, EventConfiguration, supportsAttendeesSearch} from "~/app/shared/account/account";
+import {Account, AdditionalButton, EventConfiguration, supportsAttendeesSearch} from "~/app/shared/account/account";
 import * as Email from "@nativescript/email";
-import {BarcodeScanner} from 'nativescript-barcodescanner';
+import {BarcodeScanner} from "@nstudio/nativescript-barcodescanner";
 import {encodeBase64} from '~/app/utils/network-util';
 import {VibrateService} from '~/app/shared/notification/vibrate.service';
 import {FeedbackService} from '~/app/shared/notification/feedback.service';
 import {ListViewEventData, RadListView} from 'nativescript-ui-listview';
 import {Observable, Subject} from 'rxjs';
 import {timeout} from 'rxjs/operators';
-import {android} from "@nativescript/core/application";
-import {ObservableArray} from '@nativescript/core';
+import {Application} from "@nativescript/core/application";
+import {ObservableArray, TapGestureEventData} from '@nativescript/core';
+import {openUrl} from "@nativescript/core/utils";
+import {logIfDevMode} from "~/app/utils/systemUtils";
 
 @Component({
     moduleId: module.id,
@@ -50,7 +52,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.route.params.subscribe((params: Params) => {
-            console.log("params", params['accountId'], params['eventId']);
+            logIfDevMode("params", params['accountId'], params['eventId']);
             let id = params['accountId'];
             let eventId = params['eventId'];
             this.accountService.findAccountById(id).ifPresent(account => {
@@ -86,13 +88,13 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         scanOptions.continuousScanCallback = (res) => setTimeout(() => {
             const cleanCode = SponsorEventDetailComponent.cleanScan(res.text, this.labelLayout);
             console.log("scanned", res.text, 'clean', cleanCode);
-            let result = this.sponsorScanService.scan(this.event.key, this.account, cleanCode);
+            let result = this.sponsorScanService.scan(this.event.key, this.account, cleanCode, res.text, this.labelLayout);
             console.log('scan result is OK:', result === ScanResult.OK);
             switch (result) {
                 case ScanResult.OK: {
-                  console.log('OK, vibrate');
+                    logIfDevMode('OK, vibrate');
                     this.vibrateService.success();
-                  console.log('OK, show feedback');
+                    logIfDevMode('OK, show feedback');
                     this.feedbackService.success('Scan enqueued!');
                     break;
                 }
@@ -122,7 +124,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     }
 
     private forceRefreshList(): void {
-        if (android && this.scanView != null) {
+        if (Application.android && this.scanView != null) {
             setTimeout(() => {
                 this.scanView.nativeElement.refresh();
                 console.log("forced scanView refresh...");
@@ -152,7 +154,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         let file = encodeBase64(this.scans.map(s => s.code).join('\n'));
         Email.compose({
             subject: `Data for event ${this.event.name}`,
-            body: `Here attached the scanned data from account ${this.account.username}`,
+            body: `Here attached the scanned data from account ${this.account.description}`,
             to: [],
             attachments: [
                 {
@@ -202,10 +204,31 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         return this.scans.length > 0 ? "70, *, auto, 70" : "70, 10, *, 70";
     }
 
+    get additionalButton(): AdditionalButton | null {
+      const additionalButtons = this.account.userConfiguration?.additionalButtons;
+      if (additionalButtons != null && additionalButtons.length > 0) {
+        // get first
+        return additionalButtons[0];
+      }
+      return null;
+    }
+
     private static cleanScan(code: string, labelLayout?: LabelLayout): string {
       if (labelLayout?.qrCode?.infoSeparator != null) {
         return code.split(labelLayout.qrCode.infoSeparator)[0];
       }
       return code;
     }
+
+  additionalButtonTap($event: TapGestureEventData) {
+    this.sponsorScanService.retrieveCustomLink(this.additionalButton)
+      .subscribe(res => {
+        if (res.authenticatedLink != null) {
+          const result = openUrl(res.authenticatedLink);
+          if (!result) {
+            this.feedbackService.warning("Unable to open link");
+          }
+        }
+      });
+  }
 }
