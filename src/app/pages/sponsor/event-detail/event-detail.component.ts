@@ -95,7 +95,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
                     logIfDevMode('OK, vibrate');
                     this.vibrateService.success();
                     logIfDevMode('OK, show feedback');
-                    this.feedbackService.success('Scan enqueued!');
+                    this.feedbackService.success('Scan successful!');
                     break;
                 }
                 case ScanResult.DUPLICATE: {
