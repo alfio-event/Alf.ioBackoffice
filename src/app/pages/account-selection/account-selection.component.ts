@@ -10,6 +10,7 @@ import {defaultScanOptions} from "~/app/utils/barcodescanner";
 import {ObservableArray, Page, View} from "@nativescript/core";
 import {OrientationService} from "~/app/shared/orientation.service";
 import {Subscription} from "rxjs";
+import {logIfDevMode} from "~/app/utils/systemUtils";
 
 @Component({
     selector: "account-selection",
@@ -90,6 +91,19 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
 
     }
 
+    refreshAccounts(args: ListViewEventData): void {
+        this.accountService.refreshAccounts()
+            .subscribe({
+                next: result => {
+                    if (result) {
+                        this.accounts.splice(0, this.accounts.length, ...this.accountService.getRegisteredAccounts());
+                    }
+                    args.object.notifyPullToRefreshFinished();
+                },
+                error: () => args.object.notifyPullToRefreshFinished()
+            })
+    }
+
     private registerNewAccount(account: ScannedAccount): void {
         try {
             this.isLoading = true;
@@ -130,7 +144,8 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         const swipeLimits = args.data.swipeLimits;
         const actionView = args['object'].getViewById<View>('deleteBtn');
         const actualLabel = args['object'].getViewById<View>('deleteText');
-        const padding = Math.round(actualLabel.getLocationOnScreen().x) + 5; // add extra margin because iOS, meh...
+        logIfDevMode("location on screen", actualLabel.getLocationOnScreen());
+        const padding = Math.round(actualLabel.getLocationOnScreen()?.x ?? 16) + 5; // add extra margin because iOS, meh...
         const actionViewWidth = (padding * 2) + actionView.getMeasuredWidth();
         swipeLimits.left = actionViewWidth;
         swipeLimits.right = 0;

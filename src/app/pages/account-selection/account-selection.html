@@ -12,6 +12,8 @@
 	<RadListView id="list" [items]="accounts" row="1" *ngIf="hasAccounts && !isLoading"
 		multipleSelection="false" selectionBehavior="None" (itemSelected)="onItemSelected($event)"
 		swipeActions="true" ignoreTouchAnimation="true"
+        pullToRefresh="true"
+        (pullToRefreshInitiated)="refreshAccounts($event)"
 		(itemSwipeProgressStarted)="onSwipeCellStarted($event)"
 		(itemSwipeProgressEnded)="onSwipeCellFinished($event)">
 		<ng-template tkListItemTemplate let-item="item">

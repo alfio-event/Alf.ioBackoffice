@@ -13,7 +13,7 @@ import {
 } from "./account";
 import {AccountSelectionNotifier} from "./account-selection-notifier";
 import {catchError, map, mergeMap, tap} from 'rxjs/operators';
-import {Observable, of, throwError, zip} from "rxjs";
+import {forkJoin, Observable, of, throwError, zip} from "rxjs";
 
 import {HttpClient} from "@angular/common/http";
 import {StorageService} from "../storage/storage.service";
@@ -39,45 +39,69 @@ export class AccountService {
         if (apiKey == null || username != null || password != null) {
             return throwError(() => new Error("Unsupported configuration. Make sure you're scanning an API Key"));
         }
+        return this.retrieveAccountDetails(baseUrl, apiKey, scannedAccount).pipe(
+            map(accountResponse => {
+                let account = accountResponse.getAccount();
+                this.accounts.set(account.getKey(), account);
+                this.persistAccounts();
+                console.log("accounts persisted.");
+                return accountResponse;
+            }));
+    }
+
+    public refreshAccounts(): Observable<boolean> {
+        const observables: Observable<boolean>[] = [];
+        this.accounts.getAllAccounts().forEach(account => {
+            observables.push(this.retrieveAccountDetails(account.url, account.apiKey, account).pipe(map(resp => {
+                let newState = resp.getAccount();
+                account.userConfiguration = newState.userConfiguration;
+                account.description = newState.description;
+                this.accounts.set(account.getKey(), account);
+                return resp.isExisting();
+            })));
+        });
+        return forkJoin([...observables]).pipe(map(result => {
+            const success = result.some(r => r);
+            if (success) {
+                this.persistAccounts();
+            }
+            return success;
+        }));
+    }
+
+    private retrieveAccountDetails(baseUrl: string, apiKey: string, scannedAccount: ScannedAccount | Account) {
         return this.http.get<RemoteAccount>(`${baseUrl}/admin/api/user/details`, {
-                headers: authorization(apiKey)
-            }).pipe(
-                map(data => {
-                    console.log("got user type", data.userType);
-                    let account = new Account();
-                    account.url = baseUrl;
-                    account.apiKey = apiKey;
-                    account.configurationUrl = scannedAccount.configurationUrl;
-                    account.eventName = scannedAccount.eventName;
-                    account.description = data.description;
-                    account.accountType = this.detectAccountType(data.userType);
-                    account.configurations = [];
-                    let newAccountKey = account.getKey();
-                    let maybeExisting = this.accounts.get(newAccountKey);
-                    return new AccountResponse(account, maybeExisting.isPresent());
-                }),
-                mergeMap(data => {
-                    return zip(this.loadEventsForAccount(data.getAccount()), this.loadUserConfiguration(scannedAccount))
-                      .pipe(map(([accountConfigurations, userConfiguration]) => {
-                          let account = data.getAccount();
-                          account.configurations = accountConfigurations;
-                          account.userConfiguration = userConfiguration;
-                          return new AccountResponse(account, data.isExisting());
-                      }));
-                }),
-                map(accountResponse => {
-                    let account = accountResponse.getAccount();
-                    this.accounts.set(account.getKey(), account);
-                    this.persistAccounts();
-                    console.log("accounts persisted.");
-                    return accountResponse;
-                }),
-                catchError(error => {
-                    console.log("got error! ");
-                    console.log(JSON.stringify(error));
-                    return throwError(() => new Error('Cannot register a new Account. Please check your internet connection and retry.'));
-                })
-            );
+            headers: authorization(apiKey)
+        }).pipe(
+            map(data => {
+                console.log("got user type", data.userType);
+                let account = new Account();
+                account.url = baseUrl;
+                account.apiKey = apiKey;
+                account.configurationUrl = scannedAccount.configurationUrl;
+                account.eventName = scannedAccount.eventName;
+                account.description = data.description;
+                account.accountType = this.detectAccountType(data.userType);
+                account.configurations = [];
+                let newAccountKey = account.getKey();
+                let maybeExisting = this.accounts.get(newAccountKey);
+                return new AccountResponse(account, maybeExisting.isPresent());
+            }),
+            mergeMap(data => {
+                return zip(this.loadEventsForAccount(data.getAccount()), this.loadUserConfiguration(scannedAccount))
+                    .pipe(map(([accountConfigurations, userConfiguration]) => {
+                        let account = data.getAccount();
+                        account.configurations = accountConfigurations;
+                        account.userConfiguration = userConfiguration;
+                        return new AccountResponse(account, data.isExisting());
+                    }));
+            }),
+            catchError(error => {
+                console.log("got error! ");
+                console.log(JSON.stringify(error));
+                return throwError(() => new Error('Cannot register a new Account. Please check your internet connection and retry.'));
+            })
+        );
     }
 
     private detectAccountType(userType: string): AccountType {
@@ -104,10 +128,12 @@ export class AccountService {
     }
 
     public deleteAccount(account: Account): Array<Account> {
+        logIfDevMode("deleting account", account.getKey());
         let newArray = this.accounts.getAllAccounts().filter(it => it.getKey() !== account.getKey());
         this.accounts = new AccountsArray(newArray);
         if (account.accountType === AccountType.SPONSOR) {
-          account.configurations.forEach(e => {
+          logIfDevMode("account is sponsor", account.getKey(), "configurations", account.configurations?.length);
+          account.configurations?.forEach(e => {
             this.storage.removeValue('ALFIO_SPONSOR_SCANS_' + e.key + account.getKey());
           });
         }
@@ -179,10 +205,10 @@ export class AccountService {
         console.log("done.");
     }
 
-  private loadUserConfiguration(scannedAccount: ScannedAccount): Observable<UserConfiguration> {
-    if (scannedAccount.configurationUrl != null) {
-      logIfDevMode('configurationUrl is not empty', scannedAccount.configurationUrl);
-      return this.http.get<UserConfiguration>(scannedAccount.configurationUrl)
+  private loadUserConfiguration(account: ScannedAccount | Account): Observable<UserConfiguration> {
+    if (account.configurationUrl != null) {
+      logIfDevMode('configurationUrl is not empty', account.configurationUrl);
+      return this.http.get<UserConfiguration>(account.configurationUrl)
         .pipe(
           tap(r => logIfDevMode('got', JSON.stringify(r))),
           catchError(err => {

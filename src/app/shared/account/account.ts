@@ -16,7 +16,7 @@ export class Account {
     }
 
     containsEvent(key: String): boolean {
-        return this.configurations.some(ec => ec.key === key);
+        return this.configurations?.some(ec => ec.key === key);
     }
 
     get title(): string {
