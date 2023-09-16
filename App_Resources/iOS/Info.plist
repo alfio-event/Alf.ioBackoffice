@@ -45,5 +45,7 @@
 		</array>
 		<key>NSCameraUsageDescription</key>
 		<string>Alf.io needs access to the camera in order to scan barcodes. We won't save or share pictures.</string>
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
 	</dict>
 </plist>
