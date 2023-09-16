@@ -1,27 +1,26 @@
-import {Component, NgZone, OnChanges, OnInit} from "@angular/core";
-import {ListViewEventData, RadListView} from "nativescript-ui-listview";
-import {RouterExtensions} from "@nativescript/angular";
+import {Component, Inject, NgZone, OnInit} from "@angular/core";
+import {DEVICE, RouterExtensions} from "@nativescript/angular";
 import {Account, AccountResponse, Maybe, Nothing, ScannedAccount, Some} from "../../shared/account/account";
 import {AccountService} from "../../shared/account/account.service";
 import {isDefined, isUndefined} from "@nativescript/core/utils/types";
 import {BarcodeScanner, ScanResult} from "@nstudio/nativescript-barcodescanner";
 import {FeedbackService} from "../../shared/notification/feedback.service";
 import {defaultScanOptions} from "~/app/utils/barcodescanner";
-import {ObservableArray, Page, View} from "@nativescript/core";
+import {ObservableArray, Page} from "@nativescript/core";
 import {OrientationService} from "~/app/shared/orientation.service";
 import {Subscription} from "rxjs";
-import {logIfDevMode} from "~/app/utils/systemUtils";
+import {IDevice, platformNames} from "@nativescript/core/platform";
 
 @Component({
     selector: "account-selection",
     templateUrl: "./account-selection.html",
     styleUrls: ["./account-selection.scss"],
 })
-export class AccountSelectionComponent implements OnInit, OnChanges {
+export class AccountSelectionComponent implements OnInit {
     accounts: ObservableArray<Account> = new ObservableArray<Account>();
     isLoading: boolean;
     editModeEnabled: boolean = false;
-    private editedAccount: Account = null;
+    isIos: boolean;
     private orientationSubscription?: Subscription;
 
     constructor(private accountService: AccountService,
@@ -30,7 +29,9 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         private ngZone: NgZone,
         private feedbackService: FeedbackService,
         private orientationService: OrientationService,
-        private page: Page) {
+        private page: Page,
+        @Inject(DEVICE) device: IDevice) {
+        this.isIos = device.os === platformNames.ios;
     }
 
     ngOnInit(): void {
@@ -55,10 +56,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         });
     }
 
-    ngOnChanges(): void {
-        console.log("ngOnChanges");
-    }
-
     get hasAccounts(): boolean {
         return this.accounts.length > 0;
     }
@@ -74,10 +71,6 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         }
     }
 
-    cancelScan(): void {
-        this.barcodeScanner.stop();
-    }
-
     requestQrScan(): void {
         if (this.editModeEnabled) {
             return;
@@ -91,16 +84,18 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
 
     }
 
-    refreshAccounts(args: ListViewEventData): void {
+    refreshAccounts(args: {object: {refreshing: boolean}}): void {
         this.accountService.refreshAccounts()
             .subscribe({
                 next: result => {
                     if (result) {
                         this.accounts.splice(0, this.accounts.length, ...this.accountService.getRegisteredAccounts());
                     }
-                    args.object.notifyPullToRefreshFinished();
+                    args.object.refreshing = false;
                 },
-                error: () => args.object.notifyPullToRefreshFinished()
+                error: () => {
+                    args.object.refreshing = false;
+                }
             })
     }
 
@@ -139,51 +134,15 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         }
     }
 
-    onSwipeCellStarted(args: ListViewEventData) {
-        this.editModeEnabled = true;
-        const swipeLimits = args.data.swipeLimits;
-        const actionView = args['object'].getViewById<View>('deleteBtn');
-        const actualLabel = args['object'].getViewById<View>('deleteText');
-        logIfDevMode("location on screen", actualLabel.getLocationOnScreen());
-        const padding = Math.round(actualLabel.getLocationOnScreen()?.x ?? 16) + 5; // add extra margin because iOS, meh...
-        const actionViewWidth = (padding * 2) + actionView.getMeasuredWidth();
-        swipeLimits.left = actionViewWidth;
-        swipeLimits.right = 0;
-        swipeLimits.treshold = actionViewWidth / 2;
-    }
-
-    onSwipeCellFinished(args: ListViewEventData) {
-        this.editModeEnabled = args.data.x !== 0;
-        console.log("swipe finished. Edit mode is enabled", this.editModeEnabled);
-    }
-
-    onItemSelected(args: ListViewEventData): void {
+    select(account: Account, index: number): void {
         if (this.editModeEnabled) {
-            return;
-        }
-        const listView = args.object as RadListView;
-        const account = listView.getSelectedItems()[0] as Account;
-        this.routerExtensions.navigate(['/manage-account/', account.getKey()]);
-    }
-
-    select(account: Account): void {
-        if (this.editModeEnabled) {
-            return;
-        }
-        this.routerExtensions.navigate(['/manage-account/', account.getKey()]);
-    }
-
-    isEditRequested(account: Account): boolean {
-        return this.editedAccount === account;
-    }
-
-    onDeleteButtonTap(args: ListViewEventData) {
-        const indexToDelete = this.accounts.indexOf(args.object.bindingContext);
-        if (indexToDelete > -1) {
-            const accountToDelete = this.accounts.getItem(indexToDelete);
+            // deleting the element
+            const accountToDelete = this.accounts.getItem(index);
             this.accountService.deleteAccount(accountToDelete);
-            this.accounts.splice(indexToDelete, 1);
+            this.accounts.splice(index, 1);
             this.editModeEnabled = false;
+        } else {
+            this.routerExtensions.navigate(['/manage-account/', account.getKey()]);
         }
     }
 
@@ -197,4 +156,11 @@ export class AccountSelectionComponent implements OnInit, OnChanges {
         this.isLoading = false;
     }
 
+    get itemLayout(): string {
+        return this.editModeEnabled ? "60, *" : "40, *, 35";
+    }
+
+    toggleEditMode(): void {
+        this.editModeEnabled = !this.editModeEnabled;
+    }
 }

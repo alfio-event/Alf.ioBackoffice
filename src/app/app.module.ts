@@ -1,6 +1,13 @@
 import { EventHeaderComponent } from './pages/event-header/event-header.component';
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
-import { NativeScriptFormsModule, NativeScriptAnimationsModule, NativeScriptHttpClientModule, NativeScriptModule, NativeScriptRouterModule } from "@nativescript/angular";
+import {
+    NativeScriptFormsModule,
+    NativeScriptAnimationsModule,
+    NativeScriptHttpClientModule,
+    NativeScriptModule,
+    NativeScriptRouterModule,
+    registerElement
+} from "@nativescript/angular";
 import { AccountModule } from "./shared/account/account.module";
 import { AppComponent } from "./app.component";
 import { routes, navigatableComponents } from "./app.routing";
@@ -19,15 +26,13 @@ import { NativeScriptUIDataFormModule } from "nativescript-ui-dataform/angular";
 import { OrientationService } from './shared/orientation.service';
 import { SearchAttendeesResultComponent } from './pages/staff/search-attendees/search-attendees-result.component';
 import { AttendeeDetailComponent } from "~/app/pages/staff/attendee-detail/attendee-detail.component";
+import { PullToRefresh } from "@nativescript-community/ui-pulltorefresh";
 
 export function createBarcodeScanner() {
-    // const scanner = new BarcodeScanner();
-    // if (scanner['_observer']) {
-    //     scanner['_observer']['_owner'] = undefined;
-    //     scanner['_observer'] = undefined;
-    // }
     return new BarcodeScanner();
 }
+
+registerElement("PullToRefresh", () => PullToRefresh);
 
 @NgModule({
     schemas: [NO_ERRORS_SCHEMA],
