@@ -5,7 +5,6 @@ import {Account, AccountType, EventConfiguration} from "../../shared/account/acc
 import {AccountService} from "../../shared/account/account.service";
 import {isDefined, isUndefined} from "@nativescript/core/utils/types";
 import {FeedbackService} from "../../shared/notification/feedback.service";
-import {ListViewEventData} from "nativescript-ui-listview";
 import {isAndroid, ObservableArray, Page} from "@nativescript/core";
 import {OrientationService} from "~/app/shared/orientation.service";
 import {Subscription, zip} from "rxjs";
@@ -123,25 +122,29 @@ export class AccountManageComponent implements OnInit {
       this.routerExtensions.back();
   }
 
-  select(args: ListViewEventData): void {
-      let index = this.events.indexOf(args.object.bindingContext);
-      let item = this.events.getItem(index);
-      if (item.key != null) {
+  select(item: EventConfiguration): void {
+      if (item?.key != null) {
           let accountType = this.account.accountType === AccountType.SPONSOR ? "SPONSOR" : "STAFF";
           this.routerExtensions.navigate(['/event-detail/', this.account.getKey(), accountType, item.key]);
       }
   }
 
-  onPullToRefreshInitiated(args: ListViewEventData): void {
-    this.loadEventsForAccount(this.account, () => args.object.notifyPullToRefreshFinished());
+  onPullToRefreshInitiated(args: {object: {refreshing: boolean}}): void {
+    this.loadEventsForAccount(this.account, () => {
+        args.object.refreshing = false
+    });
   }
 
   get rowsLayout(): string {
       if (this.accountHasPendingDataForPastEvents) {
         return "90, 16, *, auto"
       } else {
-        return "auto, 16, *, auto"
+        return "*, auto"
       }
+  }
+
+  get mainRowIndex(): number {
+      return this.accountHasPendingDataForPastEvents ? 2 : 0;
   }
 
   forcePushPendingScans(): void {

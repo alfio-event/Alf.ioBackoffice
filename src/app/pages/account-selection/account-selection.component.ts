@@ -163,4 +163,10 @@ export class AccountSelectionComponent implements OnInit {
     toggleEditMode(): void {
         this.editModeEnabled = !this.editModeEnabled;
     }
+
+    toggleLongPress() {
+        if (!this.isIos) {
+            this.toggleEditMode();
+        }
+    }
 }

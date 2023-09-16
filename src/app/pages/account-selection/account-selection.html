@@ -15,7 +15,7 @@
         <PullToRefresh (refresh)="refreshAccounts($event)" row="1">
             <ListView id="list" [items]="accounts" row="1" class="list-group">
                 <ng-template let-item="item" let-i="index">
-                    <GridLayout [columns]="itemLayout" class="fill-bg list-group-item" (tap)="select(item, i)" (longpress)="toggleEditMode()">
+                    <GridLayout [columns]="itemLayout" class="fill-bg list-group-item" (tap)="select(item, i)" (longpress)="toggleLongPress()">
                         <StackLayout id="deleteBtn" col="0" *ngIf="editModeEnabled" class="text-danger">
                             <Label id="deleteText" text="&#xf154;" class="icon icon-1-5x person-icon text-center"></Label>
                         </StackLayout>
