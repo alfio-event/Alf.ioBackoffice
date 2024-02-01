@@ -17,32 +17,44 @@ export class VibrateService {
     }
 
     public success(): void {
-        if (Application.android) {
-            this.vibrateAndroid.vibrate(250);
-        } else {
-            this.tapticEngine.notification({
-                type: TapticEngineNotificationType.SUCCESS
-            });
+        try {
+            if (Application.android) {
+                this.vibrateAndroid.vibrate(250);
+            } else {
+                this.tapticEngine.notification({
+                    type: TapticEngineNotificationType.SUCCESS
+                });
+            }
+        } catch (e) {
+            console.error("vibrate success: got error", e);
         }
     }
 
     public error(): void {
-        if (Application.android) {
-            this.vibrateAndroid.vibrate([50, 50, 50]);
-        } else {
-            this.tapticEngine.notification({
-                type: TapticEngineNotificationType.ERROR
-            });
+        try {
+            if (Application.android) {
+                this.vibrateAndroid.vibrate([50, 50, 50]);
+            } else {
+                this.tapticEngine.notification({
+                    type: TapticEngineNotificationType.ERROR
+                });
+            }
+        } catch (e) {
+            console.error("vibrate failed: got error", e);
         }
     }
 
     public warning(): void {
-        if (Application.android) {
-            this.vibrateAndroid.vibrate([50, 50]);
-        } else {
-            this.tapticEngine.notification({
-                type: TapticEngineNotificationType.WARNING
-            });
+        try {
+            if (Application.android) {
+                this.vibrateAndroid.vibrate([50, 50]);
+            } else {
+                this.tapticEngine.notification({
+                    type: TapticEngineNotificationType.WARNING
+                });
+            }
+        } catch (e) {
+            console.error("vibrate warning: got error", e);
         }
     }
 

@@ -16,7 +16,7 @@
                 "src/*"
             ],
             "@/*": [
-              "src/*"
+                "src/*"
             ]
         },
         "moduleResolution": "node",
@@ -24,9 +24,14 @@
         "skipLibCheck": true
     },
     "include": [
-      "src/**/*.ios.ts", "src/**/*.android.ts"
+        "src/**/*.ios.ts",
+        "src/**/*.android.ts"
     ],
-    "files": ["./src/main.ts", "./references.d.ts", "./src/polyfills.ts"],
+    "files": [
+        "./src/main.ts",
+        "./references.d.ts",
+        "./src/polyfills.ts"
+    ],
     "exclude": [
         "node_modules",
         "platforms"
