@@ -21,12 +21,12 @@ import { FeedbackService } from './shared/notification/feedback.service';
 import { IfAndroidDirective, IfIosDirective } from './utils/if-platform.directive';
 import { SponsorModule } from './shared/scan/sponsor.module';
 import { SponsorScanBadgeComponent } from './pages/sponsor-scan-badge/sponsor-scan-badge.component';
-import { NativeScriptUIListViewModule } from "nativescript-ui-listview/angular";
 import { NativeScriptUIDataFormModule } from "nativescript-ui-dataform/angular";
 import { OrientationService } from './shared/orientation.service';
 import { SearchAttendeesResultComponent } from './pages/staff/search-attendees/search-attendees-result.component';
 import { AttendeeDetailComponent } from "~/app/pages/staff/attendee-detail/attendee-detail.component";
 import { PullToRefresh } from "@nativescript-community/ui-pulltorefresh";
+import {NativeScriptUIListViewModule} from "nativescript-ui-listview/angular";
 
 export function createBarcodeScanner() {
     return new BarcodeScanner();

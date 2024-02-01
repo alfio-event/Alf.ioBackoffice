@@ -3,10 +3,10 @@
     <NavigationButton *ifIos (tap)="onBackTap()" text="Scan"></NavigationButton>
 </ActionBar>
 
-<GridLayout rows="auto, 1, *">
-    <sponsor-scan-badge row="0" [item]="scan" [showArrow]="false"></sponsor-scan-badge>
-    <StackLayout row="1" class="hr-light"></StackLayout>
-    <ScrollView row="2" tkExampleTitle tkToggleNavButton>
+<GridLayout rows="auto, 1, *" columns="16,*,16">
+    <sponsor-scan-badge row="0" col="1" [item]="scan" [showArrow]="false"></sponsor-scan-badge>
+    <StackLayout row="1" col="1" class="hr-light"></StackLayout>
+    <ScrollView row="2" col="1" tkExampleTitle tkToggleNavButton>
         <RadDataForm [source]="scan" class="fill-bg" (loaded)="dataFormLoaded($event)" [metadata]="metadata">
             <TKPropertyGroup tkDataFormGroups name="Edit Information" hidden="false">
                 <TKDataFormStackLayout tkPropertyGroupLayout></TKDataFormStackLayout>

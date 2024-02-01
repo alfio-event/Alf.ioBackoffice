@@ -13,16 +13,13 @@
             <Label class="icon text-center icon-additional-button" text="&#xf1a3;" col="2"></Label>
         </GridLayout>
     </GridLayout>
-    <RadListView #scanList id="list" [items]="scans" row="1"
-		multipleSelection="false" selectionBehavior="None"
-        swipeActions="false"
-        pullToRefresh="true"
-        (itemTap)="select($event)"
-        (pullToRefreshInitiated)="onPullToRefreshInitiated($event)">
-		<ng-template tkListItemTemplate let-item="item">
-            <sponsor-scan-badge [item]="item"></sponsor-scan-badge>
-        </ng-template>
-    </RadListView>
+    <PullToRefresh *ngIf="account && scans.length > 0" (refresh)="onPullToRefreshInitiated($event)" row="1">
+        <ListView id="list" [items]="scans" class="list-group" (itemTap)="select($event)">
+            <ng-template let-item="item">
+                <sponsor-scan-badge [item]="item"></sponsor-scan-badge>
+            </ng-template>
+        </ListView>
+    </PullToRefresh>
     <StackLayout orientation="vertical" class="warning-msg m-t-30" (tap)="requestQrScan()" row="2" *ngIf="scans.length == 0">
         <Label class="icon icon-3x text-center" text="&#xf208;" ></Label>
         <Label text="No data collected so far" class="missing-accounts text-center"></Label>

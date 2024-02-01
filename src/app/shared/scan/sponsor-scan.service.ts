@@ -208,7 +208,9 @@ export class SponsorScanService  {
 
     private process(eventKey: string, account: Account, oneShot: boolean = false): void {
         let toSend = this.findAllStatusNew(eventKey);
-        logIfDevMode("toSend is", toSend.length);
+        if (toSend.length > 0) {
+            logIfDevMode("toSend is", toSend.length);
+        }
         if (toSend.length > 0) {
             toSend.forEach(scan => this.changeStatusFor(eventKey, scan.code, ScanStatus.IN_PROCESS, scan.ticket, scan.notes, scan.leadStatus));
             this.bulkScanUpload(eventKey, account, toSend, oneShot);

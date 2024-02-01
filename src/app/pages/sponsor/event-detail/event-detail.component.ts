@@ -2,7 +2,7 @@ import {defaultScanOptions} from '~/app/utils/barcodescanner';
 import {LabelLayout, ScanResult, SponsorScan} from '~/app/shared/scan/sponsor-scan';
 import {Component, ElementRef, Injectable, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Params} from "@angular/router";
-import {RouterExtensions} from "@nativescript/angular";
+import {ListViewComponent, RouterExtensions} from "@nativescript/angular";
 import {AccountService} from "~/app/shared/account/account.service";
 import {SponsorScanService} from "~/app/shared/scan/sponsor-scan.service";
 import {Account, AdditionalButton, EventConfiguration, supportsAttendeesSearch} from "~/app/shared/account/account";
@@ -11,13 +11,13 @@ import {BarcodeScanner} from "@nstudio/nativescript-barcodescanner";
 import {encodeBase64} from '~/app/utils/network-util';
 import {VibrateService} from '~/app/shared/notification/vibrate.service';
 import {FeedbackService} from '~/app/shared/notification/feedback.service';
-import {ListViewEventData, RadListView} from 'nativescript-ui-listview';
 import {Observable, Subject} from 'rxjs';
 import {timeout} from 'rxjs/operators';
 import {Application} from "@nativescript/core/application";
-import {ObservableArray, TapGestureEventData} from '@nativescript/core';
+import {ItemEventData, ListView, ObservableArray, TapGestureEventData} from '@nativescript/core';
 import {openUrl} from "@nativescript/core/utils";
 import {logIfDevMode} from "~/app/utils/systemUtils";
+import {PullToRefresh} from "@nativescript-community/ui-pulltorefresh";
 
 @Component({
     moduleId: module.id,
@@ -33,7 +33,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
     scans = new ObservableArray<SponsorScan>();
     private dataReceived = new Subject<Date>();
     @ViewChild("scanList", { static: false })
-    private scanView: ElementRef<RadListView>;
+    private scanView: ElementRef<ListView>;
     private labelLayout?: LabelLayout = null;
 
     constructor(private route: ActivatedRoute,
@@ -171,7 +171,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
             });
     }
 
-    select(eventData: ListViewEventData): void {
+    select(eventData: ItemEventData): void {
         let item = this.scans.getItem(eventData.index);
         if (item.code != null) {
             this.routerExtensions.navigate(['/attendee-detail/', this.account.getKey(), this.event.key, item.code]);
@@ -182,19 +182,20 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         return this.dataReceived.asObservable();
     }
 
-    onPullToRefreshInitiated(args: ListViewEventData) {
-        const listView = args.object;
+    onPullToRefreshInitiated(args: {object: PullToRefresh}) {
+        const pullToRefresh = args.object;
+        pullToRefresh.refreshing = true;
         this.forceUpload();
         this.listenToChanges() // not ideal, but it's the best we can do with the current implementation
             .pipe(timeout(2000))
             .subscribe({
                 next: d => this.ngZone.run(() => {
-                    listView.notifyPullToRefreshFinished();
+                    pullToRefresh.refreshing = false;
                 }),
                 error: () => this.ngZone.run(() => {
-                    listView.notifyPullToRefreshFinished();
-                    if (listView.ios) {
-                        listView.scrollToIndex(0, true);
+                    pullToRefresh.refreshing = false;
+                    if (this.scanView.nativeElement?.ios) {
+                        this.scanView.nativeElement.scrollToIndex(0);
                     }
                 })
             });

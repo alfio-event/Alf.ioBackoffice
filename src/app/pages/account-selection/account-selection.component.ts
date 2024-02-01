@@ -6,7 +6,7 @@ import {isDefined, isUndefined} from "@nativescript/core/utils/types";
 import {BarcodeScanner, ScanResult} from "@nstudio/nativescript-barcodescanner";
 import {FeedbackService} from "../../shared/notification/feedback.service";
 import {defaultScanOptions} from "~/app/utils/barcodescanner";
-import {ObservableArray, Page} from "@nativescript/core";
+import {ItemEventData, ObservableArray, Page} from "@nativescript/core";
 import {OrientationService} from "~/app/shared/orientation.service";
 import {Subscription} from "rxjs";
 import {IDevice, platformNames} from "@nativescript/core/platform";
