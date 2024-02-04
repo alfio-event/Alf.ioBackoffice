@@ -9,7 +9,7 @@ android {
   defaultConfig {
     generatedDensities = []
     applicationId = "alfio.scan"
-    versionCode = 42402011
+    versionCode = 42402021
     versionName = "1.8.0"
     multiDexEnabled true
   }
