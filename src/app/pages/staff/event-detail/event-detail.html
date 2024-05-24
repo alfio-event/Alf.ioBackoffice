@@ -18,8 +18,8 @@
                 <Label class="icon icon-4x text-center" [text]="getStatusIcon()"></Label>
                 <Label [text]="message" class="h2 text-center m-t-10" *ngIf="!isStatusSuccess() || ticket == null" textWrap="true"></Label>
                 <ng-container *ngIf="isStatusSuccess() && ticket != null">
-                    <Label [text]="ticket.fullName" class="h2 text-center"></Label>
-                    <Label [text]="ticket.categoryName" class="h2 text-center"></Label>
+                    <Label textWrap="true" [text]="ticket.fullName" class="h2 text-center"></Label>
+                    <Label textWrap="true" [text]="ticket.categoryName" class="h2 text-center"></Label>
                     <Label text="{{ticket.uuid}}" class="h6 text-center"></Label>
                 </ng-container>
             </ng-container>
@@ -32,7 +32,7 @@
             </ng-container>
         </StackLayout>
         <Button class="-rounded-sm" row="2" *ngIf="!isLoading"
-                [class.-primary]="!status" 
+                [class.-primary]="!status"
                 (tap)="onPrimaryButtonTap()" [text]="getPrimaryButtonText()"></Button>
     </GridLayout>
     <ActivityIndicator [busy]="isLoading" [visibility]="isLoading ? 'visible' : 'collapse'" row="2" col="1" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
