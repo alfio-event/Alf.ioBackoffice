@@ -1,14 +1,15 @@
 {
     "compilerOptions": {
         "module": "esnext",
-        "target": "es2017",
+        "target": "es2020",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "noEmitHelpers": true,
         "noEmitOnError": true,
         "lib": [
             "es2017",
-            "dom"
+            "dom",
+            "ESNext"
         ],
         "baseUrl": ".",
         "paths": {

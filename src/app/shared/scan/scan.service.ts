@@ -30,7 +30,7 @@ export class ScanService {
             }
             return this.performCheckIn(account, `${account.url}/admin/api/check-in/event/${eventKey}/ticket/${ticketId}`, code);
         } else {
-            return throwError(new InvalidQrCode("Invalid QR-Code!"));
+            return throwError(() => new InvalidQrCode("Invalid QR-Code!"));
         }
     }
 
