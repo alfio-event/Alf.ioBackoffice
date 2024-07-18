@@ -97,6 +97,7 @@ export interface AttendeeSearchResults {
 
 export interface AttendeeSearchResult {
     uuid: string;
+    publicUUID?: string;
     firstName: string;
     lastName: string;
     categoryName: string;

@@ -6,6 +6,7 @@ import {AttendeeSearchResult} from "~/app/shared/scan/scan-common";
 import {HttpErrorResponse} from "@angular/common/http";
 import {IDevice, Screen} from "@nativescript/core/platform";
 import {DEVICE} from "@nativescript/angular";
+import {logIfDevMode} from "~/app/utils/systemUtils";
 
 @Component({
   moduleId: module.id,
@@ -93,7 +94,13 @@ export class AttendeeDetailComponent implements OnInit, OnChanges {
   }
 
   private initQrCodeURL(): void {
-    this.qrCodeUrl = `${this.account.url}/api/v2/public/event/${this.event.key}/ticket/${this.attendee.uuid}/code.png`;
+    let uuid: string;
+    if (this.event.apiVersion >= 205) {
+        uuid = this.attendee.publicUUID;
+    } else {
+        uuid = this.attendee.uuid;
+    }
+    this.qrCodeUrl = `${this.account.url}/api/v2/public/event/${this.event.key}/ticket/${uuid}/code.png`;
   }
 
   private revertCheckIn(): void {
@@ -116,7 +123,7 @@ export class AttendeeDetailComponent implements OnInit, OnChanges {
   }
 
   private performManualCheckIn(): void {
-    console.log("Performing manual check-in for ticket", this.attendee.uuid);
+    logIfDevMode("Performing manual check-in for ticket", this.attendee.uuid);
     this.scanService.manualCheckIn(this.event.key, this.account, this.attendee.uuid)
       .subscribe({
         next: res => {
