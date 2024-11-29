@@ -5,7 +5,7 @@ import { AccountService } from "~/app/shared/account/account.service";
 import { ScanService } from "~/app/shared/scan/scan.service";
 import { Account, AccountType, EventConfiguration, supportsAttendeesSearch } from "~/app/shared/account/account";
 import { defaultScanOptions } from '~/app/utils/barcodescanner';
-import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses, AdditionalServiceInfo } from '../../../shared/scan/scan-common';
+import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses, AdditionalServiceInfo, FieldValueAndDescription } from '../../../shared/scan/scan-common';
 import { BarcodeScanner, ScanResult } from "@nstudio/nativescript-barcodescanner";
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { Screen } from "@nativescript/core/platform";
@@ -179,14 +179,20 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     }
 
     get additionalServicesInfo(): Array<AdditionalServiceInfo> {
-        if (this.result == null) {
-            return [];
-        }
-        return this.result.additionalServices || [];
+        return this.result?.additionalServices ?? [];
+    }
+
+    get additionalFields(): Array<FieldValueAndDescription> {
+        return this.result?.fieldsToDisplay ?? [];
+    }
+
+    get hasAdditionalFields(): boolean {
+        return (this.result?.additionalServices?.length ?? 0) > 0
+            || (this.result?.fieldsToDisplay?.length ?? 0) > 0
     }
 
     get resultRows(): string {
-        return this.additionalServicesInfo.length > 0 ? "*, *, 70" : "*, auto, 70";
+        return this.hasAdditionalFields ? "auto, *, 70" : "*, auto, 70";
     }
 
     /**

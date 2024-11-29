@@ -15,7 +15,7 @@
                 <Label textWrap="true" text="Tap the button below to init the check-in process. Scan the QR-Code on the tickets and wait for the result." class="body text-center"></Label>
             </ng-container>
             <ng-container *ngIf="status" class="p-l-16 p-r-16">
-                <Label class="icon icon-4x text-center" [text]="getStatusIcon()"></Label>
+                <Label class="icon text-center" [ngClass]="{'icon-3x': hasAdditionalFields, 'icon-4x': !hasAdditionalFields}" [text]="getStatusIcon()"></Label>
                 <Label [text]="message" class="h2 text-center m-t-10" *ngIf="!isStatusSuccess() || ticket == null" textWrap="true"></Label>
                 <ng-container *ngIf="isStatusSuccess() && ticket != null">
                     <Label textWrap="true" [text]="ticket.fullName" class="h2 text-center"></Label>
@@ -24,8 +24,13 @@
                 </ng-container>
             </ng-container>
         </StackLayout>
-        <StackLayout row="1" *ngIf="!isLoading && additionalServicesInfo.length > 0" orientation="vertical" verticalAlignment="center">
-            <StackLayout class="hr"></StackLayout>
+        <StackLayout row="1" *ngIf="!isLoading && hasAdditionalFields" orientation="vertical" verticalAlignment="center">
+            <StackLayout class="hr" *ngIf="additionalFields.length > 0"></StackLayout>
+            <ng-container *ngFor="let field of additionalFields">
+                <Label [text]="field.name" class="h2 m-l-10"></Label>
+                <Label [text]="field.value" class="h3 m-l-30"></Label>
+            </ng-container>
+            <StackLayout class="hr" *ngIf="additionalServicesInfo.length > 0"></StackLayout>
             <ng-container *ngFor="let item of additionalServicesInfo">
                 <Label [text]="item.count + ' x ' + item.name" class="h2 m-l-10"></Label>
                 <Label [text]="field.fieldName + ': ' + field.fieldValue" class="h3 m-l-30" *ngFor="let field of item.fields"></Label>

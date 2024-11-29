@@ -20,10 +20,17 @@ export class TicketFieldValueForAdditionalService {
                 public additionalServiceId: Number) {}
 }
 
+export interface FieldValueAndDescription {
+    name: string;
+    value: string;
+    description: string;
+}
+
 export class TicketAndCheckInResult {
     constructor(public ticket: Ticket,
                 public result: CheckInResult,
                 public additionalServices?: Array<AdditionalServiceInfo>,
+                public fieldsToDisplay?: Array<FieldValueAndDescription>,
                 public boxColor?: string) {}
 }
 
