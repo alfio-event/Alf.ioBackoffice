@@ -57,6 +57,7 @@
     @include light-badge-color('success', $success);
     @include light-badge-color('danger', $error);
     @include light-badge-color('warning', $warning, $primary, $white, $primary);
+    @include light-badge-color('purple', $alfio-purple);
     @include light-badge-color('info', $info);
     @include light-badge-color('dark', $background-dark);
     @include light-badge-color('light', $white, $primary, $primary);
@@ -68,6 +69,7 @@
     @include dark-badge-color('success', $success-dark, $white, $white);
     @include dark-badge-color('danger', $error-dark, $white, $white);
     @include dark-badge-color('warning', $warning-dark);
+    @include light-badge-color('purple', $alfio-purple-dark, $white, $white);
     @include dark-badge-color('info', $info-dark, $white, $white, $background-dark);
     @include dark-badge-color('light', $white);
     @include dark-badge-color('dark', $background-dark, $white, $white, $background-dark);
@@ -105,11 +107,11 @@
 
 .bg-danger Button {
     background-color: $white;
-    
+
     :host-context(.ns-dark) & {
         color: $error-dark;
     }
-    
+
     :host-context(.ns-light) & {
         color: $error;
     }
