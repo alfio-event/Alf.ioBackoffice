@@ -20,7 +20,7 @@
     "@nativescript/email": "^2.1.0",
     "@nativescript/iqkeyboardmanager": "^2.1.1",
     "@nativescript/secure-storage": "~3.0.0",
-    "@nativescript/theme": "~3.0.0",
+    "@nativescript/theme": "~3.1.0",
     "@nstudio/nativescript-barcodescanner": "~5.0.1",
     "nativescript-feedback": "~2.0.0",
     "nativescript-insomnia": "~2.0.0",
