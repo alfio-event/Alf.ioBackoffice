@@ -28,7 +28,7 @@
             <StackLayout class="hr" *ngIf="additionalFields.length > 0"></StackLayout>
             <ng-container *ngFor="let field of additionalFields">
                 <Label [text]="field.name" class="h2 m-l-10"></Label>
-                <Label [text]="field.value" class="h3 m-l-30"></Label>
+                <Label [text]="field.value" textWrap="true" class="h3 m-l-30"></Label>
             </ng-container>
             <StackLayout class="hr" *ngIf="additionalServicesInfo.length > 0"></StackLayout>
             <ng-container *ngFor="let item of additionalServicesInfo">
