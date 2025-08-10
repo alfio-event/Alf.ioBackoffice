@@ -18,7 +18,8 @@ import {ListViewLoadOnDemandMode, LoadOnDemandListViewEventData, RadListView} fr
   selector: "search-attendees",
   templateUrl: "./search-attendees.html",
   styleUrls: ["./search-attendees.scss"],
-  providers: [ScanService, AccountService, ModalDialogService, FeedbackService]
+  providers: [ScanService, AccountService, ModalDialogService, FeedbackService],
+  standalone: false,
 })
 export class SearchAttendeesComponent implements OnInit, OnDestroy {
 

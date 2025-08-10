@@ -23,7 +23,8 @@ import {PullToRefresh} from "@nativescript-community/ui-pulltorefresh";
     moduleId: module.id,
     selector: "sponsor-event-detail",
     templateUrl: './event-detail.html',
-    styleUrls: ['./event-detail-common.scss']
+    styleUrls: ['./event-detail-common.scss'],
+    standalone: false,
 })
 @Injectable()
 export class SponsorEventDetailComponent implements OnInit, OnDestroy {

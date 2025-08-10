@@ -7,7 +7,8 @@ import {SponsorScanService} from "~/app/shared/scan/sponsor-scan.service";
     moduleId: module.id,
     selector: "sponsor-scan-badge",
     templateUrl: "./sponsor-scan-badge.html",
-    styleUrls: ["./sponsor-scan-badge.scss"]
+    styleUrls: ["./sponsor-scan-badge.scss"],
+    standalone: false,
 })
 export class SponsorScanBadgeComponent implements OnInit {
 

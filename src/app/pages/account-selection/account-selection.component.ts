@@ -15,6 +15,7 @@ import {IDevice, platformNames} from "@nativescript/core/platform";
     selector: "account-selection",
     templateUrl: "./account-selection.html",
     styleUrls: ["./account-selection.scss"],
+    standalone: false,
 })
 export class AccountSelectionComponent implements OnInit {
     accounts: ObservableArray<Account> = new ObservableArray<Account>();

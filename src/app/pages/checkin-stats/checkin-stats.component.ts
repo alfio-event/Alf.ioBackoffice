@@ -22,7 +22,8 @@ import { switchMap } from "rxjs/operators";
                     </GridLayout>
                     <event-header [account]="account" [event]="event" *ngIf="!stats"></event-header>
                </StackLayout>`,
-    styleUrls: []
+    styleUrls: [],
+    standalone: false,
 })
 @Injectable()
 export class CheckInStatsComponent implements OnInit, OnDestroy {

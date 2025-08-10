@@ -3,7 +3,7 @@ import { Directive, ViewContainerRef, TemplateRef, Inject } from '@angular/core'
 import { IDevice, platformNames } from "@nativescript/core/platform";
 import { DEVICE } from "@nativescript/angular";
 
-@Directive({ selector: "[ifAndroid]" })
+@Directive({ selector: "[ifAndroid]", standalone: false, })
 export class IfAndroidDirective {
     constructor( @Inject(DEVICE) device: IDevice, container: ViewContainerRef, templateRef: TemplateRef<Object>) {
         if (device.os === platformNames.android) {
@@ -12,7 +12,7 @@ export class IfAndroidDirective {
     }
 }
 
-@Directive({ selector: "[ifIos]" })
+@Directive({ selector: "[ifIos]", standalone: false, })
 export class IfIosDirective {
     constructor( @Inject(DEVICE) device: IDevice, container: ViewContainerRef, templateRef: TemplateRef<Object>) {
         if (device.os === platformNames.ios) {

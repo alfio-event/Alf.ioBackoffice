@@ -12,7 +12,8 @@ import {logIfDevMode} from "~/app/utils/systemUtils";
   moduleId: module.id,
   selector: "attendee-detail",
   templateUrl: "./attendee-detail.html",
-  styleUrls: ["./attendee-detail.scss"]
+  styleUrls: ["./attendee-detail.scss"],
+  standalone: false,
 })
 export class AttendeeDetailComponent implements OnInit, OnChanges {
 

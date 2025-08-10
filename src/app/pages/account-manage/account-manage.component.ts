@@ -19,6 +19,7 @@ import {logIfDevMode} from "~/app/utils/systemUtils";
     providers: [AccountService],
     templateUrl: "./account-manage.html",
     styleUrls: ["./account-manage-common.scss"],
+    standalone: false,
 })
 export class AccountManageComponent implements OnInit {
     account: Account;

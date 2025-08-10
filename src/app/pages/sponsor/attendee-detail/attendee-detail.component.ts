@@ -14,7 +14,8 @@ import {Page} from '@nativescript/core';
     moduleId: module.id,
     selector: "attendee-detail-component",
     templateUrl: "./attendee-detail.html",
-    styleUrls: [ "./attendee-detail.scss" ]
+    styleUrls: [ "./attendee-detail.scss" ],
+    standalone: false,
 })
 export class AttendeeDetailComponent implements OnInit, AfterViewInit {
 
