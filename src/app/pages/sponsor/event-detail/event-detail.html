@@ -1,4 +1,4 @@
-<ActionBar class="nt-action-bar" title="Scan Attendees">
+<ActionBar class="nt-action-bar" title="Scan Attendees" [ngClass]="appBarClassName()">
     <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Events"></NavigationButton>
     <NavigationButton *ifIos (tap)="onBackTap()" text="Events"></NavigationButton>
     <ActionItem (tap)="shuffle()" icon="res://ic_shuffle_white" ios.systemIcon="10" *ngIf="!additionalButton && scans.length > 1" ios.position="right" text="Shuffle" android.position="actionBarIfRoom"></ActionItem>

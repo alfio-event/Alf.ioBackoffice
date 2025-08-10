@@ -1,4 +1,4 @@
-<GridLayout [rows]="mainLayoutRows" class="search-attendees-result">
+<GridLayout [rows]="mainLayoutRows" class="search-attendees-result" [ngClass]="appBarClassName()">
     <StackLayout row="1">
         <Label [text]="attendeeFullName" class="h2 text-center"></Label>
         <Label [text]="attendee.categoryName" class="h3 text-center"></Label>

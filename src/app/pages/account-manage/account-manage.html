@@ -1,4 +1,4 @@
-<ActionBar class="nt-action-bar" title="Select Event">
+<ActionBar class="nt-action-bar" title="Select Event" [ngClass]="appBarClassName()">
     <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Accounts"></NavigationButton>
     <NavigationButton *ifIos (tap)="onBackTap()" text="Accounts"></NavigationButton>
 </ActionBar>

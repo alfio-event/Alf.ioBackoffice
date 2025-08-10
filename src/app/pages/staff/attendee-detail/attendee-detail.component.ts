@@ -6,7 +6,7 @@ import {AttendeeSearchResult} from "~/app/shared/scan/scan-common";
 import {HttpErrorResponse} from "@angular/common/http";
 import {IDevice, Screen} from "@nativescript/core/platform";
 import {DEVICE} from "@nativescript/angular";
-import {logIfDevMode} from "~/app/utils/systemUtils";
+import {appBarClassName, logIfDevMode} from "~/app/utils/systemUtils";
 
 @Component({
   moduleId: module.id,
@@ -151,4 +151,5 @@ export class AttendeeDetailComponent implements OnInit, OnChanges {
   }
 
 
+    protected readonly appBarClassName = appBarClassName;
 }

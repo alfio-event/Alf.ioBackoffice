@@ -12,6 +12,7 @@ import {OrientationService} from "~/app/shared/orientation.service";
 import {IDevice, platformNames, Screen} from "@nativescript/core/platform";
 import {FeedbackService} from "~/app/shared/notification/feedback.service";
 import {ListViewLoadOnDemandMode, LoadOnDemandListViewEventData, RadListView} from "nativescript-ui-listview";
+import {appBarClassName} from "~/app/utils/systemUtils";
 
 @Component({
   moduleId: module.id,
@@ -237,4 +238,6 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
       this.isLoading = false;
     });
   }
+
+    protected readonly appBarClassName = appBarClassName;
 }

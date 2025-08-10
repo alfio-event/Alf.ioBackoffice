@@ -9,6 +9,7 @@ import {RouterExtensions} from '@nativescript/angular';
 import {sponsorScanMetadata} from './attendee-detail.model';
 import {RadDataForm} from 'nativescript-ui-dataform';
 import {Page} from '@nativescript/core';
+import {appBarClassName} from "~/app/utils/systemUtils";
 
 @Component({
     moduleId: module.id,
@@ -78,4 +79,5 @@ export class AttendeeDetailComponent implements OnInit, AfterViewInit {
         ];
     }
 
+    protected readonly appBarClassName = appBarClassName;
 }

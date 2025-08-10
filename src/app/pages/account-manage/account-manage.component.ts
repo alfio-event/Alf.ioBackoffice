@@ -11,7 +11,7 @@ import {Subscription, zip} from "rxjs";
 import {StorageService} from "~/app/shared/storage/storage.service";
 import {getPendingEventDataForSponsor} from "~/app/shared/scan/sponsor-scan";
 import {SponsorScanService} from "~/app/shared/scan/sponsor-scan.service";
-import {logIfDevMode} from "~/app/utils/systemUtils";
+import {appBarClassName, logIfDevMode} from "~/app/utils/systemUtils";
 
 
 @Component({
@@ -164,4 +164,5 @@ export class AccountManageComponent implements OnInit {
     });
   }
 
+    protected readonly appBarClassName = appBarClassName;
 }

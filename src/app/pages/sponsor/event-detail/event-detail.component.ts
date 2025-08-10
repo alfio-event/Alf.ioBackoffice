@@ -16,7 +16,7 @@ import {timeout} from 'rxjs/operators';
 import {Application} from "@nativescript/core/application";
 import {ItemEventData, ListView, ObservableArray, TapGestureEventData} from '@nativescript/core';
 import {openUrl} from "@nativescript/core/utils";
-import {logIfDevMode} from "~/app/utils/systemUtils";
+import {appBarClassName, logIfDevMode} from "~/app/utils/systemUtils";
 import {PullToRefresh} from "@nativescript-community/ui-pulltorefresh";
 
 @Component({
@@ -233,4 +233,6 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         }
       });
   }
+
+    protected readonly appBarClassName = appBarClassName;
 }

@@ -1,4 +1,4 @@
-<ActionBar class="nt-action-bar" [title]="actionBarTitle">
+<ActionBar class="nt-action-bar" [title]="actionBarTitle" [ngClass]="appBarClassName()">
     <NavigationButton *ifAndroid icon="res://ic_arrow_back_white" (tap)="onBackTap()" text="Events"></NavigationButton>
     <NavigationButton *ifIos (tap)="onBackTap()" text="Events"></NavigationButton>
     <ActionItem icon="res://outline_search_white_24" *ngIf="supervisor" (tap)="search()" ios.systemIcon="12" ios.position="right" text="Search" android.position="actionBarIfRoom"></ActionItem>

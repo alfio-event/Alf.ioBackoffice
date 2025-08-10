@@ -10,6 +10,7 @@ import {ItemEventData, ObservableArray, Page} from "@nativescript/core";
 import {OrientationService} from "~/app/shared/orientation.service";
 import {Subscription} from "rxjs";
 import {IDevice, platformNames} from "@nativescript/core/platform";
+import {appBarClassName} from "~/app/utils/systemUtils";
 
 @Component({
     selector: "account-selection",
@@ -170,4 +171,6 @@ export class AccountSelectionComponent implements OnInit {
             this.toggleEditMode();
         }
     }
+
+    protected readonly appBarClassName = appBarClassName;
 }

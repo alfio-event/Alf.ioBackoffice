@@ -10,6 +10,7 @@ import { BarcodeScanner, ScanResult } from "@nstudio/nativescript-barcodescanner
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { Screen } from "@nativescript/core/platform";
 import { VibrateService } from '~/app/shared/notification/vibrate.service';
+import {appBarClassName} from "~/app/utils/systemUtils";
 
 @Component({
     moduleId: module.id,
@@ -224,4 +225,6 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
             this.isLoading = false;
         });
     }
+
+    protected readonly appBarClassName = appBarClassName;
 }

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android" package="__PACKAGE__">
     <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" />
-    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="__APILEVEL__" />
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="__APILEVEL__" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
