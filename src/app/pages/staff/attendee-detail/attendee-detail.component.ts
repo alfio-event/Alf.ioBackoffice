@@ -9,7 +9,6 @@ import {DEVICE} from "@nativescript/angular";
 import {appBarClassName, logIfDevMode} from "~/app/utils/systemUtils";
 
 @Component({
-  moduleId: module.id,
   selector: "attendee-detail",
   templateUrl: "./attendee-detail.html",
   styleUrls: ["./attendee-detail.scss"],
@@ -44,9 +43,7 @@ export class AttendeeDetailComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.initQrCodeURL();
-    this.additionalInfoAsList = Object.keys(this.attendee.additionalInfo)
-      .map(key => ({key, values: this.attendee.additionalInfo[key].join(', ')}));
+    this.initAttendeeInfo();
     const widthPixels = Screen.mainScreen.widthPixels;
     if (this.device.deviceType == "Phone" || widthPixels < Screen.mainScreen.heightPixels) {
       this.additionalInfoColumns = "16, *, 16";
@@ -94,7 +91,7 @@ export class AttendeeDetailComponent implements OnInit, OnChanges {
     return this.attendee.ticketStatus === 'TO_BE_PAID';
   }
 
-  private initQrCodeURL(): void {
+  private initAttendeeInfo(): void {
     let uuid: string;
     if (this.event.apiVersion >= 205) {
         uuid = this.attendee.publicUUID;
@@ -102,6 +99,8 @@ export class AttendeeDetailComponent implements OnInit, OnChanges {
         uuid = this.attendee.uuid;
     }
     this.qrCodeUrl = `${this.account.url}/api/v2/public/event/${this.event.key}/ticket/${uuid}/code.png`;
+    this.additionalInfoAsList = Object.keys(this.attendee.additionalInfo)
+      .map(key => ({key, values: this.attendee.additionalInfo[key].join(', ')}));
   }
 
   private revertCheckIn(): void {
@@ -147,7 +146,8 @@ export class AttendeeDetailComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.initQrCodeURL();
+    logIfDevMode("AttendeeDetailComponent: ngOnChanges", changes);
+    this.initAttendeeInfo();
   }
 
 

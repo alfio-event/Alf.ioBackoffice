@@ -59,15 +59,17 @@
         </ng-container>
     </FlexboxLayout>
     <!-- extended view for landscape tablet -->
-    <ng-container *ngIf="landscapeTablet">
+    @if (landscapeTablet) {
         <FlexboxLayout col="1" row="0" rowSpan="3" class="attendee-detail">
-            <StackLayout flexGrow="1" *ngIf="selectedAttendee == null" verticalAlignment="center">
-                <Image [src]="account.url + event.imageUrl" class="m-10 m-b-0" loadMode="async" stretch="aspectFit" height="100"></Image>
-                <Label text="Search Attendees" class="text-center label font-weight-bold h2"></Label>
-                <Label textWrap="true" text="Search attendees by first name, last name, email, ticket ID, reservation contact" class="body text-center"></Label>
-            </StackLayout>
-            <attendee-detail *ngIf="selectedAttendee != null" [event]="event" [account]="account" [attendee]="selectedAttendee" (updateComplete)="reloadSearch(selectedAttendee.uuid)"></attendee-detail>
+            @if (selectedAttendee == null) {
+                <StackLayout flexGrow="1" verticalAlignment="center">
+                    <Image [src]="account.url + event.imageUrl" class="m-10 m-b-0" loadMode="async" stretch="aspectFit" height="100"></Image>
+                    <Label text="Search Attendees" class="text-center label font-weight-bold h2"></Label>
+                    <Label textWrap="true" text="Search attendees by first name, last name, email, ticket ID, reservation contact" class="body text-center"></Label>
+                </StackLayout>
+            } @else {
+                <attendee-detail [event]="event" [account]="account" [attendee]="selectedAttendee" (updateComplete)="reloadSearch(selectedAttendee.uuid)"></attendee-detail>
+            }
         </FlexboxLayout>
-    </ng-container>
-
+    }
 </GridLayout>
