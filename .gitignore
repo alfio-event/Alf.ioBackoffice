@@ -42,3 +42,4 @@ run*.sh
 .cloud
 .migration_backup
 .update_backup
+.sass-cache
