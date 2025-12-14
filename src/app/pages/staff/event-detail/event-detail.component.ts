@@ -5,7 +5,7 @@ import { AccountService } from "~/app/shared/account/account.service";
 import { ScanService } from "~/app/shared/scan/scan.service";
 import { Account, AccountType, EventConfiguration, supportsAttendeesSearch } from "~/app/shared/account/account";
 import { defaultScanOptions } from '~/app/utils/barcodescanner';
-import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses, AdditionalServiceInfo, FieldValueAndDescription } from '../../../shared/scan/scan-common';
+import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses, AdditionalServiceInfo, FieldValueAndDescription } from '~/app/shared/scan/scan-common';
 import { BarcodeScanner, ScanResult } from "@nstudio/nativescript-barcodescanner";
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
 import { Screen } from "@nativescript/core/platform";
@@ -198,7 +198,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * In order to have enough room on screen for the additional items,
+     * To have enough room on screen for the additional items,
      * we have to hide the check-in stats on smaller screens
      */
     get displayCheckInStats(): boolean {
