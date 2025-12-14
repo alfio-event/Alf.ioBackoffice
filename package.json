@@ -22,7 +22,7 @@
     "@nativescript/secure-storage": "4.0.1",
     "@nativescript/theme": "~3.1.0",
     "@nstudio/nativescript-barcodescanner": "~5.0.1",
-    "nativescript-feedback": "~2.0.0",
+    "@valor/nativescript-feedback": "2.0.2",
     "nativescript-insomnia": "~2.0.0",
     "nativescript-taptic-engine": "^2.1.0",
     "nativescript-ui-dataform": "~15.2.0",

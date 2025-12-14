@@ -1,7 +1,7 @@
-import { Injectable, Inject } from "@angular/core";
-import { Feedback } from "nativescript-feedback";
-import { android as androidApplication } from "@nativescript/core/application";
-import {Utils} from "@nativescript/core";
+import {Injectable} from "@angular/core";
+
+import {isAndroid, Utils} from "@nativescript/core";
+import {Feedback} from "@valor/nativescript-feedback";
 
 @Injectable()
 export class FeedbackService {
@@ -37,7 +37,7 @@ export class FeedbackService {
     }
 
     private fallbackIfAndroid(message: string, fn: () => Promise<void>): Promise<void> {
-        if (androidApplication) {
+        if (isAndroid) {
             // at the moment we use ZXing full screen, and apparently we cannot overlay something on top of it.
             // we'll fall back to a simple "toast" for now
             // source: https://github.com/TobiasHennig/nativescript-toast/blob/master/src/toast.android.js

@@ -1,7 +1,16 @@
-import {Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild, ViewContainerRef} from "@angular/core";
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    Inject,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewContainerRef
+} from "@angular/core";
 import {ActivatedRoute, Params} from "@angular/router";
 import {DEVICE, ModalDialogOptions, ModalDialogService, RouterExtensions} from "@nativescript/angular";
-import {EventData, ObservableArray, Page, SearchBar} from "@nativescript/core";
+import {CoreTypes, EventData, isAndroid, ObservableArray, Page, SearchBar} from "@nativescript/core";
 import {Account, EventConfiguration} from "~/app/shared/account/account";
 import {AccountService} from "~/app/shared/account/account.service";
 import {AttendeeSearchResult, AttendeeSearchResults} from "~/app/shared/scan/scan-common";
@@ -12,7 +21,8 @@ import {OrientationService} from "~/app/shared/orientation.service";
 import {IDevice, platformNames, Screen} from "@nativescript/core/platform";
 import {FeedbackService} from "~/app/shared/notification/feedback.service";
 import {ListViewLoadOnDemandMode, LoadOnDemandListViewEventData, RadListView} from "nativescript-ui-listview";
-import {appBarClassName} from "~/app/utils/systemUtils";
+import {appBarClassName, logIfDevMode} from "~/app/utils/systemUtils";
+import search = CoreTypes.ReturnKeyType.search;
 
 @Component({
   moduleId: module.id,
@@ -22,7 +32,7 @@ import {appBarClassName} from "~/app/utils/systemUtils";
   providers: [ScanService, AccountService, ModalDialogService, FeedbackService],
   standalone: false,
 })
-export class SearchAttendeesComponent implements OnInit, OnDestroy {
+export class SearchAttendeesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   event: EventConfiguration;
   account: Account;
@@ -109,6 +119,38 @@ export class SearchAttendeesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.orientationSubscription?.unsubscribe();
+  }
+
+  ngAfterViewInit(): void {
+    if (isAndroid) {
+      setTimeout(() => {
+        const searchBar = this.searchBar?.nativeElement as SearchBar;
+        const editText = this.findEditText(searchBar.nativeView);
+
+        if (editText) {
+            editText.setInputType(
+                android.text.InputType.TYPE_CLASS_TEXT |
+                android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            );
+        }
+      }, 100);
+    }
+  }
+
+  private findEditText(viewGroup: any): any {
+      for (let i = 0; i < viewGroup.getChildCount(); i++) {
+          const child = viewGroup.getChildAt(i);
+          if (child instanceof android.widget.EditText) {
+              return child;
+          } else if (child instanceof android.view.ViewGroup) {
+              const result = this.findEditText(child);
+              if (result) {
+                  logIfDevMode('found text component');
+                  return result;
+              }
+          }
+      }
+      return null;
   }
 
   onSubmit(args: EventData): void {
