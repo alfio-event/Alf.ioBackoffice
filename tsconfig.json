@@ -20,7 +20,7 @@
                 "src/*"
             ]
         },
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "removeComments": false,
         "skipLibCheck": true
     },
