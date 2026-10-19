@@ -1,0 +1,72 @@
+fastlane_version '2.229.1'
+
+desc 'test lane'
+lane :test do
+  print "TEST SUCCESSFUL!"
+end
+
+platform :ios do
+ desc 'Fetch certificates and provisioning profiles'
+ lane :certificates do
+    match(api_key_path: ENV["APPSTORE_API_KEY_PATH"], git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"], type: 'development', readonly: true)
+    match(api_key_path: ENV["APPSTORE_API_KEY_PATH"], git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"], type: "appstore", readonly: true)
+ end
+
+ desc 'Build the iOS application.'
+ lane :build do
+    sh("./init-ios-build.sh")
+    sh("npx", "nativescript", "prepare", "ios", "--release", "--clean", "--env.production")
+
+    # creates a temporary keychain on CI, no-op on local machines
+    setup_ci
+
+    match(api_key_path: ENV["APPSTORE_API_KEY_PATH"], type: "appstore", readonly: true)
+
+    gym(
+      workspace: "./platforms/ios/AlfioBackoffice.xcworkspace",
+      scheme: "AlfioBackoffice",
+      export_method: "app-store",
+      xcargs: ENV["XCARGS"],
+      clean: true
+    )
+ end
+
+ desc 'Ship to Testflight.'
+ lane :beta do
+    build
+
+    upload_to_testflight(
+      api_key_path: ENV["APPSTORE_API_KEY_PATH"],
+      skip_submission: true
+    )
+ end
+
+end
+
+platform :android do
+
+ desc 'Build the Android application.'
+  lane :build do
+    sh("ns", "build", "android", "--release", "--clean", "--env.production",
+        "--key-store-path", "hidden",
+        "--key-store-password", "hidden",
+        "--key-store-alias", "hidden",
+        "--key-store-alias-password", "hidden",
+        "--aab"
+      )
+ end
+
+ desc 'Ship to Playstore Alpha.'
+  lane :alpha do
+    build
+
+    changelog_from_git_commits
+
+    upload_to_play_store(
+      track: 'alpha',
+      track_promote_to: 'alpha',
+      aab: './platforms/android/app/build/outputs/bundle/release/app-release.aab'
+    )
+ end
+
+end

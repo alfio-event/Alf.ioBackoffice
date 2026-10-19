@@ -43,3 +43,17 @@ run*.sh
 .migration_backup
 .update_backup
 .sass-cache
+fastlane/Appfile
+fastlane/Matchfile
+.env.default
+*.ipa
+*.p8
+fastlane/keys/*.json
+fastlane/keys/build.xcconfig
+fastlane/report.xml
+App_Resources/Android/keys/*.keystore
+App_Resources/Android/keys/keystore.properties
+*.app.dSYM.zip
+# Ruby / Bundler
+.bundle/
+vendor/bundle/

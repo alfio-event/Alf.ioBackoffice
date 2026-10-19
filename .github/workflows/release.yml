@@ -1,0 +1,140 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      ios_version:
+        description: 'iOS version (CFBundleShortVersionString), e.g. 1.9.5'
+        required: true
+        type: string
+      ios_build:
+        description: 'iOS build number (CFBundleVersion), e.g. 1.9.5 or 42'
+        required: true
+        type: string
+      android_version:
+        description: 'Android versionName, e.g. 1.9.5'
+        required: true
+        type: string
+      android_version_code:
+        description: 'Android versionCode (integer, must be greater than the last one uploaded)'
+        required: true
+        type: string
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write # push the release tags
+
+jobs:
+  release:
+    # macOS runners are free for public repositories; both iOS and Android are built here.
+    runs-on: macos-26
+    timeout-minutes: 120
+    env:
+      IOS_VERSION: ${{ inputs.ios_version }}
+      IOS_BUILD: ${{ inputs.ios_build }}
+      ANDROID_VERSION: ${{ inputs.android_version }}
+      ANDROID_VERSION_CODE: ${{ inputs.android_version_code }}
+      APPSTORE_API_KEY_PATH: ${{ github.workspace }}/fastlane/keys/appstore_api_key.json
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      SUPPLY_JSON_KEY: ${{ github.workspace }}/fastlane/keys/play_store_key.json
+      SUPPLY_PACKAGE_NAME: alfio.scan
+      FASTLANE_SKIP_UPDATE_CHECK: 'true'
+      FASTLANE_HIDE_CHANGELOG: 'true'
+      # versions are not stored in the source code: they are injected at build time
+      XCARGS: MARKETING_VERSION=${{ inputs.ios_version }} CURRENT_PROJECT_VERSION=${{ inputs.ios_build }}
+      ORG_GRADLE_PROJECT_appVersionName: ${{ inputs.android_version }}
+      ORG_GRADLE_PROJECT_appVersionCode: ${{ inputs.android_version_code }}
+      IOS_TAG: ios/${{ inputs.ios_version }}-${{ inputs.ios_build }}
+      ANDROID_TAG: android/${{ inputs.android_version }}-${{ inputs.android_version_code }}
+    steps:
+      - name: Validate versions
+        run: |
+          semver='^[0-9]+(\.[0-9]+){0,2}$'
+          [[ "$IOS_VERSION" =~ $semver ]] || { echo "::error::Invalid iOS version: $IOS_VERSION"; exit 1; }
+          [[ "$IOS_BUILD" =~ $semver ]] || { echo "::error::Invalid iOS build number: $IOS_BUILD"; exit 1; }
+          [[ "$ANDROID_VERSION" =~ $semver ]] || { echo "::error::Invalid Android versionName: $ANDROID_VERSION"; exit 1; }
+          [[ "$ANDROID_VERSION_CODE" =~ ^[1-9][0-9]*$ ]] || { echo "::error::Invalid Android versionCode: $ANDROID_VERSION_CODE"; exit 1; }
+
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # changelog_from_git_commits needs the history
+
+      - name: Check which platforms still need to be released
+        id: pending
+        run: |
+          # a platform whose tag already exists was released by a previous run and is skipped
+          for platform in ios android; do
+            tag_var="$(echo "$platform" | tr a-z A-Z)_TAG"
+            if git rev-parse -q --verify "refs/tags/${!tag_var}" >/dev/null; then
+              echo "::notice::${!tag_var} already exists, skipping $platform"
+              echo "$platform=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "$platform=true" >> "$GITHUB_OUTPUT"
+            fi
+          done
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm install -g nativescript
+
+      - name: Write signing material
+        env:
+          APPFILE: ${{ secrets.FASTLANE_APPFILE }}
+          MATCHFILE: ${{ secrets.FASTLANE_MATCHFILE }}
+          APPSTORE_API_KEY_JSON: ${{ secrets.APPSTORE_API_KEY_JSON }}
+          IOS_BUILD_XCCONFIG: ${{ secrets.IOS_BUILD_XCCONFIG }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PROPERTIES: ${{ secrets.ANDROID_KEYSTORE_PROPERTIES }}
+          PLAY_STORE_JSON_KEY: ${{ secrets.PLAY_STORE_JSON_KEY }}
+        run: |
+          for name in APPFILE MATCHFILE APPSTORE_API_KEY_JSON IOS_BUILD_XCCONFIG ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PROPERTIES PLAY_STORE_JSON_KEY; do
+            [ -n "${!name}" ] || { echo "::error::Missing secret for $name"; exit 1; }
+          done
+          printf '%s\n' "$APPFILE" > fastlane/Appfile
+          printf '%s\n' "$MATCHFILE" > fastlane/Matchfile
+          printf '%s' "$APPSTORE_API_KEY_JSON" > "$APPSTORE_API_KEY_PATH"
+          printf '%s' "$PLAY_STORE_JSON_KEY" > "$SUPPLY_JSON_KEY"
+          printf '\n%s\n' "$IOS_BUILD_XCCONFIG" > fastlane/keys/build.xcconfig
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > App_Resources/Android/keys/alfio.scan.keystore
+          printf '%s\n' "$ANDROID_KEYSTORE_PROPERTIES" > App_Resources/Android/keys/keystore.properties
+
+      - name: Release iOS to TestFlight
+        if: steps.pending.outputs.ios == 'true'
+        run: |
+          bundle exec fastlane ios beta
+          git tag -a "$IOS_TAG" -m "iOS $IOS_VERSION ($IOS_BUILD)"
+          git push origin "refs/tags/$IOS_TAG"
+
+      - name: Release Android to Play Store (alpha)
+        if: steps.pending.outputs.android == 'true'
+        run: |
+          bundle exec fastlane android alpha
+          git tag -a "$ANDROID_TAG" -m "Android $ANDROID_VERSION ($ANDROID_VERSION_CODE)"
+          git push origin "refs/tags/$ANDROID_TAG"
+
+      - name: Remove signing material
+        if: always()
+        run: |
+          rm -f fastlane/Appfile fastlane/Matchfile fastlane/keys/*.json fastlane/keys/build.xcconfig \
+                App_Resources/Android/keys/alfio.scan.keystore App_Resources/Android/keys/keystore.properties

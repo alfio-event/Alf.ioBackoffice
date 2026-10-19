@@ -5,14 +5,36 @@ dependencies {
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
 }
 
+def keystorePropertiesFile = rootProject.file("../../App_Resources/Android/keys/keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    signingConfigs {
+        release {
+            storeFile rootProject.file("../../App_Resources/Android/keys/alfio.scan.keystore")
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+
 android {
   compileSdk 36
   defaultConfig {
     targetSdkVersion 36
     generatedDensities = []
     applicationId = "alfio.scan"
-    versionCode = 42508101
-    versionName = "1.9.3"
+    // overridden on release builds via ORG_GRADLE_PROJECT_appVersionCode / ORG_GRADLE_PROJECT_appVersionName
+    versionCode = (project.findProperty("appVersionCode") ?: "1") as int
+    versionName = project.findProperty("appVersionName") ?: "0.0.0"
     multiDexEnabled true
   }
   aaptOptions {
