@@ -12,7 +12,6 @@ import {Page} from '@nativescript/core';
 import {appBarClassName} from "~/app/utils/systemUtils";
 
 @Component({
-    moduleId: module.id,
     selector: "attendee-detail-component",
     templateUrl: "./attendee-detail.html",
     styleUrls: [ "./attendee-detail.scss" ],

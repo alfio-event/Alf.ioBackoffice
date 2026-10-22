@@ -13,7 +13,6 @@ import { VibrateService } from '~/app/shared/notification/vibrate.service';
 import {appBarClassName} from "~/app/utils/systemUtils";
 
 @Component({
-    moduleId: module.id,
     selector: "staff-event-detail",
     providers: [AccountService, ScanService],
     templateUrl: 'event-detail.html',

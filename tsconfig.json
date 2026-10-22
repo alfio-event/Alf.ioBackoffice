@@ -11,18 +11,18 @@
             "dom",
             "ESNext"
         ],
-        "baseUrl": ".",
         "paths": {
             "~/*": [
-                "src/*"
+                "./src/*"
             ],
             "@/*": [
-                "src/*"
+                "./src/*"
             ]
         },
         "moduleResolution": "bundler",
         "removeComments": false,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "strict": false
     },
     "include": [
         "src/**/*.ios.ts",
@@ -36,5 +36,6 @@
     "exclude": [
         "node_modules",
         "platforms"
-    ]
+    ],
+    "angularCompilerOptions": { "strictTemplates": false }
 }

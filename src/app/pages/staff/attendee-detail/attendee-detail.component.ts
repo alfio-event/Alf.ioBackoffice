@@ -1,4 +1,5 @@
-import {Component, EventEmitter, Inject, Input, OnChanges, OnInit, Output, SimpleChanges} from "@angular/core";
+import {Component, EventEmitter, Inject, Input, OnChanges, OnInit, Output} from "@angular/core";
+import type {SimpleChanges} from "@angular/core";
 import {ScanService} from "~/app/shared/scan/scan.service";
 import {FeedbackService} from "~/app/shared/notification/feedback.service";
 import {Account, EventConfiguration} from "~/app/shared/account/account";

@@ -6,7 +6,9 @@ dependencies {
 }
 
 android {
+  compileSdk 36
   defaultConfig {
+    targetSdkVersion 36
     generatedDensities = []
     applicationId = "alfio.scan"
     versionCode = 42508101

@@ -5,7 +5,6 @@ import { Subscription, timer } from "rxjs";
 import { switchMap } from "rxjs/operators";
 
 @Component({
-    moduleId: module.id,
     selector: "checkin-stats",
     providers: [StatisticsService],
     template: `<StackLayout class="fill-bg">

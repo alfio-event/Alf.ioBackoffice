@@ -4,7 +4,6 @@ import {Account, EventConfiguration} from "~/app/shared/account/account";
 import {AttendeeSearchResult} from "~/app/shared/scan/scan-common";
 
 @Component({
-    moduleId: module.id,
     selector: "search-attendees-result",
     templateUrl: "./search-attendees-result.html",
     standalone: false,

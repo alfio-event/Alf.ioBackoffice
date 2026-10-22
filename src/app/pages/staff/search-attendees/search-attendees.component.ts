@@ -18,14 +18,14 @@ import {ScanService} from "~/app/shared/scan/scan.service";
 import {SearchAttendeesResultComponent} from "./search-attendees-result.component";
 import {Subscription} from "rxjs";
 import {OrientationService} from "~/app/shared/orientation.service";
-import {IDevice, platformNames, Screen} from "@nativescript/core/platform";
+import {platformNames, Screen} from "@nativescript/core/platform";
+import type {IDevice} from "@nativescript/core/platform";
 import {FeedbackService} from "~/app/shared/notification/feedback.service";
 import {ListViewLoadOnDemandMode, LoadOnDemandListViewEventData, RadListView} from "nativescript-ui-listview";
 import {appBarClassName, logIfDevMode} from "~/app/utils/systemUtils";
 import search = CoreTypes.ReturnKeyType.search;
 
 @Component({
-  moduleId: module.id,
   selector: "search-attendees",
   templateUrl: "./search-attendees.html",
   styleUrls: ["./search-attendees.scss"],

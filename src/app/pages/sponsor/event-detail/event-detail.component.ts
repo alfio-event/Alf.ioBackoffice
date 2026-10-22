@@ -20,7 +20,6 @@ import {appBarClassName, logIfDevMode} from "~/app/utils/systemUtils";
 import {PullToRefresh} from "@nativescript-community/ui-pulltorefresh";
 
 @Component({
-    moduleId: module.id,
     selector: "sponsor-event-detail",
     templateUrl: './event-detail.html',
     styleUrls: ['./event-detail-common.scss'],

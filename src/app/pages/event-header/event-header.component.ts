@@ -8,7 +8,6 @@ import {
 import { Account, EventConfiguration } from "../../shared/account/account";
 
 @Component({
-    moduleId: module.id,
     selector: "event-header",
     templateUrl: "./event-header.html",
     styleUrls: ['./event-header-common.scss'],

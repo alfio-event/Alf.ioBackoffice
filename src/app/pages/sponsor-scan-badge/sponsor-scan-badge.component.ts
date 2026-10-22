@@ -4,7 +4,6 @@ import { Ticket } from "~/app/shared/scan/scan-common";
 import {SponsorScanService} from "~/app/shared/scan/sponsor-scan.service";
 
 @Component({
-    moduleId: module.id,
     selector: "sponsor-scan-badge",
     templateUrl: "./sponsor-scan-badge.html",
     styleUrls: ["./sponsor-scan-badge.scss"],
