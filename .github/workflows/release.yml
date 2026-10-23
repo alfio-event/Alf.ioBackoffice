@@ -29,7 +29,6 @@ jobs:
     timeout-minutes: 120
     env:
       APPSTORE_API_KEY_PATH: ${{ github.workspace }}/fastlane/keys/appstore_api_key.json
-      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       SUPPLY_JSON_KEY: ${{ github.workspace }}/fastlane/keys/play_store_key.json
       SUPPLY_PACKAGE_NAME: alfio.scan
       FASTLANE_SKIP_UPDATE_CHECK: 'true'
@@ -45,6 +44,9 @@ jobs:
           exit 1
 
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          # npm install scripts run in this job: the token is passed only to the step that pushes the tags
+          persist-credentials: false
 
       # package.json is the source of truth: the input only confirms what is being released
       - name: Check version
@@ -102,6 +104,8 @@ jobs:
       - name: Release iOS to TestFlight
         id: ios
         if: inputs.platforms != 'android'
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: bundle exec fastlane ios beta
 
       - name: Release Android to Play Store (alpha)
@@ -114,6 +118,7 @@ jobs:
         if: always() && (steps.ios.outputs.tag || steps.android.outputs.tag)
         env:
           TAGS: ${{ steps.ios.outputs.tag }} ${{ steps.android.outputs.tag }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -122,7 +127,7 @@ jobs:
             git tag -a "$tag" -m "$tag"
             refs+=("refs/tags/$tag")
           done
-          git push --atomic origin "${refs[@]}"
+          git push --atomic "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "${refs[@]}"
 
       - name: Remove signing material
         if: always()
