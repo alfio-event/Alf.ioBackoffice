@@ -1,5 +1,5 @@
 import { SponsorScan, ScanStatus, LeadStatus } from "~/app/shared/scan/sponsor-scan";
-import { Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnInit } from "@angular/core";
 import { Ticket } from "~/app/shared/scan/scan-common";
 import {SponsorScanService} from "~/app/shared/scan/sponsor-scan.service";
 
@@ -8,6 +8,7 @@ import {SponsorScanService} from "~/app/shared/scan/sponsor-scan.service";
     templateUrl: "./sponsor-scan-badge.html",
     styleUrls: ["./sponsor-scan-badge.scss"],
     standalone: false,
+    changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class SponsorScanBadgeComponent implements OnInit {
 

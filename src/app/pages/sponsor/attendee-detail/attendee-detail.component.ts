@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {SponsorScanService} from '~/app/shared/scan/sponsor-scan.service';
 import {ActivatedRoute} from '@angular/router';
 import {mergeMap} from 'rxjs/operators';
@@ -16,6 +16,7 @@ import {appBarClassName} from "~/app/utils/systemUtils";
     templateUrl: "./attendee-detail.html",
     styleUrls: [ "./attendee-detail.scss" ],
     standalone: false,
+    changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class AttendeeDetailComponent implements OnInit, AfterViewInit {
 

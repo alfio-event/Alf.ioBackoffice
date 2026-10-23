@@ -1,4 +1,5 @@
 import {
+    ChangeDetectionStrategy,
     Component,
     EventEmitter,
     Injectable,
@@ -12,6 +13,7 @@ import { Account, EventConfiguration } from "../../shared/account/account";
     templateUrl: "./event-header.html",
     styleUrls: ['./event-header-common.scss'],
     standalone: false,
+    changeDetection: ChangeDetectionStrategy.Eager,
 })
 @Injectable()
 export class EventHeaderComponent implements OnInit {

@@ -1,5 +1,6 @@
 import {
     AfterViewInit,
+    ChangeDetectionStrategy,
     Component,
     ElementRef,
     Inject,
@@ -31,6 +32,7 @@ import search = CoreTypes.ReturnKeyType.search;
   styleUrls: ["./search-attendees.scss"],
   providers: [ScanService, AccountService, ModalDialogService, FeedbackService],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class SearchAttendeesComponent implements OnInit, OnDestroy, AfterViewInit {
 

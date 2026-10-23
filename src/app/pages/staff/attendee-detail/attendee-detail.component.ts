@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Inject, Input, OnChanges, OnInit, Output} from "@angular/core";
+import {ChangeDetectionStrategy, Component, EventEmitter, Inject, Input, OnChanges, OnInit, Output} from "@angular/core";
 import type {SimpleChanges} from "@angular/core";
 import {ScanService} from "~/app/shared/scan/scan.service";
 import {FeedbackService} from "~/app/shared/notification/feedback.service";
@@ -14,6 +14,7 @@ import {appBarClassName, logIfDevMode} from "~/app/utils/systemUtils";
   templateUrl: "./attendee-detail.html",
   styleUrls: ["./attendee-detail.scss"],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class AttendeeDetailComponent implements OnInit, OnChanges {
 

@@ -1,0 +1,135 @@
+fastlane_version '2.229.1'
+
+require 'json'
+
+# package.json is the single source of truth for the marketing version (both platforms)
+def app_version
+  JSON.parse(File.read("../package.json"))["version"]
+end
+
+# release notes, one file per locale: release-notes/<locale>.txt
+def release_notes
+  notes = Dir["release-notes/*.txt"].to_h { |f| [File.basename(f, ".txt"), File.read(f).strip] }.reject { |_, text| text.empty? }
+  UI.user_error!("No release notes found, write them in fastlane/release-notes/<locale>.txt") if notes.empty?
+  notes
+end
+
+# exposes the tag for a completed upload to the release workflow, which tags the deployed commit
+def record_upload(tag)
+  UI.success("Uploaded #{tag}")
+  File.write(ENV["GITHUB_OUTPUT"], "tag=#{tag}\n", mode: "a") if ENV["GITHUB_OUTPUT"]
+end
+
+desc 'test lane'
+lane :test do
+  print "TEST SUCCESSFUL!"
+end
+
+platform :ios do
+ desc 'Fetch certificates and provisioning profiles'
+ lane :certificates do
+    match(api_key_path: ENV["APPSTORE_API_KEY_PATH"], git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"], type: 'development', readonly: true)
+    match(api_key_path: ENV["APPSTORE_API_KEY_PATH"], git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"], type: "appstore", readonly: true)
+ end
+
+ desc 'Compute the next build number for the current version ("<version>.<n>"), based on TestFlight'
+ lane :next_build_number do
+    latest = latest_testflight_build_number(api_key_path: ENV["APPSTORE_API_KEY_PATH"], version: app_version, initial_build_number: 0).to_s
+    n = latest.start_with?("#{app_version}.") ? latest.split(".").last.to_i : 0
+    "#{app_version}.#{n + 1}"
+ end
+
+ desc 'Build the iOS application.'
+ lane :build do |options|
+    build_number = options[:build_number] || "#{app_version}.0"
+    sh("./init-ios-build.sh")
+    sh("npx", "nativescript", "prepare", "ios", "--release", "--clean", "--env.production")
+
+    # creates a temporary keychain on CI, no-op on local machines
+    setup_ci
+
+    match(api_key_path: ENV["APPSTORE_API_KEY_PATH"], type: "appstore", readonly: true)
+
+    gym(
+      workspace: "./platforms/ios/AlfioBackoffice.xcworkspace",
+      scheme: "AlfioBackoffice",
+      export_method: "app-store",
+      xcargs: "MARKETING_VERSION=#{app_version} CURRENT_PROJECT_VERSION=#{build_number} #{ENV["XCARGS"]}".strip,
+      clean: true
+    )
+ end
+
+ desc 'Ship to Testflight.'
+ lane :beta do
+    notes = release_notes
+    build_number = next_build_number
+    UI.message("Releasing iOS #{app_version} (#{build_number})")
+    build(build_number: build_number)
+
+    upload_to_testflight(
+      api_key_path: ENV["APPSTORE_API_KEY_PATH"],
+      localized_build_info: notes.transform_values { |text| { whats_new: text } },
+      skip_submission: true
+    )
+    record_upload("ios/#{build_number}")
+ end
+
+end
+
+platform :android do
+
+ desc 'Compute the next versionCode, based on all Play Store tracks'
+ lane :next_version_code do
+    codes = %w[internal alpha beta production].flat_map do |track|
+      google_play_track_version_codes(track: track)
+    rescue => e
+      UI.important("Could not read version codes for track #{track}: #{e.message}")
+      []
+    end
+    UI.user_error!("No version codes found on the Play Store, refusing to guess") if codes.empty?
+    codes.max + 1
+ end
+
+ desc 'Build the Android application.'
+  lane :build do |options|
+    # picked up by App_Resources/Android/app.gradle
+    ENV["ORG_GRADLE_PROJECT_appVersionName"] = app_version
+    ENV["ORG_GRADLE_PROJECT_appVersionCode"] = (options[:version_code] || 1).to_s
+    sh("ns", "build", "android", "--release", "--clean", "--env.production",
+        "--key-store-path", "hidden",
+        "--key-store-password", "hidden",
+        "--key-store-alias", "hidden",
+        "--key-store-alias-password", "hidden",
+        "--aab"
+      )
+ end
+
+ desc 'Ship to Playstore Alpha.'
+  lane :alpha do
+    notes = release_notes
+    notes.each do |locale, text|
+      UI.user_error!("Release notes for #{locale} exceed the Play Store limit of 500 characters") if text.length > 500
+    end
+    version_code = next_version_code
+    UI.message("Releasing Android #{app_version} (#{version_code})")
+    build(version_code: version_code)
+
+    # supply only reads changelogs from metadata files
+    notes.each do |locale, text|
+      dir = "metadata/android/#{locale}/changelogs"
+      FileUtils.mkdir_p(dir)
+      File.write("#{dir}/#{version_code}.txt", text)
+    end
+
+    upload_to_play_store(
+      track: 'alpha',
+      aab: './platforms/android/app/build/outputs/bundle/release/app-release.aab',
+      metadata_path: './fastlane/metadata/android',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+    record_upload("android/#{app_version}-#{version_code}")
+ end
+
+end

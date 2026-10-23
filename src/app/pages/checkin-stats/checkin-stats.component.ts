@@ -1,5 +1,5 @@
 import { StatisticsService, CheckInStatistics } from "../../shared/statistics/statistics.service";
-import { Component, Injectable, OnInit, OnDestroy, Input, NgZone } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Injectable, OnInit, OnDestroy, Input, NgZone } from "@angular/core";
 import { Account, EventConfiguration } from "../../shared/account/account";
 import { Subscription, timer } from "rxjs";
 import { switchMap } from "rxjs/operators";
@@ -23,6 +23,7 @@ import { switchMap } from "rxjs/operators";
                </StackLayout>`,
     styleUrls: [],
     standalone: false,
+    changeDetection: ChangeDetectionStrategy.Eager,
 })
 @Injectable()
 export class CheckInStatsComponent implements OnInit, OnDestroy {

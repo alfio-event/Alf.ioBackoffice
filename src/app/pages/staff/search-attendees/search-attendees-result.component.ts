@@ -1,4 +1,4 @@
-import {Component} from "@angular/core";
+import {ChangeDetectionStrategy, Component} from "@angular/core";
 import {ModalDialogParams} from "@nativescript/angular";
 import {Account, EventConfiguration} from "~/app/shared/account/account";
 import {AttendeeSearchResult} from "~/app/shared/scan/scan-common";
@@ -7,6 +7,7 @@ import {AttendeeSearchResult} from "~/app/shared/scan/scan-common";
     selector: "search-attendees-result",
     templateUrl: "./search-attendees-result.html",
     standalone: false,
+    changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class SearchAttendeesResultComponent {
 
