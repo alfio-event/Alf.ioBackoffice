@@ -7,7 +7,10 @@ dependencies {
 
 def keystorePropertiesFile = rootProject.file("../../App_Resources/Android/keys/keystore.properties")
 def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+// only present on release builds (written by the release workflow)
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
 
 android {
     signingConfigs {
