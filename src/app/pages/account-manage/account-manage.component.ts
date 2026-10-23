@@ -1,4 +1,4 @@
-import {Component, NgZone, OnInit} from "@angular/core";
+import {ChangeDetectionStrategy, Component, NgZone, OnInit} from "@angular/core";
 import {ActivatedRoute, Params} from "@angular/router";
 import {RouterExtensions} from "@nativescript/angular";
 import {Account, AccountType, EventConfiguration} from "../../shared/account/account";
@@ -20,6 +20,7 @@ import {appBarClassName, logIfDevMode} from "~/app/utils/systemUtils";
     templateUrl: "./account-manage.html",
     styleUrls: ["./account-manage-common.scss"],
     standalone: false,
+    changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class AccountManageComponent implements OnInit {
     account: Account;

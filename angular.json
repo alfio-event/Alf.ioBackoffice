@@ -12,6 +12,5 @@
         "projectType": "application",
         "prefix": "ns"
       }
-    },
-    "defaultProject": "hello-world"
+    }
 }

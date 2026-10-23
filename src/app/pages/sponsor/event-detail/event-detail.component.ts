@@ -1,6 +1,6 @@
 import {defaultScanOptions} from '~/app/utils/barcodescanner';
 import {LabelLayout, ScanResult, SponsorScan} from '~/app/shared/scan/sponsor-scan';
-import {Component, ElementRef, Injectable, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, Injectable, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Params} from "@angular/router";
 import {ListViewComponent, RouterExtensions} from "@nativescript/angular";
 import {AccountService} from "~/app/shared/account/account.service";
@@ -24,6 +24,7 @@ import {PullToRefresh} from "@nativescript-community/ui-pulltorefresh";
     templateUrl: './event-detail.html',
     styleUrls: ['./event-detail-common.scss'],
     standalone: false,
+    changeDetection: ChangeDetectionStrategy.Eager,
 })
 @Injectable()
 export class SponsorEventDetailComponent implements OnInit, OnDestroy {

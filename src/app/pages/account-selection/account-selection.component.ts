@@ -1,4 +1,4 @@
-import {Component, Inject, NgZone, OnInit} from "@angular/core";
+import {ChangeDetectionStrategy, Component, Inject, NgZone, OnInit} from "@angular/core";
 import {DEVICE, RouterExtensions} from "@nativescript/angular";
 import {Account, AccountResponse, Maybe, Nothing, ScannedAccount, Some} from "../../shared/account/account";
 import {AccountService} from "../../shared/account/account.service";
@@ -17,6 +17,7 @@ import {appBarClassName} from "~/app/utils/systemUtils";
     templateUrl: "./account-selection.html",
     styleUrls: ["./account-selection.scss"],
     standalone: false,
+    changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class AccountSelectionComponent implements OnInit {
     accounts: ObservableArray<Account> = new ObservableArray<Account>();

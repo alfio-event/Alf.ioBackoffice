@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit, OnDestroy, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injectable, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { ActivatedRoute, Params } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { AccountService } from "~/app/shared/account/account.service";
@@ -18,6 +18,7 @@ import {appBarClassName} from "~/app/utils/systemUtils";
     templateUrl: 'event-detail.html',
     styleUrls: ['./event-detail.scss'],
     standalone: false,
+    changeDetection: ChangeDetectionStrategy.Eager,
 })
 @Injectable()
 export class StaffEventDetailComponent implements OnInit, OnDestroy {
