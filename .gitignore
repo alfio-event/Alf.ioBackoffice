@@ -51,6 +51,7 @@ fastlane/Matchfile
 fastlane/keys/*.json
 fastlane/keys/build.xcconfig
 fastlane/report.xml
+fastlane/metadata/android/*/changelogs/
 App_Resources/Android/keys/*.keystore
 App_Resources/Android/keys/keystore.properties
 *.app.dSYM.zip

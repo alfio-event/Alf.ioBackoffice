@@ -1,31 +1,26 @@
 name: Release
+run-name: Release ${{ inputs.version }} (${{ inputs.platforms }})
 
 on:
   workflow_dispatch:
     inputs:
-      ios_version:
-        description: 'iOS version (CFBundleShortVersionString), e.g. 1.9.5'
+      version:
+        description: 'App version, e.g. 1.9.5 (release notes are read from fastlane/release-notes)'
         required: true
         type: string
-      ios_build:
-        description: 'iOS build number (CFBundleVersion), e.g. 1.9.5 or 42'
+      platforms:
+        description: 'Platforms to release'
         required: true
-        type: string
-      android_version:
-        description: 'Android versionName, e.g. 1.9.5'
-        required: true
-        type: string
-      android_version_code:
-        description: 'Android versionCode (integer, must be greater than the last one uploaded)'
-        required: true
-        type: string
+        default: both
+        type: choice
+        options: [both, ios, android]
 
 concurrency:
   group: release
   cancel-in-progress: false
 
 permissions:
-  contents: write # push the release tags
+  contents: write # push the deploy tags
 
 jobs:
   release:
@@ -33,50 +28,31 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 120
     env:
-      IOS_VERSION: ${{ inputs.ios_version }}
-      IOS_BUILD: ${{ inputs.ios_build }}
-      ANDROID_VERSION: ${{ inputs.android_version }}
-      ANDROID_VERSION_CODE: ${{ inputs.android_version_code }}
       APPSTORE_API_KEY_PATH: ${{ github.workspace }}/fastlane/keys/appstore_api_key.json
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       SUPPLY_JSON_KEY: ${{ github.workspace }}/fastlane/keys/play_store_key.json
       SUPPLY_PACKAGE_NAME: alfio.scan
       FASTLANE_SKIP_UPDATE_CHECK: 'true'
       FASTLANE_HIDE_CHANGELOG: 'true'
-      # versions are not stored in the source code: they are injected at build time
-      XCARGS: MARKETING_VERSION=${{ inputs.ios_version }} CURRENT_PROJECT_VERSION=${{ inputs.ios_build }}
-      ORG_GRADLE_PROJECT_appVersionName: ${{ inputs.android_version }}
-      ORG_GRADLE_PROJECT_appVersionCode: ${{ inputs.android_version_code }}
-      IOS_TAG: ios/${{ inputs.ios_version }}-${{ inputs.ios_build }}
-      ANDROID_TAG: android/${{ inputs.android_version }}-${{ inputs.android_version_code }}
     steps:
-      - name: Validate versions
+      - name: Check branch
+        if: github.ref_name != github.event.repository.default_branch
         run: |
-          semver='^[0-9]+(\.[0-9]+){0,2}$'
-          [[ "$IOS_VERSION" =~ $semver ]] || { echo "::error::Invalid iOS version: $IOS_VERSION"; exit 1; }
-          [[ "$IOS_BUILD" =~ $semver ]] || { echo "::error::Invalid iOS build number: $IOS_BUILD"; exit 1; }
-          [[ "$ANDROID_VERSION" =~ $semver ]] || { echo "::error::Invalid Android versionName: $ANDROID_VERSION"; exit 1; }
-          [[ "$ANDROID_VERSION_CODE" =~ ^[1-9][0-9]*$ ]] || { echo "::error::Invalid Android versionCode: $ANDROID_VERSION_CODE"; exit 1; }
+          echo "::error::Releases must be built from ${{ github.event.repository.default_branch }}, not ${{ github.ref_name }}"
+          exit 1
 
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0 # changelog_from_git_commits needs the history
 
-      - name: Check which platforms still need to be released
-        id: pending
+      # package.json is the source of truth: the input only confirms what is being released
+      - name: Check version
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
-          # a platform whose tag already exists was released by a previous run and is skipped
-          for platform in ios android; do
-            tag_var="$(echo "$platform" | tr a-z A-Z)_TAG"
-            if git rev-parse -q --verify "refs/tags/${!tag_var}" >/dev/null; then
-              echo "::notice::${!tag_var} already exists, skipping $platform"
-              echo "$platform=false" >> "$GITHUB_OUTPUT"
-            else
-              echo "$platform=true" >> "$GITHUB_OUTPUT"
-            fi
-          done
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          declared=$(node -p "require('./package.json').version")
+          if [ "$VERSION" != "$declared" ]; then
+            echo "::error::Requested version $VERSION does not match package.json ($declared). Update package.json on ${{ github.ref_name }} first."
+            exit 1
+          fi
 
       - uses: actions/setup-node@v5
         with:
@@ -120,18 +96,27 @@ jobs:
           printf '%s\n' "$ANDROID_KEYSTORE_PROPERTIES" > App_Resources/Android/keys/keystore.properties
 
       - name: Release iOS to TestFlight
-        if: steps.pending.outputs.ios == 'true'
-        run: |
-          bundle exec fastlane ios beta
-          git tag -a "$IOS_TAG" -m "iOS $IOS_VERSION ($IOS_BUILD)"
-          git push origin "refs/tags/$IOS_TAG"
+        id: ios
+        if: inputs.platforms != 'android'
+        run: bundle exec fastlane ios beta
 
       - name: Release Android to Play Store (alpha)
-        if: steps.pending.outputs.android == 'true'
+        id: android
+        if: inputs.platforms != 'ios'
+        run: bundle exec fastlane android alpha
+
+      # also runs when only one platform succeeded, so that its upload is recorded
+      - name: Tag deploy
+        if: always() && (steps.ios.outputs.tag || steps.android.outputs.tag)
+        env:
+          TAGS: ${{ steps.ios.outputs.tag }} ${{ steps.android.outputs.tag }}
         run: |
-          bundle exec fastlane android alpha
-          git tag -a "$ANDROID_TAG" -m "Android $ANDROID_VERSION ($ANDROID_VERSION_CODE)"
-          git push origin "refs/tags/$ANDROID_TAG"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for tag in $TAGS; do
+            git tag -a "$tag" -m "$tag"
+          done
+          git push --atomic origin $(printf 'refs/tags/%s ' $TAGS)
 
       - name: Remove signing material
         if: always()
