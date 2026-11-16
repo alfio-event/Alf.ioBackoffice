@@ -1,5 +1,6 @@
-import {ScanOptions} from "@nstudio/nativescript-barcodescanner";
+import {BarcodeScanner, ScanOptions, ScanResult} from "@nstudio/nativescript-barcodescanner";
 import { Application } from "@nativescript/core";
+import { keepPreviewOrientationInSync } from "./scannerOrientation";
 
 export function defaultScanOptions(): ScanOptions {
     return <ScanOptions> {
@@ -14,4 +15,18 @@ export function defaultScanOptions(): ScanOptions {
         resultDisplayDuration: 0,
         beepOnScan: Application.android != null
     }
+}
+
+/**
+ * Opens the scanner, keeping the camera preview aligned with the UI while it is open.
+ * See scannerOrientation.ios.ts for the details.
+ */
+export function scanWithOrientationFix(scanner: BarcodeScanner, options: ScanOptions): Promise<ScanResult> {
+    // scan() must run first: it creates the native scanner that the orientation sync looks up
+    const result = scanner.scan(options);
+    const stop = keepPreviewOrientationInSync(scanner);
+    return result.then(
+        res => { stop(); return res; },
+        err => { stop(); throw err; }
+    );
 }

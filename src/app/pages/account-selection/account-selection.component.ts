@@ -5,7 +5,7 @@ import {AccountService} from "../../shared/account/account.service";
 import {isDefined, isUndefined} from "@nativescript/core/utils/types";
 import {BarcodeScanner, ScanResult} from "@nstudio/nativescript-barcodescanner";
 import {FeedbackService} from "../../shared/notification/feedback.service";
-import {defaultScanOptions} from "~/app/utils/barcodescanner";
+import {defaultScanOptions, scanWithOrientationFix} from "~/app/utils/barcodescanner";
 import {ItemEventData, ObservableArray, Page} from "@nativescript/core";
 import {OrientationService} from "~/app/shared/orientation.service";
 import {Subscription} from "rxjs";
@@ -79,7 +79,7 @@ export class AccountSelectionComponent implements OnInit {
             return;
         }
         let scanOptions = defaultScanOptions();
-        this.barcodeScanner.scan(scanOptions)
+        scanWithOrientationFix(this.barcodeScanner, scanOptions)
             .then(result => this.onScanResult(result), (error) => {
                 console.log("No scan: " + error);
                 this.isLoading = false;

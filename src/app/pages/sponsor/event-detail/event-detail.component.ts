@@ -1,4 +1,4 @@
-import {defaultScanOptions} from '~/app/utils/barcodescanner';
+import {defaultScanOptions, scanWithOrientationFix} from '~/app/utils/barcodescanner';
 import {LabelLayout, ScanResult, SponsorScan} from '~/app/shared/scan/sponsor-scan';
 import {ChangeDetectionStrategy, Component, ElementRef, Injectable, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Params} from "@angular/router";
@@ -114,7 +114,7 @@ export class SponsorEventDetailComponent implements OnInit, OnDestroy {
         scanOptions.reportDuplicates = true;
         scanOptions.closeCallback = () => this.forceRefreshList();
 
-        this.barcodeScanner.scan(scanOptions)
+        scanWithOrientationFix(this.barcodeScanner, scanOptions)
             .then(() => {
                     console.log("barcode scanner exited");
                     this.forceRefreshList();

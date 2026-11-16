@@ -4,7 +4,7 @@ import { RouterExtensions } from "@nativescript/angular";
 import { AccountService } from "~/app/shared/account/account.service";
 import { ScanService } from "~/app/shared/scan/scan.service";
 import { Account, AccountType, EventConfiguration, supportsAttendeesSearch } from "~/app/shared/account/account";
-import { defaultScanOptions } from '~/app/utils/barcodescanner';
+import {defaultScanOptions, scanWithOrientationFix} from '~/app/utils/barcodescanner';
 import { TicketAndCheckInResult, CheckInStatus, statusDescriptions, UnexpectedError, Ticket, SuccessStatuses, WarningStatuses, AdditionalServiceInfo, FieldValueAndDescription } from '~/app/shared/scan/scan-common';
 import { BarcodeScanner, ScanResult } from "@nstudio/nativescript-barcodescanner";
 import { keepAwake, allowSleepAgain } from "nativescript-insomnia";
@@ -107,7 +107,7 @@ export class StaffEventDetailComponent implements OnInit, OnDestroy {
 
     scan(): void {
         this.isLoading = true;
-        this.barcodeScanner.scan(defaultScanOptions())
+        scanWithOrientationFix(this.barcodeScanner, defaultScanOptions())
             .then((res) => setTimeout(() => this.scanResult(res), 10), (error) => {
                 console.log("handling scan error", error);
                 this.cancel();
